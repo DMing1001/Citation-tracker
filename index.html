@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CiteGlow — 查看你的论文被谁引用了。免费、无需注册、数据来自 OpenAlex。">
+<title>CiteGlow — 论文引用追踪器</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>📊</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#6366f1;--pri2:#818cf8;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(99,102,241,.15);--glow:rgba(99,102,241,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* Animated bg */
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.08;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:400px;height:400px;background:var(--pri);top:-10%;left:-10%}
+.orb:nth-child(2){width:300px;height:300px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+.orb:nth-child(3){width:250px;height:250px;background:var(--acc2);top:40%;right:20%;animation-delay:-14s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+.container{max-width:960px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* Hero */
+.hero{text-align:center;padding:80px 0 40px}
+.hero-icon{font-size:3.5rem;margin-bottom:16px;animation:float 3s ease-in-out infinite;cursor:pointer;user-select:none;transition:transform .15s}
+.hero-icon:active{transform:scale(.9)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* Confetti (彩蛋触发) */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
+.confetti{position:absolute;top:-10px;width:10px;height:10px;border-radius:2px;animation:confettiFall linear forwards;opacity:0}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(105vh) rotate(720deg) scale(.5);opacity:0}}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--bright);margin-bottom:12px}
+.hero h1 .grad{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--dim);font-size:1.05rem;max-width:550px;margin:0 auto;line-height:1.7}
+
+/* Encouragement banner */
+.encourage{margin:0 auto 36px;max-width:700px;padding:20px 28px;border-radius:16px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(34,211,238,.06));border:1px solid var(--border);text-align:center;position:relative;overflow:hidden}
+.encourage::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(99,102,241,.05),transparent,rgba(34,211,238,.05),transparent);animation:rotateBg 10s linear infinite}
+@keyframes rotateBg{to{transform:rotate(360deg)}}
+.encourage-text{position:relative;z-index:1;font-size:1.05rem;color:var(--txt);line-height:1.8;transition:opacity .2s ease}
+.encourage-text .emoji{font-size:1.3rem}
+.encourage-author{position:relative;z-index:1;font-size:.8rem;color:var(--dim);margin-top:8px;font-style:italic;transition:opacity .2s ease}
+
+/* Input area */
+.input-section{margin-bottom:40px}
+.input-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:.3s}
+.input-card:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.input-label{font-size:.85rem;font-weight:600;color:var(--dim);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.input-label span{color:var(--pri)}
+.doi-input{width:100%;padding:14px 18px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--txt);font-size:.95rem;font-family:inherit;resize:vertical;min-height:100px;transition:.2s;line-height:1.6}
+.doi-input:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.doi-input::placeholder{color:var(--dim);opacity:.6}
+.input-hint{font-size:.78rem;color:var(--dim);margin-top:8px;line-height:1.5}
+.input-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:.9rem;font-weight:600;border:none;cursor:pointer;transition:.25s;font-family:inherit}
+.btn-pri{background:linear-gradient(135deg,var(--pri),#4f46e5);color:#fff;box-shadow:0 4px 16px rgba(99,102,241,.3)}
+.btn-pri:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,.4)}
+.btn-pri:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn-ghost{background:rgba(255,255,255,.04);color:var(--txt);border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:var(--pri)}
+.btn-sm{padding:8px 16px;font-size:.82rem;border-radius:8px}
+
+/* Stats bar */
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;text-align:center;transition:.25s}
+.stat:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
+.stat-num{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:.8rem;color:var(--dim);margin-top:4px}
+
+/* Paper card */
+.paper-card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden;transition:.3s}
+.paper-card:hover{border-color:rgba(99,102,241,.3);box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.paper-header{padding:22px 26px;cursor:pointer;display:flex;align-items:flex-start;gap:16px}
+.paper-num{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--pri),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff}
+.paper-info{flex:1;min-width:0}
+.paper-title{font-size:1.05rem;font-weight:600;color:var(--bright);line-height:1.5;margin-bottom:6px}
+.paper-title a{color:var(--bright);text-decoration:none;transition:.2s}
+.paper-title a:hover{color:var(--pri2)}
+.paper-meta{font-size:.82rem;color:var(--dim);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.paper-meta .sep{opacity:.3}
+.paper-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:.8rem;font-weight:600}
+.badge-cite{background:rgba(251,191,36,.12);color:var(--gold)}
+.badge-doi{background:rgba(99,102,241,.12);color:var(--pri2)}
+.paper-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.cite-count{text-align:center}
+.cite-num{font-size:1.6rem;font-weight:800;color:var(--gold);line-height:1}
+.cite-label{font-size:.7rem;color:var(--dim);margin-top:2px}
+.expand-icon{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--dim);transition:.3s}
+.paper-card.open .expand-icon{transform:rotate(180deg)}
+
+/* Citing papers list */
+.cite-list{border-top:1px solid var(--border);display:none}
+.paper-card.open .cite-list{display:block}
+.cite-list-inner{padding:16px 26px 20px 78px}
+.cite-item{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.cite-item:last-child{border-bottom:none}
+.cite-item-title{font-size:.9rem;color:var(--txt);line-height:1.5;margin-bottom:4px}
+.cite-item-title a{color:var(--txt);text-decoration:none;transition:.2s}
+.cite-item-title a:hover{color:var(--pri2)}
+.cite-item-meta{font-size:.78rem;color:var(--dim);display:flex;gap:10px;flex-wrap:wrap}
+.cite-item-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--dim);opacity:.5;align-self:center}
+.cite-loading{text-align:center;padding:30px;color:var(--dim);font-size:.9rem}
+.cite-loading .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--pri);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cite-empty{text-align:center;padding:20px;color:var(--dim);font-size:.88rem}
+.cite-more{text-align:center;padding:12px}
+.cite-more button{background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 18px;border-radius:8px;font-size:.82rem;cursor:pointer;font-family:inherit;transition:.2s}
+.cite-more button:hover{background:rgba(99,102,241,.1)}
+
+/* Footer */
+.footer{text-align:center;padding:60px 0 30px;color:var(--dim);font-size:.82rem}
+.footer a{color:var(--pri2);text-decoration:none}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px}
+.empty-icon{font-size:3rem;margin-bottom:12px;opacity:.5}
+.empty p{color:var(--dim);font-size:.95rem}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);padding:12px 24px;border-radius:10px;font-size:.9rem;font-weight:500;z-index:100;transition:.4s;opacity:0;white-space:nowrap;backdrop-filter:blur(12px)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:var(--green)}
+.toast.error{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:var(--red)}
+.toast.info{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:var(--pri2)}
+
+/* Delete btn on paper */
+.paper-del{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.04);color:var(--dim);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;opacity:0}
+.paper-card:hover .paper-del{opacity:.7}
+.paper-del:hover{opacity:1!important;background:rgba(248,113,113,.15);color:var(--red)}
+
+/* Delta badge (+N ↑) */
+.cite-delta{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:rgba(52,211,153,.15);color:var(--green);margin-left:8px;animation:deltaPop .4s ease;transition:opacity .6s ease}
+@keyframes deltaPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+
+/* Sort bar */
+.sort-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.sort-bar .sort-label{font-size:.82rem;color:var(--dim);margin-right:4px}
+.sort-btn{padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:500;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--dim);cursor:pointer;transition:.2s;font-family:inherit}
+.sort-btn:hover{border-color:var(--pri);color:var(--txt)}
+.sort-btn.active{background:rgba(99,102,241,.12);border-color:var(--pri);color:var(--pri2)}
+
+/* Sparkline (mini bar chart) */
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:8px}
+.spark-bar{width:6px;border-radius:2px 2px 0 0;background:rgba(99,102,241,.35);min-height:2px;transition:height .3s ease;position:relative}
+.spark-bar:hover{background:var(--pri)}
+.spark-bar:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);color:var(--txt);font-size:.68rem;padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:5}
+.spark-years{display:flex;gap:2px;margin-top:2px;height:12px}
+.spark-year{width:6px;font-size:.55rem;color:var(--dim);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Responsive */
+@media(max-width:600px){
+  .paper-header{padding:16px;gap:12px}
+  .cite-list-inner{padding:12px 16px 16px 16px}
+  .input-card{padding:20px}
+  .paper-right{flex-direction:row;align-items:center;gap:12px}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+
+<div class="container">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-icon" id="heroIcon" onclick="onHeroClick()">📊</div>
+    <h1><span class="grad">CiteGlow</span> · 论文引用追踪器</h1>
+    <p>输入论文 DOI，一键查看每篇文章被谁引用了。数据来自 OpenAlex 开放学术数据库。</p>
+  </div>
+
+  <!-- Encouragement -->
+  <div class="encourage" id="encourageBox" onclick="nextEncouragement()" title="点击换一条" style="cursor:pointer;user-select:none">
+    <div class="encourage-text" id="encourageText"></div>
+    <div class="encourage-author" id="encourageAuthor"></div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-section">
+    <div class="input-card">
+      <div class="input-label">📝 输入论文 DOI <span>（每行一个）</span></div>
+      <textarea class="doi-input" id="doiInput" placeholder="例如：&#10;10.1016/j.jhydrol.2023.129887&#10;10.1029/2022WR034123&#10;&#10;也可以直接粘贴论文标题，我会自动搜索 DOI"></textarea>
+      <div class="input-hint">💡 支持 DOI 格式（10.xxxx/xxxxx）或完整论文标题。数据会保存在浏览器本地，下次打开自动恢复。</div>
+      <div class="input-actions">
+        <button class="btn btn-pri" id="btnFetch" onclick="fetchAll()">🔍 查询引用</button>
+        <button class="btn btn-ghost" onclick="loadSample()">📋 加载示例</button>
+        <button class="btn btn-ghost" id="btnRefresh" onclick="autoRefresh()">🔄 刷新数据</button>
+        <button class="btn btn-ghost" onclick="clearAll()">🗑️ 清空</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat"><div class="stat-num" id="statPapers">0</div><div class="stat-label">收录论文</div></div>
+    <div class="stat"><div class="stat-num" id="statCites">0</div><div class="stat-label">总引用次数</div></div>
+    <div class="stat"><div class="stat-num" id="statH">0</div><div class="stat-label">H-Index</div></div>
+    <div class="stat"><div class="stat-num" id="statYear">-</div><div class="stat-label">最新引用</div></div>
+  </div>
+
+  <!-- Sort -->
+  <div class="sort-bar" id="sortBar" style="display:none">
+    <span class="sort-label">排序：</span>
+    <button class="sort-btn active" data-sort="cites" onclick="setSort('cites')">📊 引用数↓</button>
+    <button class="sort-btn" data-sort="year" onclick="setSort('year')">📅 年份↓</button>
+    <button class="sort-btn" data-sort="added" onclick="setSort('added')">🕐 添加顺序</button>
+  </div>
+
+  <!-- Papers -->
+  <div id="papersList"></div>
+  <div id="emptyState" class="empty">
+    <div class="empty-icon">🔬</div>
+    <p>输入你的论文 DOI，开始追踪引用吧！</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    数据来源：<a href="https://openalex.org" target="_blank">OpenAlex</a> · 
+    <a href="https://www.openalex.org/how-to-use-the-api" target="_blank">API 文档</a> · 
+    做科研的人，都值得看到自己的影响力 ✨ · <a href="https://citeglow.com">CiteGlow</a>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// 🥚 彩蛋 1：切走 tab 标题变文案，切回来恢复
+// ═══════════════════════════════════════════
+const origTitle = document.title;
+const awayTitles = [
+  '嘿，你的引用又涨了吧？',
+  '偷偷告诉你：你被引用了 ✨',
+  '快回来！有人在引用你的论文',
+  '别走——你的 H-Index 在等你',
+  '科研不易，但引用在涨 📈',
+  '远处的实验室里，有人正在读你的论文',
+];
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    document.title = awayTitles[Math.floor(Math.random() * awayTitles.length)];
+  } else {
+    document.title = origTitle;
+  }
+});
+
+// ═══════════════════════════════════════════
+// 🥚 彩蛋 2：连续点击 hero icon 5 次 → 彩纸
+// ═══════════════════════════════════════════
+let heroClicks = 0;
+let heroTimer = null;
+function onHeroClick() {
+  heroClicks++;
+  clearTimeout(heroTimer);
+  heroTimer = setTimeout(() => { heroClicks = 0; }, 2000); // 2 秒内连点才算
+  if (heroClicks >= 5) {
+    heroClicks = 0;
+    launchConfetti();
+  }
+}
+
+function launchConfetti() {
+  const wrap = document.createElement('div');
+  wrap.className = 'confetti-wrap';
+  document.body.appendChild(wrap);
+  const colors = ['#6366f1','#22d3ee','#fbbf24','#34d399','#f87171','#a78bfa','#ec4899','#fb923c'];
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.width = (Math.random() * 8 + 5) + 'px';
+    c.style.height = (Math.random() * 8 + 5) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    c.style.animationDelay = (Math.random() * 1.5) + 's';
+    wrap.appendChild(c);
+  }
+  setTimeout(() => wrap.remove(), 5000);
+}
+
+// ─── Encouragement messages (22 条通用) ───
+const encouragements = [
+  {text:'每一个引用，都是你对这个领域的一次推动。<br>被引用的不只是数字，是你的思想在别人的论文里继续生长。', author:'致每一位默默耕耘的研究者'},
+  {text:'<span class="emoji">🌟</span> 科研的孤独，只有同行才懂。<br>但每一个引用，都在告诉你：<span style="color:var(--acc)">有人在听。</span>', author:''},
+  {text:'发表论文是开始，被引用才是回响。<br>你的工作正在影响着这个世界，只是你还不知道而已。', author:'— 写给深夜还在改论文的你'},
+  {text:'<span class="emoji">💡</span> 引用数不是衡量科研价值的唯一标准，<br>但它证明了：<span style="color:var(--gold)">你的思考被需要。</span>', author:''},
+  {text:'从第一个引用到第一百个，<br>每一步都是你在这个领域留下的脚印。<br><span class="emoji">👣</span> 继续走，路会越来越宽。', author:''},
+  {text:'科研最浪漫的事：<br>你在 A 大学写下的公式，在 B 国家的实验室里被验证。<br>这就是学术的<span style="color:var(--acc2)">蝴蝶效应</span>。 <span class="emoji">🦋</span>', author:''},
+  {text:'<span class="emoji">🏆</span> 能发出来已经很厉害了，<br>能被引用更是对你的认可。<br>别忘了给自己点个赞。', author:''},
+  {text:'论文里的每一个数据，都凝结着无数个实验失败后的重来。<br>被引用，是对你坚持的最好回报。<span class="emoji">💪</span>', author:''},
+  {text:'有人说科研是一场马拉松。<br>但其实更像是<span style="color:var(--acc)">在雾中点灯</span>——<br>你不知道谁会借你的光，但灯一直在那里。<span class="emoji">🏮</span>', author:''},
+  {text:'<span class="emoji">📚</span> 一篇好论文的价值，不在于发表那一刻的喜悦，<br>而在于五年后还有人在参考文献里找到它。', author:''},
+  {text:'审稿人让你改了三轮，你觉得自己的工作一文不值。<br>但引用会告诉你：<span style="color:var(--gold)">那些痛苦是有意义的。</span><span class="emoji">✨</span>', author:''},
+  {text:'<span class="emoji">🔬</span> 科研圈有一条隐藏的规则：<br>你引用别人的时候觉得理所当然，<br>被引用的时候才明白——那是一种认可。', author:''},
+  {text:'引用不是 KPI，是<span style="color:var(--pri2)">思想的接力</span>。<br>你跑完了你的那一棒，<br>现在有人接上了。<span class="emoji">🏃</span>', author:''},
+  {text:'<span class="emoji">🌍</span> 你的论文可能被地球另一端的人读到。<br>在某个实验室的深夜，你的方法帮 ta 跨过了一个坎。<br>这就是科研的浪漫。', author:''},
+  {text:'学术界最温暖的一句话：<br><span style="color:var(--acc)">"As demonstrated by [你的名字]..."</span><br>你的名字，正在被世界引用。<span class="emoji">📝</span>', author:''},
+  {text:'<span class="emoji">🧪</span> 一组数据，一个结论，一篇文章。<br>看似微小，却可能改变某个人的研究方向。<br>永远低估论文的力量，是你对自己最大的不公平。', author:''},
+  {text:'你有没有想过：你的某个实验参数，<br>可能在别人的方案里被复制了一遍又一遍？<br><span style="color:var(--gold)">学术的种子就是这样传播的。</span><span class="emoji">🌱</span>', author:''},
+  {text:'<span class="emoji">🎯</span> 引用数 0 的时候你焦虑，引用数涨了你又怀疑数据。<br>这就是科研人的自我修养。<br>放松——你的工作值得被看到。', author:''},
+  {text:'比影响因子更重要的事情：<br>在某个你不知道的地方，<br>有人因为读了你的论文，<span style="color:var(--acc)">少走了弯路</span>。<span class="emoji">🛤️</span>', author:''},
+  {text:'<span class="emoji">⚓</span> 科研像航海——<br>你的论文就是你投下的锚。<br>后来的船，会以你为参照继续前行。', author:''},
+  {text:'今天不想写论文？正常。<br>但别忘了，你之前写出来的那些，<br>正在<span style="color:var(--acc2)">安静地替你影响世界</span>。<span class="emoji">🌊</span>', author:''},
+  {text:'<span class="emoji">🔄</span> 科研是一个循环：<br>你引用前人 → 你的工作被后人引用 → 循环往复。<br>你不是在写论文，你是在<span style="color:var(--pri2)">编织一张知识的网</span>。', author:''},
+];
+
+// ─── 里程碑鼓励（10+、20+ 专属） ───
+const milestoneMessages = {
+  10: [
+    {text:'<span class="emoji">🔟</span> <strong>突破 10 次引用！</strong><br>这不是运气——是你的研究被至少 10 个独立团队认可。<br>在学术界，<span style="color:var(--gold)">10 次引用意味着你的工作已经进入同行的「必读清单」</span>。', author:'里程碑：你不再是新手了'},
+    {text:'<span class="emoji">🏅</span> 10 次引用，听起来不多？<br>但想想：全世界只有约 15% 的论文能达到这个数字。<br><span style="color:var(--acc)">你已经超过了大多数人。</span>', author:'数据不会说谎'},
+    {text:'10 篇论文引用了你。<br>10 个研究组，在不同的时间、不同的国家，<br>不约而同地认为：<span style="color:var(--gold)">「这篇论文值得参考」</span>。<br>这就是被认可的感觉。<span class="emoji">🌟</span>', author:''},
+  ],
+  20: [
+    {text:'<span class="emoji">🚀</span> <strong>20 次引用！</strong><br>从「发了一篇论文」到「做出了被广泛引用的工作」，<br>这是一个质变。<span style="color:var(--acc)">你的研究正在成为这个领域的基础设施之一。</span>', author:'你已经在学术地图上留下标记'},
+    {text:'<span class="emoji">💎</span> 20+ 引用意味着：<br>你的方法被采纳了，你的结论被验证了，<br>你的思想被传承了。<br>这不是数字，是<span style="color:var(--gold)">学术遗产</span>。', author:''},
+    {text:'还记得第一篇论文被接收时的激动吗？<br>现在你的工作被引用了 20 次。<br><span style="color:var(--acc2)">从「我能发表吗」到「我正在改变这个领域」——<br>你已经走了很远。</span><span class="emoji">🏔️</span>', author:'回望来时路'},
+  ],
+};
+
+// ─── 增量引用鼓励（刷新后引用数增长时） ───
+const incrementMessages = [
+  {text:'<span class="emoji">📈</span> 引用又涨了！有人正在用你的方法做研究。<br>你可能永远不会知道 ta 是谁，但 ta 一定在某个实验室里，<br>看着你的论文说：<span style="color:var(--acc)">"这个方法可以试试。"</span>', author:''},
+  {text:'新的引用，意味着新的故事。<br>某个人读了你的论文，决定在自己的工作中引用它。<br><span class="emoji">🤝</span> 这是学术世界里最含蓄的致敬。', author:''},
+  {text:'<span class="emoji">🔔</span> 引用+1。<br>每一次增长都不是偶然——<br>是有人认真读了你的工作，<span style="color:var(--gold)">认为它足够重要，值得写进自己的论文里。</span>', author:''},
+  {text:'引用又多了！<br>这说明你的论文不只是「发表即遗忘」的那一批。<br><span class="emoji">💪</span> 它在持续发挥作用。', author:''},
+  {text:'<span class="emoji">🎯</span> 每一个新的引用，都是一次「投票」。<br>这个领域的研究者用脚投票，告诉你：<br><span style="color:var(--acc2)">「你的工作是有价值的。」</span>', author:''},
+  {text:'你可能正在改 bug / 开组会 / 刷手机。<br>但在世界的某个角落，有人刚刚引用了你的论文。<br><span class="emoji">🌏</span> 科研就是这样——<span style="color:var(--acc)">影响力在你看不见的地方生长。</span>', author:''},
+  {text:'<span class="emoji">✨</span> 每多一个引用，你的论文的「半衰期」就更长一点。<br>有些论文发表五年就没人提了。<br>而你的，还在被引用。<span style="color:var(--gold)">这就是生命力。</span>', author:''},
+  {text:'新的引用来了！想想看：<br>从你写完这篇论文到现在，世界上发生了多少事。<br>但你的那篇论文，<span style="color:var(--acc)">依然有人在读</span>。<span class="emoji">📖</span>', author:''},
+];
+
+// ─── 时间相关鼓励 ───
+function getTimeEncouragement() {
+  const h = new Date().getHours();
+  if (h >= 0 && h < 6) {
+    return {text:'<span class="emoji">🌙</span> 凌晨还在看引用数据？<br>科研人的生物钟果然和别人不一样。<br>不过放心——<span style="color:var(--acc2)">你的论文可不会熬夜，它 24 小时在线替你工作。</span>', author:'夜猫子研究者，请注意休息'};
+  } else if (h >= 6 && h < 9) {
+    return {text:'<span class="emoji">🌅</span> 早安，研究者。<br>在你喝咖啡的时候，你的论文正在大洋彼岸被阅读。<br><span style="color:var(--acc)">学术没有时区。</span>', author:''};
+  } else if (h >= 12 && h < 14) {
+    return {text:'<span class="emoji">🍱</span> 午休时间查引用？<br>说明你真的很在乎自己的研究。<br>别忘了吃饭——<span style="color:var(--gold)">身体才是最大的学术资本。</span>', author:''};
+  } else if (h >= 22 || h < 0) {
+    return {text:'<span class="emoji">🌃</span> 深夜了。<br>论文改完了吗？引用查完了吗？<br>不管怎样，<span style="color:var(--acc)">今晚先放过自己。</span> 明天论文还在，引用也会继续涨。', author:''};
+  }
+  return null;
+}
+
+// ─── 状态跟踪 ───
+let encourageIndex = -1;
+let lastCiteSnapshot = {}; // {openalex_id: cited_by_count} 上次快照
+
+// ─── State ───
+let papers = []; // {doi, title, year, venue, openalex_id, cited_by_count, citation_list:[], loaded:false, cite_delta:0}
+let sortMode = 'cites'; // 'cites' | 'year' | 'added'
+const STORAGE_KEY = 'citation_tracker_papers';
+
+// ─── Init ───
+window.addEventListener('DOMContentLoaded', () => {
+  showRandomEncouragement();
+  loadFromStorage();
+  if (papers.length > 0) {
+    renderAll();        // 先用本地缓存渲染，用户立刻看到内容
+    takeSnapshot();
+    autoRefresh();      // 后台静默刷新
+  }
+});
+
+function showRandomEncouragement() {
+  // 1/3 概率显示时间相关鼓励（如果有的话）
+  if (Math.random() < 0.33) {
+    const timeMsg = getTimeEncouragement();
+    if (timeMsg) {
+      renderEncouragement(timeMsg);
+      return;
+    }
+  }
+  encourageIndex = Math.floor(Math.random() * encouragements.length);
+  renderEncouragement(encouragements[encourageIndex]);
+}
+
+function nextEncouragement() {
+  encourageIndex = (encourageIndex + 1) % encouragements.length;
+  renderEncouragement(encouragements[encourageIndex]);
+}
+
+function renderEncouragement(e) {
+  const textEl = document.getElementById('encourageText');
+  const authorEl = document.getElementById('encourageAuthor');
+  // 淡出再淡入
+  textEl.style.opacity = '0';
+  authorEl.style.opacity = '0';
+  setTimeout(() => {
+    textEl.innerHTML = e.text;
+    authorEl.textContent = e.author || '';
+    textEl.style.opacity = '1';
+    authorEl.style.opacity = '1';
+  }, 200);
+}
+
+// 显示里程碑鼓励
+function showMilestone(totalCites) {
+  let milestone = null;
+  if (totalCites >= 20) milestone = 20;
+  else if (totalCites >= 10) milestone = 10;
+  if (!milestone || !milestoneMessages[milestone]) return false;
+
+  const msgs = milestoneMessages[milestone];
+  renderEncouragement(msgs[Math.floor(Math.random() * msgs.length)]);
+  return true;
+}
+
+// 显示增量鼓励
+function showIncrementEncouragement() {
+  const msg = incrementMessages[Math.floor(Math.random() * incrementMessages.length)];
+  renderEncouragement(msg);
+}
+
+// 快照当前引用数
+function takeSnapshot() {
+  lastCiteSnapshot = {};
+  papers.forEach(p => {
+    if (p.openalex_id) lastCiteSnapshot[p.openalex_id] = p.cited_by_count;
+  });
+}
+
+// ─── Sort ───
+function setSort(mode) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.sort === mode);
+  });
+  renderAll();
+}
+
+function getSortedPapers() {
+  if (sortMode === 'cites') {
+    return [...papers].sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
+  } else if (sortMode === 'year') {
+    return [...papers].sort((a, b) => (b.year || 0) - (a.year || 0));
+  }
+  return [...papers]; // 'added' = original order
+}
+
+// ─── Sparkline data ───
+function getSparklineData(paper) {
+  if (!paper.citation_list || paper.citation_list.length === 0) return null;
+  const yearCounts = {};
+  paper.citation_list.forEach(c => {
+    if (c.year && c.year !== '-') {
+      yearCounts[c.year] = (yearCounts[c.year] || 0) + 1;
+    }
+  });
+  const years = Object.keys(yearCounts).sort();
+  if (years.length < 2) return null; // 少于 2 年没意义画图
+  const maxCount = Math.max(...Object.values(yearCounts));
+  return { years, yearCounts, maxCount };
+}
+
+function renderSparkline(paper) {
+  const data = getSparklineData(paper);
+  if (!data) return '';
+  const { years, yearCounts, maxCount } = data;
+  // 补齐中间缺失年份
+  const minY = parseInt(years[0]), maxY = parseInt(years[years.length - 1]);
+  const allYears = [];
+  for (let y = minY; y <= maxY; y++) allYears.push(String(y));
+
+  let bars = '', labels = '';
+  allYears.forEach(y => {
+    const count = yearCounts[y] || 0;
+    const pct = maxCount > 0 ? Math.max((count / maxCount) * 100, count > 0 ? 15 : 0) : 0;
+    bars += `<div class="spark-bar" style="height:${pct}%" data-tip="${y}: ${count} 次引用"></div>`;
+    // 每隔几年显示一个标签，避免拥挤
+    const showLabel = allYears.length <= 6 || parseInt(y) % 2 === 0 || y === allYears[0] || y === allYears[allYears.length-1];
+    labels += `<div class="spark-year">${showLabel ? y.slice(2) : ''}</div>`;
+  });
+  return `<div class="sparkline">${bars}</div><div class="spark-years">${labels}</div>`;
+}
+
+// ─── Storage ───
+function saveToStorage() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(papers)); } catch(e) {}
+}
+
+function loadFromStorage() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      papers = JSON.parse(saved);
+      renderAll();
+    }
+  } catch(e) {}
+}
+
+// ─── API ───
+async function apiGet(url) {
+  const r = await fetch(url, {
+    headers: {'User-Agent': 'CiteGlow/1.0 (https://citeglow.com)'}
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+async function fetchWorkByDOI(doi) {
+  const clean = doi.replace(/^https?:\/\/doi.org\//, '').trim();
+  const url = `https://api.openalex.org/works/doi:${encodeURIComponent(clean)}`;
+  return await apiGet(url);
+}
+
+async function fetchWorkByTitle(title) {
+  const url = `https://api.openalex.org/works?search=${encodeURIComponent(title)}&per_page=1`;
+  const data = await apiGet(url);
+  if (data.results && data.results.length > 0) return data.results[0];
+  throw new Error('未找到匹配的论文');
+}
+
+async function fetchCitations(openalexId, page = 1, perPage = 10) {
+  const url = `https://api.openalex.org/works?filter=cites:${openalexId}&sort=cited_by_count:desc&per-page=${perPage}&page=${page}&select=id,title,doi,publication_year,authorships,primary_location`;
+  return await apiGet(url);
+}
+
+// ─── Main fetch ───
+async function fetchAll() {
+  const input = document.getElementById('doiInput').value.trim();
+  if (!input) return toast('请输入至少一个 DOI 或论文标题', 'error');
+
+  const lines = input.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const btn = document.getElementById('btnFetch');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>查询中...';
+
+  let newPapers = 0;
+  let errors = 0;
+
+  for (const line of lines) {
+    // Skip if already in list
+    const existingDOI = line.replace(/^https?:\/\/doi.org\//, '').trim();
+    if (papers.some(p => p.doi === existingDOI || p.doi === 'doi:' + existingDOI)) {
+      continue;
+    }
+
+    try {
+      let work;
+      if (line.match(/^10\.\d{4,}/)) {
+        work = await fetchWorkByDOI(line);
+      } else {
+        work = await fetchWorkByTitle(line);
+      }
+
+      const doi = (work.doi || '').replace('https://doi.org/', '');
+      papers.push({
+        doi: doi,
+        title: work.title || 'Untitled',
+        year: work.publication_year || '-',
+        venue: work.primary_location?.source?.display_name || '',
+        openalex_id: work.id.replace('https://openalex.org/', ''),
+        cited_by_count: work.cited_by_count || 0,
+        citation_list: [],
+        cite_page: 0,
+        loaded: false
+      });
+      newPapers++;
+    } catch(e) {
+      console.error('Error fetching:', line, e);
+      errors++;
+    }
+
+    // Rate limit: small delay between requests
+    await sleep(300);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🔍 查询引用';
+
+  if (newPapers > 0) {
+    saveToStorage();
+    renderAll();
+    toast(`✅ 已添加 ${newPapers} 篇论文`, 'success');
+  } else if (errors > 0) {
+    toast(`❌ ${errors} 篇查询失败，请检查 DOI 是否正确`, 'error');
+  } else {
+    toast('ℹ️ 这些论文已经在列表中了', 'info');
+  }
+}
+
+// ─── Load citations for a paper ───
+async function loadCitations(index) {
+  const paper = papers[index];
+  if (!paper) return;
+
+  const listEl = document.getElementById(`cite-list-${index}`);
+  listEl.innerHTML = '<div class="cite-loading"><span class="spinner"></span>正在加载引用列表...</div>';
+
+  try {
+    const page = (paper.cite_page || 0) + 1;
+    const data = await fetchCitations(paper.openalex_id, page, 10);
+    const results = data.results || [];
+
+    const citingPapers = results.map(w => ({
+      title: w.title || 'Untitled',
+      doi: (w.doi || '').replace('https://doi.org/', ''),
+      year: w.publication_year || '-',
+      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + (w.authorships?.length > 3 ? ' et al.' : ''),
+      venue: w.primary_location?.source?.display_name || '',
+      cited_by: w.cited_by_count || 0
+    }));
+
+    paper.citation_list = [...(paper.citation_list || []), ...citingPapers];
+    paper.cite_page = page;
+    paper.loaded = true;
+    paper.has_more = results.length >= 10;
+
+    saveToStorage();
+    renderCitations(index);
+    updateStats();
+  } catch(e) {
+    listEl.innerHTML = `<div class="cite-empty">❌ 加载失败: ${e.message}</div>`;
+  }
+}
+
+// ─── Render ───
+function renderAll() {
+  const list = document.getElementById('papersList');
+  const empty = document.getElementById('emptyState');
+  const stats = document.getElementById('statsBar');
+  const sortBar = document.getElementById('sortBar');
+
+  if (papers.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = '';
+    stats.style.display = 'none';
+    sortBar.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  stats.style.display = '';
+  sortBar.style.display = '';
+
+  const sorted = getSortedPapers();
+  let html = '';
+  sorted.forEach((p) => {
+    const i = papers.indexOf(p); // keep original index for onclick handlers
+    const doiLink = p.doi ? `https://doi.org/${p.doi}` : '#';
+    const delta = p.cite_delta || 0;
+    const deltaBadge = delta > 0 ? `<span class="cite-delta" id="delta-${i}">↑ +${delta}</span>` : '';
+    const sparkline = renderSparkline(p);
+
+    html += `
+    <div class="paper-card" id="paper-${i}">
+      <div class="paper-header" onclick="togglePaper(${i})">
+        <div class="paper-num">${i + 1}</div>
+        <div class="paper-info">
+          <div class="paper-title"><a href="${doiLink}" target="_blank" onclick="event.stopPropagation()">${escHtml(p.title)}</a></div>
+          <div class="paper-meta">
+            <span class="paper-badge badge-cite">📊 ${p.cited_by_count} 次引用${deltaBadge}</span>
+            ${p.year ? `<span>${p.year}</span>` : ''}
+            ${p.venue ? `<span class="sep">·</span><span>${escHtml(p.venue)}</span>` : ''}
+            ${p.doi ? `<span class="badge-doi" style="font-size:.72rem;opacity:.6">${escHtml(p.doi.substring(0,30))}${p.doi.length>30?'...':''}</span>` : ''}
+          </div>
+          ${sparkline}
+        </div>
+        <div class="paper-right">
+          <div class="cite-count">
+            <div class="cite-num">${p.cited_by_count}</div>
+            <div class="cite-label">引用</div>
+          </div>
+          <div class="expand-icon">▼</div>
+          <button class="paper-del" onclick="event.stopPropagation();removePaper(${i})" title="删除">×</button>
+        </div>
+      </div>
+      <div class="cite-list">
+        <div class="cite-list-inner" id="cite-list-${i}">
+          ${p.loaded ? renderCiteItems(p, i) : '<div class="cite-empty" style="cursor:pointer" onclick="loadCitations(' + i + ')">👆 点击展开查看引用列表</div>'}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  list.innerHTML = html;
+  updateStats();
+
+  // Fade out delta badges after 4 seconds
+  setTimeout(() => {
+    document.querySelectorAll('.cite-delta').forEach(el => {
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 600);
+    });
+    // Clear delta data
+    papers.forEach(p => { p.cite_delta = 0; });
+    saveToStorage();
+  }, 4000);
+}
+
+function renderCiteItems(paper, index) {
+  if (!paper.citation_list || paper.citation_list.length === 0) {
+    return '<div class="cite-empty">暂无引用数据（或尚未加载）</div>';
+  }
+
+  let html = '';
+  paper.citation_list.forEach((c, j) => {
+    const link = c.doi ? `https://doi.org/${c.doi}` : `https://scholar.google.com/scholar?q=${encodeURIComponent(c.title)}`;
+    html += `
+    <div class="cite-item">
+      <div class="cite-item-title"><a href="${link}" target="_blank">${j+1}. ${escHtml(c.title)}</a></div>
+      <div class="cite-item-meta">
+        ${c.authors ? `<span>${escHtml(c.authors)}</span><div class="dot"></div>` : ''}
+        ${c.year ? `<span>${c.year}</span><div class="dot"></div>` : ''}
+        ${c.venue ? `<span>${escHtml(c.venue)}</span><div class="dot"></div>` : ''}
+        <span style="color:var(--gold)">📊 ${c.cited_by}</span>
+      </div>
+    </div>`;
+  });
+
+  if (paper.has_more) {
+    html += `<div class="cite-more"><button onclick="loadCitations(${index})">加载更多引用</button></div>`;
+  }
+
+  return html;
+}
+
+function renderCitations(index) {
+  const el = document.getElementById(`cite-list-${index}`);
+  if (el && papers[index]) {
+    el.innerHTML = renderCiteItems(papers[index], index);
+  }
+}
+
+function togglePaper(index) {
+  const card = document.getElementById(`paper-${index}`);
+  const paper = papers[index];
+
+  if (card.classList.contains('open')) {
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    if (!paper.loaded) {
+      loadCitations(index);
+    }
+  }
+}
+
+function removePaper(index) {
+  papers.splice(index, 1);
+  saveToStorage();
+  renderAll();
+  toast('已删除', 'info');
+}
+
+function updateStats() {
+  const totalCites = papers.reduce((sum, p) => sum + (p.cited_by_count || 0), 0);
+  const citeCounts = papers.map(p => p.cited_by_count || 0).sort((a, b) => b - a);
+  let hIndex = 0;
+  for (let i = 0; i < citeCounts.length; i++) {
+    if (citeCounts[i] >= i + 1) hIndex = i + 1;
+    else break;
+  }
+
+  const allCiteYears = [];
+  papers.forEach(p => {
+    (p.citation_list || []).forEach(c => {
+      if (c.year && c.year !== '-') allCiteYears.push(c.year);
+    });
+  });
+  const latestYear = allCiteYears.length > 0 ? Math.max(...allCiteYears) : '-';
+
+  document.getElementById('statPapers').textContent = papers.length;
+  document.getElementById('statCites').textContent = totalCites;
+  document.getElementById('statH').textContent = hIndex;
+  document.getElementById('statYear').textContent = latestYear;
+}
+
+// ─── Auto refresh on load ───
+async function autoRefresh() {
+  const btn = document.getElementById('btnFetch');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>正在刷新最新数据...';
+
+  let updated = 0;
+  for (let i = 0; i < papers.length; i++) {
+    const p = papers[i];
+    if (!p.openalex_id) continue;
+    try {
+      const url = `https://api.openalex.org/works/${p.openalex_id}?select=id,title,publication_year,primary_location,cited_by_count`;
+      const work = await apiGet(url);
+      const oldCount = p.cited_by_count;
+      p.cited_by_count = work.cited_by_count || 0;
+      p.title = work.title || p.title;
+      p.year = work.publication_year || p.year;
+      p.venue = work.primary_location?.source?.display_name || p.venue;
+      if (p.cited_by_count !== oldCount) {
+        p.cite_delta = p.cited_by_count - oldCount;
+        updated++;
+      }
+    } catch(e) {
+      console.error('Auto-refresh failed for:', p.title, e);
+    }
+    await sleep(350);
+  }
+
+  saveToStorage();
+  renderAll();
+
+  btn.disabled = false;
+  btn.innerHTML = '🔍 查询引用';
+
+  if (updated > 0) {
+    // 增量检测
+    let anyIncrement = false;
+    papers.forEach(p => {
+      if (p.openalex_id && lastCiteSnapshot[p.openalex_id] !== undefined) {
+        if (p.cited_by_count > lastCiteSnapshot[p.openalex_id]) anyIncrement = true;
+      }
+    });
+
+    const totalCites = papers.reduce((sum, p) => sum + (p.cited_by_count || 0), 0);
+
+    // 优先：里程碑（10+/20+）
+    if (anyIncrement && !showMilestone(totalCites)) {
+      // 非里程碑但有增量 → 增量鼓励
+      if (anyIncrement) showIncrementEncouragement();
+    }
+
+    toast(`🔄 已刷新！${updated} 篇论文引用数有更新`, 'success');
+  }
+
+  // 更新快照
+  takeSnapshot();
+}
+
+// ─── Helpers ───
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+function toast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function clearAll() {
+  if (!confirm('确定清空所有论文数据？')) return;
+  papers = [];
+  saveToStorage();
+  renderAll();
+  document.getElementById('doiInput').value = '';
+  toast('已清空', 'info');
+}
+
+function loadSample() {
+  document.getElementById('doiInput').value = [
+    '10.1016/j.jhydrol.2023.129887',
+    '10.1029/2022WR034123',
+    '10.1016/j.advwatres.2022.104336'
+  ].join('\n');
+  toast('已加载示例 DOI，点击查询即可', 'info');
+}
+</script>
+</body>
+</html>
