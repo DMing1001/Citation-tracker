@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CiteGlow — 期刊投稿信息查询。收录 SCI 期刊的收稿范围、审稿流程、格式要求等投稿必备信息。">
+<title>期刊投稿指南 — CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>📚</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#6366f1;--pri2:#818cf8;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(99,102,241,.15);--glow:rgba(99,102,241,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.08;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:400px;height:400px;background:var(--pri);top:-10%;left:-10%}
+.orb:nth-child(2){width:300px;height:300px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+.orb:nth-child(3){width:250px;height:250px;background:var(--acc2);top:40%;right:20%;animation-delay:-14s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+.container{max-width:960px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* Top nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 0;margin-bottom:20px}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(99,102,241,.1)}
+
+/* Hero */
+.hero{text-align:center;padding:40px 0 30px}
+.hero-icon{font-size:2.8rem;margin-bottom:12px}
+.hero h1{font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:800;color:var(--bright);margin-bottom:10px}
+.hero h1 .grad{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--dim);font-size:.95rem;max-width:520px;margin:0 auto;line-height:1.7}
+
+/* Search */
+.search-wrap{max-width:500px;margin:0 auto 32px;position:relative}
+.search-wrap input{width:100%;padding:14px 18px 14px 44px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--txt);font-size:.95rem;font-family:inherit;transition:.2s}
+.search-wrap input:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.search-wrap input::placeholder{color:var(--dim);opacity:.6}
+.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:1.1rem;opacity:.5}
+
+/* Journal cards */
+.journal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:60px}
+.journal-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.3s;text-decoration:none;color:inherit;display:block}
+.journal-card:hover{border-color:rgba(99,102,241,.3);box-shadow:0 8px 32px rgba(0,0,0,.2);transform:translateY(-3px)}
+.jcard-hero{padding:24px 24px 16px;display:flex;align-items:flex-start;gap:14px}
+.jcard-icon{font-size:2rem;flex-shrink:0}
+.jcard-name{font-size:1.05rem;font-weight:700;color:var(--bright);line-height:1.4;margin-bottom:4px}
+.jcard-pub{font-size:.82rem;color:var(--dim)}
+.jcard-body{padding:0 24px 20px}
+.jcard-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.jbadge{padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:600}
+.jbadge-q1{background:rgba(52,211,153,.12);color:var(--green)}
+.jbadge-pub{background:rgba(99,102,241,.12);color:var(--pri2)}
+.jbadge-oa{background:rgba(251,191,36,.12);color:var(--gold)}
+.jcard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.jstat{text-align:center;padding:8px 0;background:var(--bg2);border-radius:8px}
+.jstat-val{font-size:1rem;font-weight:700;color:var(--bright)}
+.jstat-lbl{font-size:.7rem;color:var(--dim);margin-top:2px}
+
+/* Footer */
+.footer{text-align:center;padding:40px 0 30px;color:var(--dim);font-size:.82rem}
+.footer a{color:var(--pri2);text-decoration:none}
+
+/* Empty search */
+.no-result{text-align:center;padding:60px 20px;display:none}
+.no-result p{color:var(--dim);font-size:.95rem}
+.no-result .icon{font-size:2.5rem;margin-bottom:12px;opacity:.4}
+
+@media(max-width:600px){
+  .journal-grid{grid-template-columns:1fr}
+  .topnav{flex-direction:column;gap:10px}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+
+<div class="container">
+  <!-- Top nav -->
+  <nav class="topnav">
+    <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+    <div class="topnav-links">
+      <a href="/">引用追踪</a>
+      <a href="/journals/" class="active">期刊投稿</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-icon">📚</div>
+    <h1><span class="grad">期刊投稿指南</span></h1>
+    <p>收录 SCI 期刊的收稿范围、审稿流程、格式要求等投稿必备信息。不用翻官网，一站看完。</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索期刊名称、出版商、学科方向..." oninput="filterJournals()">
+  </div>
+
+  <!-- Journal cards -->
+  <div class="journal-grid" id="journalGrid"></div>
+  <div class="no-result" id="noResult">
+    <div class="icon">🔍</div>
+    <p>没有找到匹配的期刊，试试其他关键词？</p>
+  </div>
+
+  <div class="footer">
+    数据来源于各期刊官网 Guide for Authors · <a href="https://citeglow.com">CiteGlow</a> · 持续更新中
+  </div>
+</div>
+
+<script>
+const journals = [
+  {
+    slug: 'journal-of-hydrology',
+    name: 'Journal of Hydrology',
+    icon: '🌊',
+    publisher: 'Elsevier',
+    issn: '0022-1694',
+    badges: ['SCI Q1', 'Elsevier'],
+    badgesClass: ['jbadge-q1', 'jbadge-pub'],
+    stats: { if: '6.4', partition: 'JCR Q1', review: '2–4 月' },
+    keywords: 'hydrology water groundwater surface runoff watershed catchment flood drought water quality'
+  },
+  {
+    slug: 'catena',
+    name: 'CATENA',
+    icon: '🏔️',
+    publisher: 'Elsevier',
+    issn: '0341-8162',
+    badges: ['SCI Q1', 'Elsevier'],
+    badgesClass: ['jbadge-q1', 'jbadge-pub'],
+    stats: { if: '5.4', partition: 'JCR Q1', review: '2–3 月' },
+    keywords: 'soil erosion geomorphology land degradation catena hillslope sediment weathering'
+  }
+];
+
+function renderJournals(list) {
+  const grid = document.getElementById('journalGrid');
+  const noResult = document.getElementById('noResult');
+  if (list.length === 0) {
+    grid.innerHTML = '';
+    noResult.style.display = 'block';
+    return;
+  }
+  noResult.style.display = 'none';
+  grid.innerHTML = list.map(j => `
+    <a class="journal-card" href="${j.slug}.html">
+      <div class="jcard-hero">
+        <div class="jcard-icon">${j.icon}</div>
+        <div>
+          <div class="jcard-name">${j.name}</div>
+          <div class="jcard-pub">${j.publisher} · ISSN ${j.issn}</div>
+        </div>
+      </div>
+      <div class="jcard-body">
+        <div class="jcard-badges">
+          ${j.badges.map((b, i) => `<span class="jbadge ${j.badgesClass[i]}">${b}</span>`).join('')}
+        </div>
+        <div class="jcard-stats">
+          <div class="jstat"><div class="jstat-val">${j.stats.if}</div><div class="jstat-lbl">影响因子</div></div>
+          <div class="jstat"><div class="jstat-val">${j.stats.partition}</div><div class="jstat-lbl">分区</div></div>
+          <div class="jstat"><div class="jstat-val">${j.stats.review}</div><div class="jstat-lbl">审稿周期</div></div>
+        </div>
+      </div>
+    </a>
+  `).join('');
+}
+
+function filterJournals() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (!q) { renderJournals(journals); return; }
+  const filtered = journals.filter(j =>
+    j.name.toLowerCase().includes(q) ||
+    j.publisher.toLowerCase().includes(q) ||
+    j.keywords.toLowerCase().includes(q) ||
+    j.badges.some(b => b.toLowerCase().includes(q))
+  );
+  renderJournals(filtered);
+}
+
+renderJournals(journals);
+</script>
+</body>
+</html>

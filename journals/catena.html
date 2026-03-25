@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CATENA 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>CATENA — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>🏔️</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e18;--bg2:#0e1525;--card:#121a2e;--card2:#162038;
+  --pri:#d97706;--pri2:#f59e0b;--acc:#fbbf24;--acc2:#fb923c;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(217,119,6,.15);--glow:rgba(217,119,6,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(217,119,6,.1)}
+
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(217,119,6,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(217,119,6,.08);border-left-color:var(--pri)}
+
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+.c-block code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:.85rem}
+
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(217,119,6,.03)}
+
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(59,130,246,.12);color:#60a5fa}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+.tag-purple{background:rgba(167,139,250,.12);color:#a78bfa}
+
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'☐';position:absolute;left:0;top:8px;font-size:1rem;color:var(--dim)}
+
+.link-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.link-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:500;text-decoration:none;color:var(--pri2);background:rgba(217,119,6,.08);border:1px solid var(--border);transition:.2s}
+.link-btn:hover{background:rgba(217,119,6,.15);border-color:var(--pri)}
+
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+@media(max-width:800px){
+  .j-layout{flex-direction:column;gap:20px;padding:16px}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .nav-section{margin-bottom:0;display:flex;gap:2px}
+  .nav-title{display:none}
+  .nav-link{white-space:nowrap;padding:8px 12px;border-left:none;border-bottom:2px solid transparent;font-size:.82rem}
+  .nav-link.active{border-left:none;border-bottom-color:var(--pri)}
+  .j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<div class="j-breadcrumb"><a href="/journals/">期刊列表</a> &nbsp;›&nbsp; CATENA</div>
+
+<div class="j-hero">
+  <div class="icon">🏔️</div>
+  <h1>CATENA</h1>
+  <div class="subtitle">Elsevier · ISSN 0341-8162 · 创刊于 1973 年</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">5.4</div><div class="meta-lbl">影响因子 (IF)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q1</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">2–3 月</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">混合 OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</div>
+
+<div class="j-layout">
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">投稿信息</div>
+      <a class="nav-link active" href="#overview" data-section="overview">📊 期刊概览</a>
+      <a class="nav-link" href="#scope" data-section="scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types" data-section="types">📝 文章类型</a>
+      <a class="nav-link" href="#review" data-section="review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission" data-section="submission">📤 投稿流程</a>
+      <a class="nav-link" href="#manuscript" data-section="manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format" data-section="format">📐 格式要求</a>
+      <a class="nav-link" href="#reference" data-section="reference">📖 参考文献</a>
+      <a class="nav-link" href="#checklist" data-section="checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics" data-section="ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <main class="j-main">
+
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📊</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">期刊全称</div><div class="info-value">CATENA</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Elsevier</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">0341-8162</div></div>
+        <div class="info-item"><div class="info-label">创刊年份</div><div class="info-value">1973</div></div>
+        <div class="info-item"><div class="info-label">出版频率</div><div class="info-value">月刊（12 期/年）</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">5.4 (2024)</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q1 (Geosciences, Multidisciplinary)</div></div>
+        <div class="info-item"><div class="info-label">中科院分区</div><div class="info-value">1 区</div></div>
+        <div class="info-item"><div class="info-label">开放获取</div><div class="info-value">混合 OA</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">$3,150 (USD)</div></div>
+        <div class="info-item"><div class="info-label">平均审稿</div><div class="info-value">约 2–3 个月</div></div>
+        <div class="info-item"><div class="info-label">录用率</div><div class="info-value">约 30–35%</div></div>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>Aims & Scope</h4>
+        <p>CATENA 致力于发表关于地球关键带（Critical Zone）物理、化学和生物过程的研究，特别关注土壤、地貌和水文过程的相互作用。"CATENA" 源自拉丁语，意为"链"，象征着从山顶到谷底的土壤-地貌过程链。</p>
+        <ul>
+          <li>土壤侵蚀与水土流失（Soil Erosion & Conservation）</li>
+          <li>土壤物理学与土壤水文（Soil Physics & Hydrology）</li>
+          <li>地貌学与坡面过程（Geomorphology & Hillslope Processes）</li>
+          <li>土地退化与恢复（Land Degradation & Restoration）</li>
+          <li>风蚀与荒漠化（Aeolian Processes & Desertification）</li>
+          <li>沉积物输移与泥沙动力学（Sediment Transport）</li>
+          <li>土壤碳循环与气候变化</li>
+          <li>土壤微生物与生物地球化学过程</li>
+          <li>遥感与 GIS 在土壤/地貌研究中的应用</li>
+          <li>土地利用变化对土壤-地貌系统的影响</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 不接受的稿件类型</h4>
+        <ul>
+          <li>纯水文学研究（缺少土壤/地貌角度）— 投 <a href="journal-of-hydrology.html">Journal of Hydrology</a></li>
+          <li>仅描述土壤分类或制图的区域性研究</li>
+          <li>缺乏定量分析或实验验证的研究</li>
+          <li>与地球关键带过程无明确关联的环境化学研究</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <div class="c-block" style="padding:0;overflow-x:auto">
+        <table class="j-table">
+          <thead><tr><th>类型</th><th>说明</th><th>字数限制</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Original Research</strong></td><td>完整的研究论文</td><td>无严格限制，建议 6000–10000 词</td><td><span class="tag tag-blue">最常见</span></td></tr>
+            <tr><td><strong>Short Communication</strong></td><td>短篇快报</td><td>≤ 3000 词</td><td><span class="tag tag-green">快速发表</span></td></tr>
+            <tr><td><strong>Review</strong></td><td>系统综述/元分析</td><td>无严格限制</td><td><span class="tag tag-purple">需提前联系编辑</span></td></tr>
+            <tr><td><strong>Special Issue Paper</strong></td><td>特刊征稿论文</td><td>视特刊要求</td><td><span class="tag tag-gold">定期发布</span></td></tr>
+            <tr><td><strong>Letter to Editor</strong></td><td>对已发表文章的评论</td><td>≤ 1500 词</td><td>需引用原文</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="c-block">
+        <h4>📝 关于 Review 文章</h4>
+        <p>CATENA 接受综述类文章，但建议在投稿前先向编辑发送 Pre-submission Inquiry，简要说明综述主题和创新点。编辑会判断是否符合期刊方向。</p>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <div class="info-grid" style="margin-bottom:16px">
+          <div class="info-item"><div class="info-label">审稿方式</div><div class="info-value">单盲审稿</div></div>
+          <div class="info-item"><div class="info-label">审稿人数量</div><div class="info-value">2–3 位</div></div>
+          <div class="info-item"><div class="info-label">首轮审稿</div><div class="info-value">约 2–3 个月</div></div>
+          <div class="info-item"><div class="info-label">修改轮数</div><div class="info-value">通常 1–2 轮</div></div>
+        </div>
+        <p>单盲审稿 (Single-blind)：审稿人知道作者信息，但作者不知道审稿人身份。</p>
+      </div>
+      <div class="c-block">
+        <h4>审稿流程</h4>
+        <ol>
+          <li><strong>提交</strong> → 编辑初审（Desk Review）约 1–2 周</li>
+          <li><strong>分配编辑</strong> → 领域编辑评估</li>
+          <li><strong>送审</strong> → 邀请 2–3 位审稿人</li>
+          <li><strong>审稿</strong> → 通常 4–6 周</li>
+          <li><strong>决定</strong> → Accept / Minor Revision / Major Revision / Reject</li>
+          <li><strong>修改</strong> → 回复审稿意见 + 修改稿件</li>
+          <li><strong>最终决定</strong> → 编辑确认</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>申诉机制</h4>
+        <p>可通过 Editorial Manager 提交申诉。需提供逐条回应和新的论证。申诉处理通常 2–3 周。</p>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>登录 <a href="https://www.editorialmanager.com/catena/" target="_blank">Editorial Manager</a></li>
+          <li>选择文章类型</li>
+          <li>填写标题、摘要、关键词</li>
+          <li>添加作者信息及 ORCID</li>
+          <li>建议/排除审稿人</li>
+          <li>上传稿件（Word 或 LaTeX）</li>
+          <li>上传 Cover Letter</li>
+          <li>填写附加信息</li>
+          <li>确认提交</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>Cover Letter 要点</h4>
+        <ul>
+          <li>说明研究如何属于 CATENA 的收稿范围（特别强调土壤-地貌-水文的交叉视角）</li>
+          <li>突出创新点和主要发现</li>
+          <li>声明未同时投稿他刊</li>
+          <li>通讯作者联系方式</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>投稿后注意事项</h4>
+        <ul>
+          <li>通过 Editorial Manager 跟踪状态</li>
+          <li>修改稿须在 <strong>60 天</strong> 内提交</li>
+          <li>从接收到在线发表约 1–2 周</li>
+          <li>Proof 阶段仅改排版错误</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li><strong>首选格式</strong>：Word (.doc / .docx)</li>
+          <li><strong>也可接受</strong>：LaTeX（提供 PDF + 源文件）</li>
+          <li>单栏排版，行距 1.5 倍</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构</h4>
+        <ol>
+          <li><strong>Title</strong> — 简洁明确，≤ 20 词为佳</li>
+          <li><strong>Abstract</strong> — 结构式或非结构式均可，≤ 250 词</li>
+          <li><strong>Keywords</strong> — 3–6 个，使用具体术语</li>
+          <li><strong>Introduction</strong> — 研究背景、知识缺口、研究目的</li>
+          <li><strong>Materials and Methods</strong> — 研究区域、数据来源、分析方法</li>
+          <li><strong>Results</strong> — 客观结果，配合图表</li>
+          <li><strong>Discussion</strong> — 解释结果、对比前人研究</li>
+          <li><strong>Conclusions</strong> — 主要发现总结</li>
+          <li><strong>CRediT Author Statement</strong> — 作者贡献声明</li>
+          <li><strong>Data Availability</strong> — 数据获取方式</li>
+          <li><strong>Acknowledgments</strong> — 致谢与基金信息</li>
+          <li><strong>References</strong> — 参考文献列表</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>CRediT 作者贡献声明</h4>
+        <p>必须使用 CRediT 标准声明每位作者贡献。格式示例：</p>
+        <p><code>Wang L: Conceptualization, Investigation, Writing - Original Draft. Zhang H: Methodology, Software. Liu Q: Supervision, Writing - Review & Editing.</code></p>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">📐</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范</h4>
+        <ul>
+          <li>图片格式：TIFF / EPS / PDF / JPEG，分辨率 ≥ 300 dpi</li>
+          <li>线条图：≥ 1000 dpi</li>
+          <li>图表标题独立可读</li>
+          <li>彩色图表在线版免费</li>
+          <li>每张图表需在正文中引用</li>
+          <li>地图需标注比例尺和方向</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>补充材料</h4>
+        <ul>
+          <li>可上传 Supplementary Material</li>
+          <li>以原格式发布，不经排版</li>
+          <li>建议放入次要数据、附加图表等</li>
+          <li>补充材料需在正文中引用</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>数据政策</h4>
+        <ul>
+          <li>鼓励数据公开共享</li>
+          <li>推荐：<a href="https://zenodo.org/" target="_blank">Zenodo</a>、<a href="https://figshare.com/" target="_blank">Figshare</a></li>
+          <li>Data Availability Statement 为必填</li>
+          <li>代码建议上传 GitHub + Zenodo 存档</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📖</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式</h4>
+        <p>采用 <strong>Author-Date</strong> 体系，文中引用格式：</p>
+        <ul>
+          <li>单作者：<code>(Lal, 2020)</code> 或 <code>Lal (2020)</code></li>
+          <li>双作者：<code>(Wang and Zhang, 2020)</code></li>
+          <li>三作者及以上：<code>(Wang et al., 2020)</code></li>
+          <li>多篇：<code>(Lal, 2020; Wang et al., 2021)</code></li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>参考文献格式示例</h4>
+        <p><strong>期刊文章：</strong></p>
+        <p><code>Wang, L., Shi, Z.H., Wu, G.L., Fang, N.F., 2023. Freeze-thaw and water erosion processes on the Loess Plateau. CATENA 224, 106970. https://doi.org/10.1016/j.catena.2023.106970</code></p>
+        <br>
+        <p><strong>书籍：</strong></p>
+        <p><code>Morgan, R.P.C., 2005. Soil Erosion and Conservation, 3rd ed. Blackwell Publishing, Oxford.</code></p>
+        <br>
+        <p><strong>书籍章节：</strong></p>
+        <p><code>Lal, R., 2001. Soil degradation and global food security: a soil science perspective. In: Lal, R. (Ed.), Soil Degradation in the United States. CRC Press, pp. 17–40.</code></p>
+      </div>
+      <div class="c-block">
+        <h4>格式要点</h4>
+        <ul>
+          <li>姓在前，名缩写在后</li>
+          <li>期刊名使用标准缩写</li>
+          <li>按字母顺序排列</li>
+          <li>DOI 必填（如有）</li>
+          <li>建议 40–80 篇参考文献</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查</h4>
+        <ul class="checklist">
+          <li>稿件符合 CATENA 收稿范围（土壤-地貌-水文交叉）</li>
+          <li>文章类型选择正确</li>
+          <li>标题简洁且信息丰富</li>
+          <li>摘要 ≤ 250 词</li>
+          <li>关键词 3–6 个</li>
+          <li>所有作者信息完整，含 ORCID</li>
+          <li>CRediT 作者贡献声明已填写</li>
+          <li>通讯作者已标注</li>
+          <li>利益冲突声明已填写</li>
+          <li>基金信息完整</li>
+          <li>数据可用性声明已提供</li>
+          <li>图表分辨率达标（≥ 300 dpi）</li>
+          <li>参考文献格式正确，含 DOI</li>
+          <li>所有图表在正文中已引用</li>
+          <li>补充材料已上传</li>
+          <li>语言经过润色</li>
+          <li>Cover Letter 已准备</li>
+          <li>推荐审稿人至少 3 名</li>
+          <li>未同时投其他期刊</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突</h4>
+        <p>所有作者必须声明利益冲突。无冲突时仍需声明："The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper."</p>
+      </div>
+      <div class="c-block">
+        <h4>AI 使用声明</h4>
+        <p>使用 AI 工具辅助写作须明确声明使用范围。AI 工具<strong>不能列为作者</strong>。</p>
+      </div>
+      <div class="c-block">
+        <h4>出版伦理</h4>
+        <ul>
+          <li>遵循 <a href="https://publicationethics.org/" target="_blank">COPE</a> 准则</li>
+          <li>禁止一稿多投、数据造假、抄袭</li>
+          <li>涉及人类/动物实验需提供伦理审批</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <div class="link-row">
+          <a class="link-btn" href="https://www.sciencedirect.com/journal/catena" target="_blank">🏠 期刊主页</a>
+          <a class="link-btn" href="https://www.editorialmanager.com/catena/" target="_blank">📤 投稿系统</a>
+          <a class="link-btn" href="https://www.elsevier.com/journals/catena/0341-8162/guide-for-authors" target="_blank">📋 官方 Guide for Authors</a>
+          <a class="link-btn" href="https://www.elsevier.com/about/policies-and-standards" target="_blank">⚖️ Elsevier 出版政策</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 CATENA 官方 Guide for Authors · <a href="/journals/">返回期刊列表</a> · <a href="https://citeglow.com">CiteGlow</a>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link[data-section]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.section === e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(link.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
