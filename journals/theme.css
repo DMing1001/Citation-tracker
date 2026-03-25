@@ -1,0 +1,141 @@
+/* ═══════════════════════════════════════════
+   CiteGlow Theme — 深色/浅色切换
+   引用此文件： <link rel="stylesheet" href="/journals/theme.css">
+   需配合 theme-toggle.js 使用
+   ═══════════════════════════════════════════ */
+
+/* ── 浅色主题变量 ── */
+:root[data-theme="light"]{
+  --bg:#f5f7fa;--bg2:#eef1f6;--card:#ffffff;--card2:#f0f3f8;
+  --txt:#1a1a2e;--dim:#6b7280;--bright:#0f0f1a;
+  --border:rgba(99,102,241,.12);--glow:rgba(99,102,241,.08)
+}
+:root[data-theme="light"] .bg-orbs{display:none}
+:root[data-theme="light"] body{box-shadow:inset 0 0 100px rgba(99,102,241,.03)}
+
+/* 浅色下的 Hero 渐变变柔和 */
+:root[data-theme="light"] .j-hero{
+  background:linear-gradient(180deg,rgba(99,102,241,.06),transparent);
+}
+:root[data-theme="light"] .j-hero .meta-item,
+:root[data-theme="light"] .info-item{
+  background:var(--bg2);border-color:var(--border)
+}
+:root[data-theme="light"] .c-block{
+  background:var(--card);border-color:var(--border);
+  box-shadow:0 1px 4px rgba(0,0,0,.04)
+}
+:root[data-theme="light"] .j-table th{
+  background:var(--bg2);color:var(--pri);border-color:var(--border)
+}
+:root[data-theme="light"] .j-table td{
+  border-color:rgba(0,0,0,.06)
+}
+:root[data-theme="light"] .j-table tr:hover td{
+  background:rgba(99,102,241,.03)
+}
+:root[data-theme="light"] .nav-link:hover{
+  background:rgba(0,0,0,.03)
+}
+:root[data-theme="light"] .nav-link.active{
+  background:rgba(99,102,241,.06)
+}
+:root[data-theme="light"] .link-btn{
+  background:rgba(99,102,241,.06);border-color:var(--border)
+}
+:root[data-theme="light"] .link-btn:hover{
+  background:rgba(99,102,241,.1)
+}
+:root[data-theme="light"] .checklist li{
+  border-color:rgba(0,0,0,.06)
+}
+:root[data-theme="light"] .j-footer{
+  border-top:1px solid var(--border)
+}
+
+/* ── 期刊列表页浅色适配 ── */
+:root[data-theme="light"] .search-wrap input{
+  background:var(--card);border-color:var(--border)
+}
+:root[data-theme="light"] .journal-card{
+  background:var(--card);border-color:var(--border);
+  box-shadow:0 1px 4px rgba(0,0,0,.04)
+}
+:root[data-theme="light"] .journal-card:hover{
+  box-shadow:0 4px 20px rgba(0,0,0,.08)
+}
+:root[data-theme="light"] .jstat{
+  background:var(--bg2)
+}
+:root[data-theme="light"] .topnav-links a.active{
+  color:var(--pri);background:rgba(99,102,241,.08)
+}
+
+/* ── 主页浅色适配 ── */
+:root[data-theme="light"] .hero h1 .grad{
+  background:linear-gradient(135deg,var(--pri),#06b6d4);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+:root[data-theme="light"] .encourage{
+  background:linear-gradient(135deg,rgba(99,102,241,.05),rgba(6,182,212,.04));
+  border-color:var(--border)
+}
+:root[data-theme="light"] .input-card{
+  background:var(--card);border-color:var(--border)
+}
+:root[data-theme="light"] .doi-input{
+  background:var(--bg2);border-color:var(--border);color:var(--txt)
+}
+:root[data-theme="light"] .stat{
+  background:var(--card);border-color:var(--border)
+}
+:root[data-theme="light"] .paper-card{
+  background:var(--card);border-color:var(--border)
+}
+:root[data-theme="light"] .paper-card:hover{
+  box-shadow:0 4px 20px rgba(0,0,0,.06)
+}
+:root[data-theme="light"] .cite-item{
+  border-color:rgba(0,0,0,.06)
+}
+:root[data-theme="light"] .sort-btn{
+  background:var(--card);border-color:var(--border)
+}
+:root[data-theme="light"] .sort-btn.active{
+  background:rgba(99,102,241,.08)
+}
+
+/* ── 切换按钮 ── */
+.theme-toggle{
+  position:relative;
+  width:48px;height:26px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--card);
+  cursor:pointer;
+  transition:.3s;
+  display:inline-flex;
+  align-items:center;
+  padding:0 3px;
+  flex-shrink:0
+}
+.theme-toggle:hover{border-color:var(--pri)}
+.theme-toggle .thumb{
+  width:20px;height:20px;
+  border-radius:50%;
+  background:var(--pri);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;
+  transition:.3s ease;
+  box-shadow:0 1px 3px rgba(0,0,0,.2)
+}
+:root[data-theme="light"] .theme-toggle .thumb{
+  transform:translateX(22px)
+}
+.theme-toggle-wrap{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-left:auto
+}
+.theme-toggle-label{
+  font-size:.78rem;color:var(--dim);white-space:nowrap
+}
