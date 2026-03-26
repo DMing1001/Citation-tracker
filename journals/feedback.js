@@ -1,5 +1,9 @@
-/* CiteGlow Feedback Widget v2 */
+/* CiteGlow Feedback Widget v3 */
 (function(){
+  // Only render on /journals/ index page — nowhere else
+  var path = location.pathname.replace(/\/+$/, '');
+  if(path !== '/journals' && path !== '/journals/index.html') return;
+
   // ===== CONFIG =====
   var GOOGLE_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSfs_HTjB9PAi_soI9O02ID7E7IrKHOCe3tfnryNeXehx-FEvw/viewform?usp=pp_url';
   var GH_REPO = 'DMing1001/Citation-tracker';
@@ -16,11 +20,8 @@
 
   // Build DOM
   var html = [
-    // Float button
     '<button class="fb-float" id="fbBtn" title="反馈与建议">💬</button>',
-    // Backdrop
     '<div class="fb-backdrop" id="fbBackdrop"></div>',
-    // Modal
     '<div class="fb-modal" id="fbModal">',
       '<div class="fb-head">',
         '<h3>💬 反馈与建议</h3>',
@@ -30,7 +31,6 @@
         '<button class="fb-tab active" data-tab="form">📝 留言</button>',
         '<button class="fb-tab" data-tab="github">🐙 GitHub</button>',
       '</div>',
-      // Form panel — Google Forms
       '<div class="fb-panel active" id="fbPanelForm">',
         '<div class="fb-gf-intro">',
           '<p>有建议、想加新期刊、发现错误？点下面的按钮填写表单，我会尽快处理。</p>',
@@ -56,7 +56,6 @@
           '<span>表单在新窗口打开，填完关闭即可</span>',
         '</div>',
       '</div>',
-      // GitHub panel
       '<div class="fb-panel" id="fbPanelGithub">',
         '<p class="fb-gh-intro">如果你有 GitHub 账号，也可以直接在仓库提 Issue。Issue 会自动通知我，公开可追踪。</p>',
         '<div class="fb-gh-btns">',
@@ -75,18 +74,28 @@
 
   var wrapper = document.createElement('div');
   wrapper.id = 'fbWidget';
-  wrapper.innerHTML = html;
+  wrapper.style.display = 'none';
   document.body.appendChild(wrapper);
+  wrapper.innerHTML = html;
 
   // Elements
   var btn = document.getElementById('fbBtn');
-  btn.classList.add('visible');
   var backdrop = document.getElementById('fbBackdrop');
   var modal = document.getElementById('fbModal');
   var closeBtn = document.getElementById('fbClose');
   var tabs = document.querySelectorAll('.fb-tab');
   var panelForm = document.getElementById('fbPanelForm');
   var panelGithub = document.getElementById('fbPanelGithub');
+
+  // Ensure modal is closed on init
+  backdrop.classList.remove('open');
+  modal.classList.remove('open');
+
+  // Show button with delay (prevents flash)
+  setTimeout(function(){
+    wrapper.style.display = '';
+    btn.classList.add('visible');
+  }, 300);
 
   // Open / Close
   function openModal(){

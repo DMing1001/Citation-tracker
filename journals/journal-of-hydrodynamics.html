@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Journal of Hydrodynamics 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>Journal of Hydrodynamics — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>💧</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<script>!function(){var t=localStorage.getItem('citeglow-theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='light'?'#f5f7fa':'#080e1a'}();</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#3b82f6;--pri2:#60a5fa;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(59,130,246,.15);--glow:rgba(59,130,246,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+/* Top nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2;gap:20px}
+.topnav-logo{display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:800;color:var(--bright);text-decoration:none;flex-shrink:0}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px;margin-left:auto}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:1.05rem;font-weight:600;text-decoration:none;color:var(--dim);transition:.2s;border-bottom:2px solid transparent}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05);border-bottom:2px solid rgba(99,102,241,.3)}
+.topnav-links a.active{color:var(--pri2);background:rgba(59,130,246,.1)}
+
+/* Hero */
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(59,130,246,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{font-size:.9rem;color:var(--dim);margin-bottom:16px}
+.j-hero .meta-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:800px;margin:0 auto}
+.j-meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;text-align:center;min-width:110px}
+.j-meta-item .val{font-size:1rem;font-weight:700;color:var(--pri2)}
+.j-meta-item .lbl{font-size:.72rem;color:var(--dim);margin-top:2px}
+
+/* Breadcrumb */
+.breadcrumb{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:12px 24px;font-size:.82rem;color:var(--dim)}
+.breadcrumb a{color:var(--dim);text-decoration:none;transition:.2s}
+.breadcrumb a:hover{color:var(--pri2)}
+.breadcrumb .sep{margin:0 6px;opacity:.4}
+
+/* Layout */
+.j-layout{position:relative;z-index:1;max-width:1200px;margin:0 auto;display:flex;gap:24px;padding:0 24px 60px}
+
+/* Sidebar */
+.j-sidebar{width:240px;flex-shrink:0;position:sticky;top:16px;align-self:flex-start;max-height:calc(100vh - 32px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:4px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.nav-section{margin-bottom:4px}
+.nav-section-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);padding:12px 12px 6px}
+.nav-link{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(59,130,246,.08);border-left-color:var(--pri2)}
+
+/* Main content */
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:36px}
+.j-section-icon{font-size:1.3rem;margin-bottom:6px}
+.j-section h2{font-size:1.3rem;font-weight:800;color:var(--bright);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.j-section h3{font-size:1rem;font-weight:700;color:var(--bright);margin:20px 0 10px}
+.j-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px}
+.j-card p,.j-card li{font-size:.9rem;line-height:1.7;color:var(--txt);margin-bottom:8px}
+.j-card ul{padding-left:20px}
+.j-card li{margin-bottom:6px}
+.j-card strong{color:var(--bright)}
+
+/* Info table */
+.info-table{width:100%;border-collapse:collapse;margin:10px 0}
+.info-table th,.info-table td{padding:10px 14px;text-align:left;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.info-table th{color:var(--dim);font-weight:600;width:160px;white-space:nowrap}
+.info-table td{color:var(--txt)}
+
+/* Tags */
+.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(59,130,246,.12);color:var(--pri2)}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+.tag-red{background:rgba(248,113,113,.12);color:var(--red)}
+
+/* Checklist */
+.checklist{list-style:none;padding:0}
+.checklist li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.88rem;display:flex;align-items:flex-start;gap:8px}
+.checklist li::before{content:'☐';flex-shrink:0;color:var(--pri2)}
+
+/* Alert box */
+.alert{padding:14px 18px;border-radius:10px;font-size:.88rem;line-height:1.6;margin:12px 0}
+.alert-info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:var(--pri2)}
+.alert-warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);color:var(--gold)}
+
+/* Footer */
+.j-footer{text-align:center;padding:40px 0 30px;position:relative;z-index:1}
+.j-footer p{font-size:.82rem;color:var(--dim)}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+/* Mobile */
+@media(max-width:900px){
+  .j-layout{flex-direction:column}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;flex-wrap:wrap;gap:4px;padding:0 0 16px}
+  .nav-section{display:flex;flex-wrap:wrap;gap:4px}
+  .nav-section-title{display:none}
+  .nav-link{border-left:none;border-bottom:2px solid transparent}
+  .nav-link.active{border-left:none;border-bottom-color:var(--pri2)}
+}
+@media(max-width:600px){
+  .j-hero .meta-grid{gap:8px}
+  .j-meta-item{min-width:90px;padding:8px 12px}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<div class="j-hero">
+  <div class="icon">💧</div>
+  <h1>Journal of Hydrodynamics</h1>
+  <div class="subtitle">J HYDRODYN · ISSN 1001-6058 · Springer Singapore · Bimonthly</div>
+  <div class="meta-grid">
+    <div class="j-meta-item"><div class="val">3.5</div><div class="lbl">影响因子 (2024)</div></div>
+    <div class="j-meta-item"><div class="val">Q1</div><div class="lbl">JCR 分区</div></div>
+    <div class="j-meta-item"><div class="val">~2 月</div><div class="lbl">审稿周期</div></div>
+    <div class="j-meta-item"><div class="val">600 ¥/页</div><div class="lbl">出版费</div></div>
+    <div class="j-meta-item"><div class="val">单盲</div><div class="lbl">审稿制度</div></div>
+    <div class="j-meta-item"><div class="val">Hybrid</div><div class="lbl">OA 类型</div></div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="/journals/">期刊投稿</a><span class="sep">/</span>Journal of Hydrodynamics
+</div>
+
+<div class="j-layout">
+  <!-- Sidebar -->
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">期刊信息</div>
+      <a class="nav-link active" data-section="overview">📋 期刊概览</a>
+      <a class="nav-link" data-section="scope">🎯 收稿范围</a>
+      <a class="nav-link" data-section="types">📄 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">审稿与投稿</div>
+      <a class="nav-link" data-section="review">🔍 审稿流程</a>
+      <a class="nav-link" data-section="submission">📝 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">稿件要求</div>
+      <a class="nav-link" data-section="preparation">⚙️ 稿件准备</a>
+      <a class="nav-link" data-section="format">📐 格式要求</a>
+      <a class="nav-link" data-section="references">📚 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">其他</div>
+      <a class="nav-link" data-section="checklist">✅ 投稿清单</a>
+      <a class="nav-link" data-section="ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="j-main">
+
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-icon">📋</div>
+      <h2>期刊概览</h2>
+      <div class="j-card">
+        <table class="info-table">
+          <tr><th>全称</th><td>Journal of Hydrodynamics</td></tr>
+          <tr><th>缩写</th><td>J HYDRODYN</td></tr>
+          <tr><th>ISSN</th><td>1001-6058 (Print) · 1878-0342 (Online)</td></tr>
+          <tr><th>出版商</th><td>Springer Singapore</td></tr>
+          <tr><th>出版周期</th><td>Bimonthly（双月刊）</td></tr>
+          <tr><th>创刊年份</th><td>2006（SCI 收录）</td></tr>
+          <tr><th>出版地区</th><td>中国</td></tr>
+          <tr><th>出版语言</th><td>English</td></tr>
+          <tr><th>年发文量</th><td>~96 篇</td></tr>
+          <tr><th>h-index</th><td>33</td></tr>
+          <tr><th>自引率</th><td>14.3% (2024-2025)</td></tr>
+        </table>
+      </div>
+      <div class="j-card">
+        <h3>影响力指标</h3>
+        <table class="info-table">
+          <tr><th>影响因子 (2024)</th><td><strong>3.5</strong>（实时 IF 3.8，截至 2026-01）</td></tr>
+          <tr><th>5 年 IF</th><td>3.3</td></tr>
+          <tr><th>JCI</th><td>0.67</td></tr>
+          <tr><th>CiteScore (2025)</th><td>6.1</td></tr>
+          <tr><th>SJR</th><td>0.792</td></tr>
+          <tr><th>SNIP</th><td>1.423</td></tr>
+        </table>
+        <div style="margin-top:12px">
+          <span class="tag tag-green">Modeling & Simulation Q1</span>
+          <span class="tag tag-green">Mechanical Engineering Q1</span>
+          <span class="tag tag-green">Condensed Matter Physics Q1</span>
+          <span class="tag tag-gold">Mechanics of Materials Q2</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-icon">🎯</div>
+      <h2>收稿范围</h2>
+      <div class="j-card">
+        <p>Journal of Hydrodynamics 致力于发表水动力学各领域的原创理论、计算和实验研究，涵盖：</p>
+        <ul>
+          <li><strong>船舶与海洋工程</strong> — 船舶水动力学、海洋结构物</li>
+          <li><strong>水利水电工程</strong> — 水流力学、水电站设计</li>
+          <li><strong>环境工程</strong> — 环境流体力学、污染物扩散</li>
+          <li><strong>能源勘探</strong> — 海洋能源、流体机械</li>
+          <li><strong>化学工程</strong> — 多相流、传热传质</li>
+          <li><strong>生物医学工程</strong> — 生物流体力学</li>
+          <li><strong>计算流体力学 (CFD)</strong> — 数值方法、湍流模拟</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-icon">📄</div>
+      <h2>文章类型</h2>
+      <div class="j-card">
+        <table class="info-table">
+          <tr><th>Original Article</th><td>原创研究论文，完整的研究成果报告</td></tr>
+          <tr><th>Review</th><td>综述文章（通常为编辑邀请，但作者也可主动联系编辑部提案）</td></tr>
+          <tr><th>Letter</th><td>简短通讯，快速发表重要初步结果</td></tr>
+        </table>
+        <div class="alert alert-info" style="margin-top:14px">
+          <strong>关于 Review 文章：</strong>综述须具有前沿性，不是简单文献罗列，而是从全局视角评述领域最新进展，指出现有研究的创新与不足，并提供前瞻性讨论。
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-icon">🔍</div>
+      <h2>审稿流程</h2>
+      <div class="j-card">
+        <table class="info-table">
+          <tr><th>审稿制度</th><td><strong>单盲审稿 (Single-blind)</strong> — 审稿人知道作者身份，作者不知道审稿人</td></tr>
+          <tr><th>审稿周期</th><td>约 2 个月（LetPub 用户反馈）</td></tr>
+          <tr><th>投稿系统</th><td>Editorial Manager</td></tr>
+          <tr><th>投稿网址</th><td><a href="https://www.editorialmanager.com/ijhd" target="_blank" rel="noopener" style="color:var(--pri2)">editorialmanager.com/ijhd</a></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-icon">📝</div>
+      <h2>投稿流程</h2>
+      <div class="j-card">
+        <ul>
+          <li>通过 Editorial Manager 在线提交所有稿件文件</li>
+          <li>提交即表示：作品未曾发表、不在其他期刊考虑中、所有共同作者和所属机构已批准</li>
+          <li>接受后需签署版权转让协议（如被拒，权利回归作者）</li>
+          <li>如引用已发表内容（图、表、文字），须获得版权许可并在提交时附上证明</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="preparation">
+      <div class="j-section-icon">⚙️</div>
+      <h2>稿件准备</h2>
+      <div class="j-card">
+        <h3>Title Page</h3>
+        <ul>
+          <li>标题简洁明了</li>
+          <li>作者姓名、单位（机构、院系、城市、国家）</li>
+          <li>通讯作者须标注有效邮箱</li>
+          <li>如有 ORCID，请提供 16 位号码</li>
+        </ul>
+        <h3>Abstract</h3>
+        <ul>
+          <li><strong>150–250 词</strong></li>
+          <li>不得包含未定义缩写或未标注引用</li>
+        </ul>
+        <h3>Keywords</h3>
+        <ul>
+          <li><strong>4–6 个关键词</strong>，用于索引</li>
+        </ul>
+        <h3>正文</h3>
+        <ul>
+          <li>提交格式：<strong>Word (.docx) 或 LaTeX</strong></li>
+          <li>正文字体：10pt Times Roman</li>
+          <li>自动页码编号</li>
+          <li>用 Tab 缩进，不要用空格</li>
+          <li>表格用 Word 表格功能，不要用电子表格</li>
+          <li>公式用公式编辑器或 MathType</li>
+          <li>标题使用十进制系统，不超过三级</li>
+          <li>缩写首次出现时定义，全文一致使用</li>
+        </ul>
+      </div>
+      <div class="j-card">
+        <h3>AI 使用政策</h3>
+        <div class="alert alert-warn">
+          LLM（如 ChatGPT）<strong>不满足作者资格</strong>。使用 LLM 须在 Methods 部分记录（如无 Methods 则在合适位置说明）。AI 辅助语言润色无需声明。
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-icon">📐</div>
+      <h2>格式要求</h2>
+      <div class="j-card">
+        <table class="info-table">
+          <tr><th>文件格式</th><td>Word (.docx) 或 LaTeX</td></tr>
+          <tr><th>正文字体</th><td>10pt Times Roman</td></tr>
+          <tr><th>标题层级</th><td>十进制系统，最多三级</td></tr>
+          <tr><th>图表</th><td>Artwork 须符合 Springer Nature 标准</td></tr>
+          <tr><th>补充材料</th><td>Supplementary Information (SI) 可在线附带</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="references">
+      <div class="j-section-icon">📚</div>
+      <h2>参考文献</h2>
+      <div class="j-card">
+        <p>参考文献格式遵循 Springer Nature 标准格式（作者-年份制），具体见投稿系统内模板说明。</p>
+        <div class="alert alert-info">
+          LaTeX 用户推荐使用 <a href="https://www.springernature.com/gp/authors/campaigns/latex-author-support" target="_blank" rel="noopener" style="color:var(--pri2)">Springer Nature LaTeX 模板</a>。
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-icon">✅</div>
+      <h2>投稿清单</h2>
+      <div class="j-card">
+        <ul class="checklist">
+          <li>稿件为 Word (.docx) 或 LaTeX 格式</li>
+          <li>Title Page 含标题、作者信息、通讯邮箱、ORCID</li>
+          <li>Abstract 150–250 词</li>
+          <li>Keywords 4–6 个</li>
+          <li>正文 10pt Times Roman，自动页码</li>
+          <li>Competing Interests 声明已准备</li>
+          <li>引用他人已发表内容的版权许可</li>
+          <li>所有可编辑源文件（非 PDF）</li>
+          <li>补充材料 (SI) 已整理</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-icon">⚖️</div>
+      <h2>伦理与政策</h2>
+      <div class="j-card">
+        <h3>Publication Fee</h3>
+        <ul>
+          <li>非 OA 文章：<strong>600 RMB/页</strong>（由编辑部收取，在最终接受前缴纳）</li>
+          <li>选择 OA 发表：缴纳 APC 后<strong>不再另收页费</strong></li>
+        </ul>
+        <h3>Open Choice</h3>
+        <p>本刊为 Hybrid OA 期刊，作者可选择开放获取。Springer Nature 提供 APC 减免机制（发展中国家等）。</p>
+        <h3>竞争利益</h3>
+        <p>作者须披露与稿件直接或间接相关的财务或非财务利益。</p>
+        <h3>作者资格</h3>
+        <p>遵循 Springer Nature <a href="https://www.springer.com/us/editorial-policies/authorship-principles" target="_blank" rel="noopener" style="color:var(--pri2)">Authorship Principles</a>。</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="j-footer">
+  <p>数据来源：<a href="https://link.springer.com/journal/42241/submission-guidelines" target="_blank" rel="noopener">Springer Nature</a> · <a href="https://www.letpub.com.cn/index.php?journalid=4646&page=journalapp&view=detail" target="_blank" rel="noopener">LetPub</a> · <a href="https://citeglow.com">CiteGlow</a></p>
+</footer>
+
+<script src="theme-toggle.js"></script>
+<script>
+// Sidebar active state
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('.j-section');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector('.nav-link[data-section="'+e.target.id+'"]');
+      if(link) link.classList.add('active');
+    }
+  });
+}, {rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s => observer.observe(s));
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(link.dataset.section);
+    if(target) target.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
