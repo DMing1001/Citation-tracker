@@ -53,14 +53,15 @@
   // 暴露全局方法
   window.__toggleTheme = toggleTheme;
 
-  // 初始化
+  // ★ Immediately apply theme (prevents flash of wrong mode)
+  applyTheme(getTheme());
+
+  // Inject toggle button when DOM is ready
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', function(){
-      applyTheme(getTheme());
       injectToggle();
     });
   } else {
-    applyTheme(getTheme());
     injectToggle();
   }
 

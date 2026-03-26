@@ -77,6 +77,7 @@
   wrapper.id = 'fbWidget';
   wrapper.innerHTML = html;
   document.body.appendChild(wrapper);
+  btn.classList.add('visible');
 
   // Elements
   var btn = document.getElementById('fbBtn');
