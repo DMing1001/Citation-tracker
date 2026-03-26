@@ -77,10 +77,10 @@
   wrapper.id = 'fbWidget';
   wrapper.innerHTML = html;
   document.body.appendChild(wrapper);
-  btn.classList.add('visible');
 
   // Elements
   var btn = document.getElementById('fbBtn');
+  btn.classList.add('visible');
   var backdrop = document.getElementById('fbBackdrop');
   var modal = document.getElementById('fbModal');
   var closeBtn = document.getElementById('fbClose');
