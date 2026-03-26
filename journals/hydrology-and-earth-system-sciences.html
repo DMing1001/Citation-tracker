@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Hydrology and Earth System Sciences (HESS) 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>Hydrology and Earth System Sciences — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>🌊</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#3b82f6;--pri2:#60a5fa;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(59,130,246,.15);--glow:rgba(59,130,246,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+/* Top nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(59,130,246,.1)}
+
+/* Hero banner */
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(59,130,246,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+
+/* Layout */
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+
+/* Sidebar */
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(59,130,246,.08);border-left-color:var(--pri)}
+
+/* Main content */
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+
+/* Content blocks */
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+.c-block code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:.85rem}
+
+/* Table */
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(59,130,246,.03)}
+
+/* Tags */
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(59,130,246,.12);color:var(--pri2)}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+.tag-purple{background:rgba(167,139,250,.12);color:var(--acc2)}
+.tag-red{background:rgba(248,113,113,.12);color:var(--red)}
+
+/* Checklist */
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'☐';position:absolute;left:0;top:8px;font-size:1rem;color:var(--dim)}
+
+/* Link row */
+.link-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.link-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:500;text-decoration:none;color:var(--pri2);background:rgba(59,130,246,.08);border:1px solid var(--border);transition:.2s}
+.link-btn:hover{background:rgba(59,130,246,.15);border-color:var(--pri)}
+
+/* Highlight box */
+.highlight-box{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:16px 20px;margin-bottom:14px;font-size:.9rem;line-height:1.7}
+.highlight-box strong{color:var(--pri2)}
+
+/* Footer */
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+/* Mobile sidebar */
+@media(max-width:800px){
+  .j-layout{flex-direction:column;gap:20px;padding:16px}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .nav-section{margin-bottom:0;display:flex;gap:2px}
+  .nav-title{display:none}
+  .nav-link{white-space:nowrap;padding:8px 12px;border-left:none;border-bottom:2px solid transparent;font-size:.82rem}
+  .nav-link.active{border-left:none;border-bottom-color:var(--pri)}
+  .j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<!-- Nav -->
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<!-- Breadcrumb -->
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / Hydrology and Earth System Sciences</div>
+
+<!-- Hero -->
+<div class="j-hero">
+  <div class="icon">🌊</div>
+  <h1>Hydrology and Earth System Sciences</h1>
+  <div class="subtitle">Copernicus / EGU · ISSN 1027-5606 (print) · 1607-7938 (online)</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">5.8</div><div class="meta-lbl">影响因子 (2024)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q1</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">6 周 +</div><div class="meta-lbl">公开讨论期</div></div>
+    <div class="meta-item"><div class="meta-val">€1,800</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">公开评审</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">Gold OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="j-layout">
+  <!-- Sidebar -->
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview" data-section="overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope" data-section="scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types" data-section="types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review" data-section="review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission" data-section="submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript" data-section="manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format" data-section="format">📐 格式要求</a>
+      <a class="nav-link" href="#reference" data-section="reference">📖 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist" data-section="checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics" data-section="ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="j-main">
+
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📊</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">期刊全称</div><div class="info-value">Hydrology and Earth System Sciences</div></div>
+        <div class="info-item"><div class="info-label">缩写</div><div class="info-value">HESS</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Copernicus (EGU)</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">1027-5606 / 1607-7938</div></div>
+        <div class="info-item"><div class="info-label">出版频率</div><div class="info-value">双月刊</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">5.8 (2024)；5yr IF 6.4</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q1 (Water Resources / Geosciences)</div></div>
+        <div class="info-item"><div class="info-label">开放获取</div><div class="info-value">Gold OA（100% 开放）</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">€1,800（全文）/ €900（短文）</div></div>
+        <div class="info-item"><div class="info-label">年发文量</div><div class="info-value">约 265 篇</div></div>
+        <div class="info-item"><div class="info-label">h-index</div><div class="info-value">107</div></div>
+        <div class="info-item"><div class="info-label">出版地</div><div class="info-value">德国 Göttingen</div></div>
+      </div>
+      <div class="highlight-box">
+        <strong>⚡ HESS 独特之处：</strong>HESS 采用两阶段开放出版模式——稿件先以预印本形式在 <a href="https://www.egusphere.net/" target="_blank">EGUsphere</a> 发布并进入为期 6 周的公开讨论与互动评审阶段，修改通过后才正式发表在 HESS。这是水文学领域最具透明度的评审流程之一。
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>Aims & Scope</h4>
+        <p>HESS 是非营利性国际两阶段开放获取期刊，发表水文学领域的原创研究。鼓励基础研究和应用研究，推进对水文系统、水资源供给及水循环在地球系统功能中作用的理解。特别提倡多学科交叉方法。</p>
+        <ul>
+          <li><strong>水循环过程</strong>：大陆水的物理、化学和生物过程（所有相态），从土壤水微观尺度到水文气候学全球尺度</li>
+          <li><strong>全球水资源</strong>：固、液、气态水资源的时空特征、储量、滞留时间、界面通量及各圈层间路径</li>
+          <li><strong>人水互动</strong>：人类活动对上述过程和通量的影响，以及可持续管理策略（洪水、干旱、荒漠化、土地退化、富营养化等）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>涵盖的主题领域</h4>
+        <ul>
+          <li>Rivers and Lakes（河流与湖泊）</li>
+          <li>Coasts and Estuaries（海岸与河口）</li>
+          <li>Hydrometeorology（水文气象学）</li>
+          <li>Ecohydrology（生态水文学）</li>
+          <li>Water Resources Management（水资源管理）</li>
+          <li>Biogeochemical Processes（生物地球化学过程）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <div class="c-block" style="padding:0;overflow-x:auto">
+        <table class="j-table">
+          <thead><tr><th>类型</th><th>说明</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Research Article</strong></td><td>原创研究论文，推进水文学理解</td><td><span class="tag tag-blue">最常见</span></td></tr>
+            <tr><td><strong>Review Article</strong></td><td>综述文章，总结研究现状与未来方向（需先联系执行编辑）</td><td><span class="tag tag-gold">需预沟通</span></td></tr>
+            <tr><td><strong>Brief Communication</strong></td><td>2–4 页短文，≤ 3 图表，≤ 20 引用，摘要 ≤ 100 词</td><td><span class="tag tag-green">快速发表</span> 标题须以 "Brief communication:" 开头</td></tr>
+            <tr><td><strong>Technical Note</strong></td><td>方法创新与技术进展（模型开发推荐投 GMD）</td><td>标题须以 "Technical note:" 开头</td></tr>
+            <tr><td><strong>Opinion Article</strong></td><td>讨论水文学热点话题（非传统评审，在 EGUsphere 公开讨论）</td><td><span class="tag tag-purple">一般为邀稿</span> 标题以 "HESS Opinions:" 开头</td></tr>
+            <tr><td><strong>Education & Communication</strong></td><td>水文学科学传播与教育研究</td><td>按正常研究文章评审</td></tr>
+            <tr><td><strong>Comment / Reply</strong></td><td>对已发表文章的评论及回复</td><td>标题以 "Comment on" / "Reply to" 开头</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="highlight-box">
+        <strong>🌟 HESS 的互动评审流程不同于传统期刊！</strong>整个过程分为提交→初筛→公开讨论→最终修订四个阶段，其中公开讨论阶段是最独特的环节。
+      </div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <div class="info-grid" style="margin-bottom:16px">
+          <div class="info-item"><div class="info-label">评审方式</div><div class="info-value">公开互动评审</div></div>
+          <div class="info-item"><div class="info-label">讨论期</div><div class="info-value">6 周（EGUsphere）</div></div>
+          <div class="info-item"><div class="info-label">最终回复</div><div class="info-value">讨论结束后 4 周内</div></div>
+          <div class="info-item"><div class="info-label">预印本</div><div class="info-value">免费（EGUsphere）</div></div>
+        </div>
+      </div>
+      <div class="c-block">
+        <h4>完整流程时间线</h4>
+        <ol>
+          <li><strong>提交与编辑分配</strong> → 稿件提交至 Copernicus Editor 系统，分配到相关学科领域的编辑</li>
+          <li><strong>Access Review（初筛）</strong> → 编辑评估稿件是否在期刊范围内、基本科学质量是否达标、是否对水文学有新贡献。可建议技术性修改（排版错误、图表澄清等），但此阶段<strong>不得要求修改科学内容</strong></li>
+          <li><strong>公开讨论（6 周）</strong> → 通过初筛后，稿件以预印本形式发布在 <a href="https://www.egusphere.net/" target="_blank">EGUsphere</a>，获得 DOI 并可被引用：
+            <ul>
+              <li>指定审稿人（可选择匿名或实名）提交审稿意见</li>
+              <li>科学界其他成员（实名）可参与讨论</li>
+              <li><strong>作者应积极参与</strong>——尽早回复审稿人和社区评论以激发进一步讨论</li>
+              <li>通常每篇预印本至少收到 2 份审稿意见</li>
+            </ul>
+          </li>
+          <li><strong>最终回复</strong> → 公开讨论结束后，作者须在 <strong>4 周内</strong>发布对所有评论的回应（若未在讨论期间完成）</li>
+          <li><strong>编辑决定</strong> → 编辑基于作者对所有评论的回应决定：邀请修订 / 直接录用 / 拒稿。必要时可继续传统同行评审</li>
+          <li><strong>正式发表</strong> → 录用后排版校对，在 HESS 网站发表。文章附带此前预印本和互动讨论的链接，所有审稿报告、编辑意见、作者回应及不同版本稿件均公开</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>评审标准</h4>
+        <p>编辑和审稿人依据 <a href="https://www.hydrology-and-earth-system-sciences.net/peer_review/review_criteria.html" target="_blank">HESS Review Criteria</a> 评估稿件，重点关注：科学原创性、方法严谨性、结果清晰度、对水文学的贡献。</p>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>下载 <a href="https://www.hydrology-and-earth-system-sciences.net/submission.html#templates" target="_blank">Copernicus 稿件模板</a>（LaTeX 或 MS Word），或使用 R Markdown</li>
+          <li>按要求准备 PDF 稿件：含行号、页码，单栏格式</li>
+          <li>准备摘要文本和短摘要（Short Summary，500 字符以内非技术性文本，用于推广）</li>
+          <li>选择合适的文章类型</li>
+          <li>注册稿件 → 收到上传链接进入 <a href="https://editor.copernicus.org/HESS/" target="_blank">Copernicus Office Editor</a></li>
+          <li>上传稿件文件（PDF，≤ 50 MB）</li>
+          <li>定义学科领域和索引词（用于编辑分配）</li>
+          <li>确认提交</li>
+        </ol>
+      </div>
+      <div class="highlight-box">
+        <strong>📌 重要提醒：</strong>HESS <strong>不需要</strong>传统的 Cover Letter。取而代之的是 Short Summary（500 字符以内的非技术性推广文本）和学科领域选择。
+      </div>
+      <div class="c-block">
+        <h4>AI 工具使用</h4>
+        <p>如使用 AI 工具辅助生成稿件的部分内容，须在 Methods 部分或 Acknowledgements 中描述使用情况。</p>
+      </div>
+      <div class="c-block">
+        <h4>投稿后注意事项</h4>
+        <ul>
+          <li>可通过 Copernicus 系统实时追踪稿件状态</li>
+          <li>初筛（Access Review）通常较快，编辑可建议技术性修改后再发布预印本</li>
+          <li>公开讨论期间作者应积极回应评论——这是 HESS 流程的核心</li>
+          <li>修订稿在讨论结束后 4 周内提交</li>
+          <li>从接收到正式发表通常 1–2 周（排版校对）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li><strong>评审阶段</strong>：提交 PDF 文件（嵌入字体，单栏，竖版，含行号和页码）</li>
+          <li><strong>录用后排版</strong>：LaTeX（.tex）或 Word（.doc/.docx）</li>
+          <li>也可使用 <strong>R Markdown</strong> 格式提交</li>
+          <li>图分辨率 ≥ 300 dpi，格式：PDF / PS / EPS / JPG / PNG / TIFF</li>
+          <li>文件大小 ≤ 50 MB</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构</h4>
+        <ol>
+          <li><strong>Title Page</strong> — 标题（简洁，避免缩写）、作者全名、完整单位地址、通讯作者邮箱。已故合著者需标注</li>
+          <li><strong>Abstract</strong> — 普通读者可理解的摘要，简要介绍主题后总结关键点并展望未来研究方向。避免引用和未解释的缩写</li>
+          <li><strong>Graphical Abstract（可选）</strong> — 作为 Key Figure 上传，或作为未编号图片放在摘要之后</li>
+          <li><strong>Introduction</strong></li>
+          <li><strong>Sections</strong> — 所有节标题必须编号（如 3, 3.1, 3.1.1），三级标题以内。正文中使用 "Sect." 缩写</li>
+          <li><strong>Conclusions</strong></li>
+          <li><strong>Appendices</strong> — 非核心但有用的补充信息，用大写字母标注（Appendix A, B…）</li>
+          <li><strong>Code Availability</strong> — 代码可获取性声明</li>
+          <li><strong>Data Availability</strong> — 数据可获取性声明</li>
+          <li><strong>Author Contribution</strong> — 推荐使用 <a href="https://publications.copernicus.org/services/contributor_roles_taxonomy.html" target="_blank">CRediT</a> 标准</li>
+          <li><strong>Competing Interests</strong> — 利益冲突声明</li>
+          <li><strong>Acknowledgements</strong> — 致谢与基金信息</li>
+          <li><strong>References</strong></li>
+        </ol>
+      </div>
+      <div class="highlight-box">
+        <strong>💡 Copernicus 模板优势：</strong>HESS 提供官方 LaTeX 和 Word 模板，直接使用模板即可满足大部分格式要求（单栏、节编号等），<strong>不需要预排双栏格式</strong>。
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">📐</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范</h4>
+        <ul>
+          <li>图格式：PDF / PS / EPS / JPG / PNG / TIFF，分辨率 ≥ 300 dpi</li>
+          <li>面板图合并为一个文件，编号阿拉伯数字（fig01, fig02…）</li>
+          <li>图表标题须独立可读（不依赖正文）</li>
+          <li>彩色图免费（在线版）</li>
+          <li>须确保色盲友好（Colour Vision Deficiency friendly）</li>
+          <li>地图和航拍图须包含版权声明或出处标注</li>
+          <li>图表插入正文中首次引用位置附近（<strong>不要</strong>放在文末）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>补充材料</h4>
+        <ul>
+          <li>非核心补充材料以 ZIP 或单独 PDF 提交（≤ 50 MB）</li>
+          <li>更大的数据集/模型代码/视频应上传至可靠数据仓库获取 DOI</li>
+          <li>推荐：<a href="https://zenodo.org/" target="_blank">Zenodo</a>、<a href="https://figshare.com/" target="_blank">Figshare</a> 等</li>
+          <li>补充材料在正文中引用并纳入参考文献列表</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>数据与代码政策</h4>
+        <ul>
+          <li>强烈建议将数据集提交至可靠数据仓库并获取 DOI</li>
+          <li>Code Availability 和 Data Availability 为必填声明</li>
+          <li>软件/模型代码建议上传至 GitHub 并通过 Zenodo 存档</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>Short Summary（必填）</h4>
+        <ul>
+          <li>500 字符以内（含空格）的非技术性英文段落</li>
+          <li>用于在社交媒体和期刊推广中介绍你的工作</li>
+          <li>需包含：主要结论、研究意义、简要背景和方法</li>
+          <li>避免缩写，使用完整术语</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📖</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式</h4>
+        <p>采用 <strong>Copernicus 编号制</strong>，文中方括号引用：</p>
+        <ul>
+          <li>单篇：<code>[1]</code></li>
+          <li>多篇：<code>[1,3,5]</code> 或 <code>[1–5]</code></li>
+          <li>按引用顺序编号</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>参考文献格式示例</h4>
+        <p><strong>期刊文章：</strong></p>
+        <p><code>Beven, K. and Kirkby, M. J.: A physically based, variable contributing area model of basin hydrology, Hydrol. Sci. Bull., 24, 43–69, https://doi.org/10.1080/02626667909491834, 1979.</code></p>
+        <br>
+        <p><strong>书籍：</strong></p>
+        <p><code>Chow, V. T., Maidment, D. R., and Mays, L. W.: Applied Hydrology, McGraw-Hill, New York, ISBN 0-07-010811-4, 1988.</code></p>
+        <br>
+        <p><strong>书籍章节：</strong></p>
+        <p><code>Sivapalan, M.: Process complexity at hillslope scale, process simplicity at the watershed scale: is there a connection?, Hydrol. Process., 17, 1037–1041, https://doi.org/10.1002/hyp.5109, 2003.</code></p>
+      </div>
+      <div class="c-block">
+        <h4>格式要点</h4>
+        <ul>
+          <li>作者姓名：名在前姓在后，用 "and" 连接最后两位作者（<code>Beven, K. and Kirkby, M. J.</code>）</li>
+          <li>期刊名使用标准缩写</li>
+          <li>按引用顺序排列（非字母序）</li>
+          <li>DOI 为必填项（如有）</li>
+          <li>URL 拼写完整，不要超链接嵌入文字</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查以下事项</h4>
+        <ul class="checklist">
+          <li>稿件符合 HESS Aims & Scope</li>
+          <li>文章类型选择正确（标题格式符合要求）</li>
+          <li>使用 Copernicus 官方 LaTeX 或 Word 模板</li>
+          <li>PDF 稿件含行号和页码，单栏竖版</li>
+          <li>所有节标题编号正确（3, 3.1, 3.1.1）</li>
+          <li>摘要不含未解释的缩写和引用</li>
+          <li>Short Summary（500 字符非技术性文本）已准备</li>
+          <li>作者全名和完整单位信息</li>
+          <li>Author Contribution 声明已填写（推荐 CRediT）</li>
+          <li>Competing Interests 声明已提供</li>
+          <li>Code Availability 和 Data Availability 声明</li>
+          <li>图表在正文中首次引用位置附近，色盲友好</li>
+          <li>图片分辨率 ≥ 300 dpi</li>
+          <li>参考文献为编号制，含 DOI</li>
+          <li>补充材料以 ZIP/PDF 提交，或上传至数据仓库获取 DOI</li>
+          <li>如使用 AI 工具，已在 Methods 或 Acknowledgements 中声明</li>
+          <li>地图/航拍图含版权标注</li>
+          <li>英文语言质量良好</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突 (Competing Interests)</h4>
+        <p>所有作者必须声明利益冲突。若无冲突，须声明："The authors declare that they have no conflict of interest."</p>
+        <p>详情参见 <a href="https://www.hydrology-and-earth-system-sciences.net/policies/competing_interests_policy.html" target="_blank">Competing Interests Policy</a>。</p>
+      </div>
+      <div class="c-block">
+        <h4>AI 使用政策</h4>
+        <p>使用 AI 工具辅助写作须在 Methods 部分或 Acknowledgements 中声明使用范围和方式。AI <strong>不能列为作者</strong>。详情参见 <a href="https://www.hydrology-and-earth-system-sciences.net/policies/publication_policy.html" target="_blank">Publication Policy</a>。</p>
+      </div>
+      <div class="c-block">
+        <h4>数据政策</h4>
+        <p>强烈建议将数据集上传至可靠公开仓库并获取 DOI，在稿件中引用。详见 <a href="https://www.hydrology-and-earth-system-sciences.net/policies/data_policy.html" target="_blank">Data Policy</a>。</p>
+      </div>
+      <div class="c-block">
+        <h4>许可与版权</h4>
+        <p>HESS 采用 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> 开放许可，作者保留版权，允许任何人共享和再利用（需注明出处）。详见 <a href="https://www.hydrology-and-earth-system-sciences.net/policies/licence_and_copyright.html" target="_blank">Licence & Copyright</a>。</p>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <div class="link-row">
+          <a class="link-btn" href="https://www.hydrology-and-earth-system-sciences.net/home.html" target="_blank">🏠 期刊主页</a>
+          <a class="link-btn" href="https://editor.copernicus.org/HESS/" target="_blank">📤 投稿系统</a>
+          <a class="link-btn" href="https://www.hydrology-and-earth-system-sciences.net/submission.html" target="_blank">📋 投稿指南</a>
+          <a class="link-btn" href="https://www.hydrology-and-earth-system-sciences.net/about/article_processing_charges.html" target="_blank">💰 APC 费用</a>
+          <a class="link-btn" href="https://www.hydrology-and-earth-system-sciences.net/peer_review/interactive_review_process.html" target="_blank">🔍 评审流程</a>
+          <a class="link-btn" href="https://www.hydrology-and-earth-system-sciences.net/about/financial_support.html" target="_blank">🤝 费用减免</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 HESS 官方网站 · <a href="/journals/">返回期刊列表</a> · <a href="https://citeglow.com">CiteGlow</a>
+</footer>
+
+<script>
+// Scroll spy
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link[data-section]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.section === e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// Smooth scroll
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(link.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+<script src="theme-toggle.js"></script>
+</body>
+</html>
