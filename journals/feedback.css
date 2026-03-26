@@ -1,0 +1,112 @@
+/* CiteGlow Feedback Widget */
+.fb-float{
+  position:fixed;bottom:28px;right:28px;z-index:999;
+  width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#6366f1,#22d3ee);
+  box-shadow:0 4px 20px rgba(99,102,241,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;color:#fff;transition:.3s;
+}
+.fb-float:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(99,102,241,.5)}
+.fb-float:active{transform:scale(.95)}
+
+/* Backdrop */
+.fb-backdrop{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.fb-backdrop.open{opacity:1;pointer-events:auto}
+
+/* Modal */
+.fb-modal{
+  position:fixed;z-index:1001;
+  bottom:90px;right:28px;
+  width:380px;max-width:calc(100vw - 48px);
+  background:#111d33;border:1px solid rgba(99,102,241,.2);
+  border-radius:16px;overflow:hidden;
+  transform:translateY(20px) scale(.95);opacity:0;pointer-events:none;
+  transition:.3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.fb-modal.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+
+/* Modal header */
+.fb-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.fb-head h3{font-size:1rem;font-weight:700;color:#f8fafc;display:flex;align-items:center;gap:8px}
+.fb-close{
+  width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;
+  background:rgba(255,255,255,.06);color:#64748b;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.fb-close:hover{background:rgba(255,255,255,.1);color:#e2e8f0}
+
+/* Tabs */
+.fb-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.06)}
+.fb-tab{
+  flex:1;padding:10px 0;text-align:center;font-size:.82rem;font-weight:600;
+  color:#64748b;background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;transition:.2s;
+}
+.fb-tab:hover{color:#e2e8f0}
+.fb-tab.active{color:#818cf8;border-bottom-color:#6366f1}
+
+/* Panel */
+.fb-panel{display:none;padding:16px 20px 20px}
+.fb-panel.active{display:block}
+
+/* Form */
+.fb-field{margin-bottom:12px}
+.fb-field label{display:block;font-size:.78rem;color:#64748b;margin-bottom:5px;font-weight:500}
+.fb-field input,.fb-field select,.fb-field textarea{
+  width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.08);
+  background:#0c1425;color:#e2e8f0;font-size:.88rem;font-family:inherit;
+  transition:.2s;outline:none;
+}
+.fb-field input:focus,.fb-field select:focus,.fb-field textarea:focus{
+  border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12);
+}
+.fb-field textarea{resize:vertical;min-height:90px;line-height:1.6}
+.fb-field select{cursor:pointer}
+.fb-field select option{background:#0c1425;color:#e2e8f0}
+
+.fb-row{display:flex;gap:10px}
+.fb-row .fb-field{flex:1}
+
+.fb-submit{
+  width:100%;padding:11px;border-radius:8px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;
+  font-size:.9rem;font-weight:600;font-family:inherit;transition:.2s;
+}
+.fb-submit:hover{opacity:.9;transform:translateY(-1px)}
+.fb-submit:disabled{opacity:.5;cursor:not-allowed}
+
+/* GitHub panel */
+.fb-gh-intro{font-size:.88rem;color:#94a3b8;line-height:1.7;margin-bottom:16px}
+.fb-gh-btns{display:flex;flex-direction:column;gap:10px}
+.fb-gh-btn{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-radius:10px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);color:#e2e8f0;text-decoration:none;
+  font-size:.88rem;transition:.2s;
+}
+.fb-gh-btn:hover{border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06)}
+.fb-gh-btn .gh-icon{font-size:1.2rem;flex-shrink:0}
+.fb-gh-btn .gh-text{flex:1}
+.fb-gh-btn .gh-text strong{display:block;margin-bottom:2px;color:#f8fafc;font-size:.88rem}
+.fb-gh-btn .gh-text span{color:#64748b;font-size:.78rem}
+
+/* Success state */
+.fb-success{text-align:center;padding:30px 20px}
+.fb-success .check{font-size:2.5rem;margin-bottom:12px}
+.fb-success h4{color:#34d399;font-size:1rem;margin-bottom:8px}
+.fb-success p{color:#94a3b8;font-size:.85rem;line-height:1.6}
+
+/* Mobile */
+@media(max-width:480px){
+  .fb-modal{right:12px;left:12px;width:auto;bottom:80px}
+  .fb-float{bottom:20px;right:20px}
+}
