@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="International Soil and Water Conservation Research 投稿指南 — 收稿范围、审稿流程、格式要求等投稿必备信息。">
+<title>International Soil and Water Conservation Research — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>🌱</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#16a34a;--pri2:#4ade80;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(22,163,74,.15);--glow:rgba(22,163,74,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(22,163,74,.1)}
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(22,163,74,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.3rem,3.5vw,1.8rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(22,163,74,.08);border-left-color:var(--pri)}
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(22,163,74,.03)}
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'✓';position:absolute;left:0;top:8px;color:var(--green);font-weight:700}
+.ref-example{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:.85rem;line-height:1.7;font-family:'SF Mono',Consolas,monospace;color:var(--dim)}
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+@media(max-width:900px){.j-layout{flex-direction:column;gap:16px}.j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px}.nav-section{display:flex;gap:4px}.nav-title{display:none}.nav-link{white-space:nowrap;font-size:.8rem;padding:6px 10px}}
+@media(max-width:600px){.j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}.topnav{flex-direction:column;gap:10px}}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / International Soil and Water Conservation Research</div>
+<section class="j-hero">
+  <div class="icon">🌱</div>
+  <h1>International Soil and Water Conservation Research</h1>
+  <div class="subtitle">Elsevier · WASWAC 官方期刊 · ISSN 2095-6339</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">7.3</div><div class="meta-lbl">影响因子 (2024)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q1</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">2–4 月</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">免费</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">单盲</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">Gold OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</section>
+<div class="j-layout">
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format">🎨 格式要求</a>
+      <a class="nav-link" href="#reference">📚 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+  <main class="j-main">
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📋</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">全称</div><div class="info-value">International Soil and Water Conservation Research</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Elsevier</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">2095-6339 (E: 2589-059X)</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">7.3 (2024)</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q1 (Soil Science / Water Science)</div></div>
+        <div class="info-item"><div class="info-label">审稿周期</div><div class="info-value">约 2–4 个月</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">免费 (No APC)</div></div>
+        <div class="info-item"><div class="info-label">OA 类型</div><div class="info-value">Gold OA (完全开放获取)</div></div>
+        <div class="info-item"><div class="info-label">学会</div><div class="info-value">世界水土保持学会 (WASWAC)</div></div>
+        <div class="info-item"><div class="info-label">投稿系统</div><div class="info-value">Editorial Manager</div></div>
+      </div>
+      <div class="c-block">
+        <h4>关于期刊</h4>
+        <p>ISWCR 是世界水土保持学会 (WASWAC) 的官方期刊，是一本涵盖水土保持研究、实践、政策与展望的多学科期刊。期刊致力于传播水土保持领域的新知识并推动实践发展。作为 <strong>Gold OA 期刊且不收取 APC</strong>，这是水土保持领域性价比极高的发表选择。</p>
+      </div>
+    </section>
+
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>Aims & Scope</h4>
+        <p>涵盖水土保持资源的预测、预防与保护研究、策略与技术，包括：</p>
+        <ul>
+          <li><strong>保护模型、工具与技术</strong> — Conservation models, tools, and technologies</li>
+          <li><strong>保护性农业</strong> — Conservation agriculture</li>
+          <li><strong>土壤侵蚀与泥沙</strong> — Soil erosion and sediment</li>
+          <li><strong>水土保持工程</strong> — Water and soil conservation engineering</li>
+          <li><strong>流域管理</strong> — Watershed management</li>
+          <li><strong>土地退化与修复</strong> — Land degradation and restoration</li>
+          <li><strong>水土保持政策与经济</strong> — Policy and economics of soil and water conservation</li>
+          <li><strong>水资源评估与管理</strong> — Assessment and management of water resources</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>研究领域覆盖</h4>
+        <p>基于 CiteScore 排名，ISWCR 在以下领域均为 Q1：</p>
+        <ul>
+          <li>Agronomy and Crop Science — 排名前 6/414</li>
+          <li>Water Science and Technology — 排名前 8/279</li>
+          <li>Nature and Landscape Conservation — 排名前 7/222</li>
+          <li>Soil Science — 排名前 6/164</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <table class="j-table">
+        <thead><tr><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Research Article</strong></td><td>原创研究报告</td></tr>
+          <tr><td><strong>Review Article</strong></td><td>综述论文</td></tr>
+          <tr><td><strong>Short Communication</strong></td><td>短篇快报</td></tr>
+          <tr><td><strong>Case Study</strong></td><td>案例研究</td></tr>
+          <tr><td><strong>Perspective</strong></td><td>观点/展望论文</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <ul>
+          <li><strong>审稿方式</strong>：单盲审稿 (Single Anonymized)</li>
+          <li><strong>审稿人数</strong>：至少 2 位独立审稿人</li>
+          <li><strong>初筛</strong>：编辑评估稿件是否适合本刊</li>
+          <li><strong>决策</strong>：由编辑决定接受或拒稿</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 投稿前须知</h4>
+        <p>ScienceDirect 上的 Guide for Authors 页面可能因网络原因无法访问（目前返回 403）。建议通过 Editorial Manager 系统内的指南确认最新要求，或联系编辑部 (ISWCR Editorial Office) 获取详细投稿说明。</p>
+      </div>
+    </section>
+
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>通过 <a href="https://www.editorialmanager.com/iswcr/" target="_blank">Editorial Manager</a> 在线提交</li>
+          <li>系统将文件转为单一 PDF 供同行评审</li>
+          <li>编辑初审 → 外审 → 编辑决定</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>本刊亮点</h4>
+        <ul>
+          <li>✅ <strong>完全免费</strong>：Gold OA 且不收取任何 APC</li>
+          <li>✅ JCR Q1，四个领域排名均靠前</li>
+          <li>✅ WASWAC 官方期刊，学术声誉良好</li>
+          <li>✅ 五年影响因子 8.5，影响力持续上升</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li>接受 <code>.doc/.docx</code> (Word) 和 <code>.tex</code> (LaTeX) 格式（Elsevier 通用要求）</li>
+          <li>不接受 PDF 作为源文件</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构（基于 Elsevier 通用模板）</h4>
+        <p>作为 Elsevier 期刊，通常要求 IMRAD 结构：</p>
+        <p><strong>Title → Abstract → Keywords → Introduction → Methods → Results → Discussion → Conclusions → CRediT → References</strong></p>
+        <ul>
+          <li>摘要不超过 250 词</li>
+          <li>关键词 1–7 个</li>
+          <li>按编号分节</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 待确认事项</h4>
+        <p>由于 ScienceDirect 的 Guide for Authors 页面当前无法访问（403 错误），以下细节可能需要确认：</p>
+        <ul>
+          <li>Graphical Abstract 是否必填</li>
+          <li>Highlights 要求</li>
+          <li>具体字数限制</li>
+          <li>数据政策细节 (Option A/B/C)</li>
+          <li>参考文献格式偏好</li>
+        </ul>
+        <p>建议在正式投稿前通过 Editorial Manager 系统内或联系编辑部确认这些细节。</p>
+      </div>
+    </section>
+
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">🎨</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范（Elsevier 通用标准）</h4>
+        <ul>
+          <li><strong>矢量图</strong>：EPS 或 PDF 格式</li>
+          <li><strong>照片</strong>：TIFF/JPG/PNG，≥ 300 dpi</li>
+          <li><strong>线描图</strong>：TIFF/JPG/PNG，≥ 1000 dpi</li>
+          <li><strong>组合图</strong>：TIFF/JPG/PNG，≥ 500 dpi</li>
+          <li>不接受 AI 生成或修改的图片</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📚</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式（Elsevier 通用标准）</h4>
+        <ul>
+          <li>正文中的引用使用<strong>作者-年份</strong>格式</li>
+          <li>一位作者：<code>(Allan, 2020)</code></li>
+          <li>两位作者：<code>(Allan and Jones, 2019)</code></li>
+          <li>三位及以上：<code>(Kramer et al., 2023)</code></li>
+          <li>参考文献列表按作者<strong>字母序</strong>排列</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>格式示例</h4>
+        <p><strong>期刊论文：</strong></p>
+        <div class="ref-example">Van der Geer, J., Handgraaf, T., Lupton, R.A., 2020. The art of writing a scientific article. J. Sci. Commun. 163, 51–59. https://doi.org/10.1016/j.sc.2020.00372.</div>
+      </div>
+    </section>
+
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <ul class="checklist">
+          <li>通讯作者已指定，完整联系信息已提供</li>
+          <li>所有文件已上传</li>
+          <li>已进行拼写和语法检查</li>
+          <li>正文中的所有引用均在参考文献列表中，反之亦然</li>
+          <li>利益冲突声明已准备</li>
+          <li>CRediT 作者贡献声明已准备</li>
+          <li>⚠️ 投稿前通过 Editorial Manager 确认完整格式要求</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突与 AI 声明</h4>
+        <p>遵循 Elsevier 通用发表伦理政策。所有作者须披露利益冲突，使用 AI 工具须声明。</p>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <ul>
+          <li><a href="https://www.sciencedirect.com/journal/international-soil-and-water-conservation-research" target="_blank">期刊主页</a></li>
+          <li><a href="https://www.editorialmanager.com/iswcr/" target="_blank">投稿系统 (Editorial Manager)</a></li>
+          <li><a href="http://www.waswac.org" target="_blank">WASWAC 官网</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+<footer class="j-footer">
+  数据来源于 ISWCR 官网及公开信息 · <a href="https://citeglow.com">CiteGlow</a> · 2026-03-26 更新<br>
+  <small>⚠️ 部分细节因 ScienceDirect 访问限制未能从官方 Guide for Authors 确认，建议投稿前核实</small>
+</footer>
+<script src="theme-toggle.js"></script>
+<script>
+const sections=document.querySelectorAll('.j-section'),navLinks=document.querySelectorAll('.nav-link');
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const link=document.querySelector(`.nav-link[href="#${e.target.id}"]`);if(link)link.classList.add('active');}})},{rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>
