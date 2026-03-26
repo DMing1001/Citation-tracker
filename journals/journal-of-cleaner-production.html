@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Journal of Cleaner Production 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>Journal of Cleaner Production — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>♻️</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#7c3aed;--pri2:#a78bfa;--acc:#c4b5fd;--acc2:#ddd6fe;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(124,58,237,.15);--glow:rgba(124,58,237,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+/* Top nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(124,58,237,.1)}
+
+/* Hero banner */
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(124,58,237,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+
+/* Layout */
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+
+/* Sidebar */
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(124,58,237,.08);border-left-color:var(--pri)}
+
+/* Main content */
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+
+/* Content blocks */
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+.c-block code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:.85rem}
+
+/* Table */
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(124,58,237,.03)}
+
+/* Tags */
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(124,58,237,.12);color:var(--pri2)}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+.tag-purple{background:rgba(167,139,250,.12);color:var(--acc2)}
+
+/* Checklist */
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'☐';position:absolute;left:0;top:8px;font-size:1rem;color:var(--dim)}
+
+/* Link row */
+.link-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.link-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:500;text-decoration:none;color:var(--pri2);background:rgba(124,58,237,.08);border:1px solid var(--border);transition:.2s}
+.link-btn:hover{background:rgba(124,58,237,.15);border-color:var(--pri)}
+
+/* Footer */
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+/* Mobile sidebar */
+@media(max-width:800px){
+  .j-layout{flex-direction:column;gap:20px;padding:16px}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .nav-section{margin-bottom:0;display:flex;gap:2px}
+  .nav-title{display:none}
+  .nav-link{white-space:nowrap;padding:8px 12px;border-left:none;border-bottom:2px solid transparent;font-size:.82rem}
+  .nav-link.active{border-left:none;border-bottom-color:var(--pri)}
+  .j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<!-- Nav -->
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<!-- Breadcrumb -->
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / Journal of Cleaner Production</div>
+
+<!-- Hero -->
+<div class="j-hero">
+  <div class="icon">♻️</div>
+  <h1>Journal of Cleaner Production</h1>
+  <div class="subtitle">Elsevier · ISSN 0959-6526 · 创刊于 1993 年</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">9.8</div><div class="meta-lbl">影响因子 (2024)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q1</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">2–3 月</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">$3,490</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">单盲</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">Hybrid OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="j-layout">
+  <!-- Sidebar -->
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview" data-section="overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope" data-section="scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types" data-section="types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review" data-section="review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission" data-section="submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript" data-section="manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format" data-section="format">📐 格式要求</a>
+      <a class="nav-link" href="#reference" data-section="reference">📖 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist" data-section="checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics" data-section="ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="j-main">
+
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📊</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">期刊全称</div><div class="info-value">Journal of Cleaner Production</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Elsevier</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">0959-6526</div></div>
+        <div class="info-item"><div class="info-label">创刊年份</div><div class="info-value">1993</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">9.8 (2024)</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q1 (Environmental Sciences / Green & Sustainable Science & Technology)</div></div>
+        <div class="info-item"><div class="info-label">开放获取</div><div class="info-value">Hybrid OA</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">$3,490 (USD)</div></div>
+        <div class="info-item"><div class="info-label">平均审稿</div><div class="info-value">约 2–3 个月</div></div>
+        <div class="info-item"><div class="info-label">审稿人数量</div><div class="info-value">至少 2 位</div></div>
+        <div class="info-item"><div class="info-label">投稿系统</div><div class="info-value">Editorial Manager</div></div>
+        <div class="info-item"><div class="info-label">最大引用数</div><div class="info-value">50 条</div></div>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>7 个学科方向</h4>
+        <p>Journal of Cleaner Production 是一本国际性、跨学科期刊，专注于清洁生产、环境和可持续性研究与实践：</p>
+        <ul>
+          <li><strong>Cleaner production and technical processes</strong> — 清洁生产与技术工艺</li>
+          <li><strong>Sustainable Development and Sustainability</strong> — 可持续发展</li>
+          <li><strong>Sustainable Consumption</strong> — 可持续消费</li>
+          <li><strong>Environmental and sustainability assessment</strong> — 环境与可持续性评估</li>
+          <li><strong>Sustainable Products and Services</strong> — 可持续产品与服务</li>
+          <li><strong>Corporate sustainability and CSR</strong> — 企业可持续发展与社会责任</li>
+          <li><strong>Education for Sustainable Development</strong> — 可持续发展教育</li>
+          <li><strong>Governance, legislation, and policy for sustainability</strong> — 可持续性治理、立法与政策</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>同伴期刊（Companion Journals）</h4>
+        <p>被 JCP 拒稿但质量尚可的稿件可能被推荐转投以下 OA 同伴期刊：</p>
+        <ul>
+          <li>Cleaner and Circular Bioeconomy</li>
+          <li>Cleaner and Responsible Consumption</li>
+          <li>Cleaner Chemical Engineering</li>
+          <li>Cleaner Energy Systems</li>
+          <li>Cleaner Engineering and Technology</li>
+          <li>Cleaner Environmental Systems</li>
+          <li>Cleaner Logistics and Supply Chain</li>
+          <li>Cleaner Materials</li>
+          <li>Cleaner Production Letters</li>
+          <li>Cleaner Waste Systems</li>
+          <li>Cleaner Water</li>
+          <li>Cleaner Food Systems</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <div class="c-block" style="padding:0;overflow-x:auto">
+        <table class="j-table">
+          <thead><tr><th>类型</th><th>字数限制</th><th>引用限制</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Original Article</strong></td><td>6000–8000 词</td><td>≤ 50 条</td><td><span class="tag tag-blue">最常见</span> 假设验证型研究</td></tr>
+            <tr><td><strong>Review Article</strong></td><td>—</td><td>—</td><td><span class="tag tag-gold">需编辑邀请</span> 非受邀需联系主编</td></tr>
+            <tr><td><strong>Technical Note</strong></td><td>≈ 3000 词</td><td>≤ 50 条</td><td><span class="tag tag-green">快速发表</span> 新产品/技术简报</td></tr>
+            <tr><td><strong>Letters to the Editor</strong></td><td>—</td><td>—</td><td>回应已发表文章或提出讨论</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 注意事项</h4>
+        <ul>
+          <li>所有文章类型引用上限均为 <strong>50 条</strong></li>
+          <li>Review Article 由主编约稿，不接受自发投稿（但可联系主编讨论创新性综述选题）</li>
+          <li>Technical Note 不得包含公司 logo</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <div class="info-grid" style="margin-bottom:16px">
+          <div class="info-item"><div class="info-label">审稿方式</div><div class="info-value">单盲审稿 (Single anonymized)</div></div>
+          <div class="info-item"><div class="info-label">审稿人数量</div><div class="info-value">至少 2 位</div></div>
+          <div class="info-item"><div class="info-label">首轮审稿</div><div class="info-value">约 2–3 个月</div></div>
+          <div class="info-item"><div class="info-label">修改轮数</div><div class="info-value">通常 1–2 轮</div></div>
+        </div>
+        <p><strong>单盲审稿</strong>：审稿人知道作者信息，但作者不知道审稿人身份。稿件先由编辑初筛，适合则送审。</p>
+      </div>
+      <div class="c-block">
+        <h4>审稿流程时间线</h4>
+        <ol>
+          <li><strong>提交 (Submit)</strong> → 编辑初审（Desk Review）约 1–2 周</li>
+          <li><strong>分配编辑 (Assign Editor)</strong> → 领域编辑评估稿件适合性</li>
+          <li><strong>送审 (Send for Review)</strong> → 邀请 2 位以上审稿人</li>
+          <li><strong>审稿 (Under Review)</strong> → 通常 4–8 周</li>
+          <li><strong>决定 (Decision)</strong> → Major Revision / Minor Revision / Accept / Reject</li>
+          <li><strong>修改 (Revise)</strong> → 作者逐条回复审稿意见</li>
+          <li><strong>最终决定</strong> → 编辑确认修改是否合格</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>申诉 (Appeal)</h4>
+        <p>可向编辑部提出正式申诉，但每篇稿件仅接受一次申诉，申诉结果为最终决定。</p>
+      </div>
+      <div class="c-block">
+        <h4>Article Transfer Service</h4>
+        <p>被拒稿件可能收到转投建议（至同伴期刊或其他 Elsevier 期刊），转投后由目标期刊独立评审。</p>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>登录 <a href="https://www.editorialmanager.com/JCLP/" target="_blank">Editorial Manager</a> 系统</li>
+          <li>选择文章类型</li>
+          <li>填写标题、摘要、关键词</li>
+          <li>添加所有作者信息（需准确拼写）</li>
+          <li>建议/排除审稿人（可选）</li>
+          <li>上传稿件文件（Word 或 LaTeX + PDF）</li>
+          <li>上传 Cover Letter</li>
+          <li>填写 Highlights（3–5 个要点，每个 ≤ 85 字符含空格）—— <strong>必填项</strong></li>
+          <li>上传 Graphical Abstract（推荐但不强制）</li>
+          <li>填写利益冲突声明、基金信息、数据声明</li>
+          <li>填写 AI 使用声明（如有使用）</li>
+          <li>确认并提交</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>Cover Letter 要点</h4>
+        <ul>
+          <li>简要说明研究背景和目的（2–3 句）</li>
+          <li>突出主要发现和创新性</li>
+          <li>说明为什么适合 Journal of Cleaner Production</li>
+          <li>声明未同时投稿他刊</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>投稿后注意事项</h4>
+        <ul>
+          <li>稿件状态可通过 Editorial Manager 实时查看</li>
+          <li>修改稿需在规定时间内提交</li>
+          <li>校样（Proof）需在 <strong>2 天内</strong> 完成修改</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li><strong>首选格式</strong>：Word (.doc / .docx)，单栏排版</li>
+          <li><strong>也可接受</strong>：LaTeX（可双栏排版）</li>
+          <li><strong>不接受</strong>：PDF 作为源文件</li>
+          <li>使用拼写和语法检查，避免错误</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构</h4>
+        <ol>
+          <li><strong>Title</strong> — 简洁、信息量大、避免缩写</li>
+          <li><strong>Author names & Affiliations</strong> — 全名 + 完整通讯地址</li>
+          <li><strong>Corresponding author</strong> — 明确标注通讯作者</li>
+          <li><strong>Abstract</strong> — ≤ 250 词，独立可读</li>
+          <li><strong>Keywords</strong> — 1–7 个</li>
+          <li><strong>Highlights</strong> — <strong>必填</strong>，3–5 个要点，每个 ≤ 85 字符（含空格）</li>
+          <li><strong>Graphical Abstract</strong> — 推荐提供（531 × 1328 px）</li>
+          <li><strong>1. Introduction</strong></li>
+          <li><strong>2. Methods / Materials and Methods</strong></li>
+          <li><strong>3. Results</strong></li>
+          <li><strong>4. Discussion</strong></li>
+          <li><strong>5. Conclusions</strong></li>
+          <li><strong>CRediT Author Statement</strong> — 作者贡献声明（必填）</li>
+          <li><strong>Declaration of generative AI</strong> — AI 使用声明（如有使用）</li>
+          <li><strong>Acknowledgments</strong></li>
+          <li><strong>References</strong> — ≤ 50 条</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 重要限制</h4>
+        <ul>
+          <li><strong>Abstract ≤ 250 词</strong></li>
+          <li><strong>Highlights 必填</strong>：3–5 个要点，每个 ≤ 85 字符（含空格）</li>
+          <li><strong>References ≤ 50 条</strong>（所有文章类型）</li>
+          <li>章节需编号（1.1, 1.1.1, ...）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">📐</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范</h4>
+        <ul>
+          <li>图片格式：TIFF / EPS / PDF / JPEG</li>
+          <li>彩色照片：≥ 300 dpi（单栏 ≥ 1063 px，全页 ≥ 2244 px）</li>
+          <li>线条图：≥ 1000 dpi</li>
+          <li>混合图：≥ 500 dpi</li>
+          <li>每张图表需在文中有对应引用</li>
+          <li>彩色图表免费（在线版）</li>
+          <li><strong>禁止使用 AI 生成或修改图片</strong></li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>Graphical Abstract</h4>
+        <ul>
+          <li>尺寸：531 × 1328 px（高 × 宽）或等比例放大</li>
+          <li>格式：TIFF / EPS / PDF / MS Office</li>
+          <li>推荐但不强制提供</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>补充材料与数据</h4>
+        <ul>
+          <li>补充材料以原格式发布，不经过排版</li>
+          <li>需提供 <strong>Data Availability Statement</strong>（必填）</li>
+          <li>鼓励上传数据至公开仓库（Zenodo / Figshare 等）</li>
+          <li>支持 co-submission 至 Data in Brief 或 MethodsX</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📖</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式</h4>
+        <p>采用 <strong>Author-Date</strong> 体系（Harvard 格式），投稿时格式不限但需一致，录用后按期刊风格排版。</p>
+        <ul>
+          <li>单作者：<code>(Allan, 2020)</code> 或 <code>Allan (2020)</code></li>
+          <li>双作者：<code>(Allan and Jones, 2019)</code></li>
+          <li>三作者及以上：<code>Kramer et al. (2023)</code></li>
+          <li>同一作者同年多篇：<code>(Allan, 2020a, 2020b)</code></li>
+          <li>多篇文献：<code>(Allan, 2020a, 2020b; Allan and Jones, 2019)</code></li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>参考文献格式示例</h4>
+        <p><strong>期刊文章：</strong></p>
+        <p><code>Van der Geer, J., Handgraaf, T., Lupton, R.A., 2020. The art of writing a scientific article. J. Sci. Commun. 163, 51–59. https://doi.org/10.1016/j.sc.2020.00372.</code></p>
+        <br>
+        <p><strong>文章编号型：</strong></p>
+        <p><code>Van der Geer, J., Handgraaf, T., Lupton, R.A., 2022. The art of writing a scientific article. Heliyon. 19, e00205. https://doi.org/10.1016/j.heliyon.2022.e00205.</code></p>
+        <br>
+        <p><strong>书籍：</strong></p>
+        <p><code>Strunk Jr., W., White, E.B., 2000. The Elements of Style, fourth ed. Longman, New York.</code></p>
+        <br>
+        <p><strong>书籍章节：</strong></p>
+        <p><code>Mettam, G.R., Adams, L.B., 2023. How to prepare an electronic version of your article, in: Jones, B.S., Smith, R.Z. (Eds.), Introduction to the Electronic Age. E-Publishing Inc., New York, pp. 281–304.</code></p>
+        <br>
+        <p><strong>格式要点：</strong></p>
+        <ul>
+          <li>作者：姓在前，名缩写在后</li>
+          <li>期刊名使用标准缩写（LTWA）</li>
+          <li>文献列表按字母→年份排序</li>
+          <li>DOI 为推荐项（如有）</li>
+          <li><strong>引用总数 ≤ 50 条</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查以下事项</h4>
+        <ul class="checklist">
+          <li>稿件符合期刊 7 个学科方向之一</li>
+          <li>文章类型选择正确，字数符合限制</li>
+          <li>标题简洁且信息丰富，避免缩写</li>
+          <li>摘要 ≤ 250 词</li>
+          <li>关键词 1–7 个</li>
+          <li><strong>Highlights 已填写</strong>（3–5 个，每个 ≤ 85 字符含空格）</li>
+          <li>Graphical Abstract 已准备（推荐）</li>
+          <li>所有章节已编号（1.1, 1.1.1, ...）</li>
+          <li>所有作者信息完整且拼写准确</li>
+          <li>通讯作者已标注并提供邮箱</li>
+          <li>利益冲突声明已填写</li>
+          <li>基金信息完整（项目名称 + 编号）</li>
+          <li>Data Availability Statement 已提供</li>
+          <li>CRediT 作者贡献声明已填写</li>
+          <li>AI 使用声明已填写（如有使用）</li>
+          <li>引用总数 ≤ 50 条</li>
+          <li>图表分辨率达标</li>
+          <li>参考文献格式为 Author-Date，一致且含 DOI</li>
+          <li>Cover Letter 已准备</li>
+          <li>未同时投其他期刊</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突 (Conflict of Interest)</h4>
+        <p>所有作者必须通过 Elsevier 声明工具（declarations tool）披露利益冲突。若无冲突，选择 "I have nothing to declare"。</p>
+      </div>
+      <div class="c-block">
+        <h4>AI 使用声明</h4>
+        <p>使用 ChatGPT、Copilot 等 AI 工具辅助写作的，必须在稿件末尾新增 "Declaration of generative AI" 章节，说明工具名称、使用原因。AI 工具<strong>不能列为作者</strong>，审稿过程中也不允许使用 AI。</p>
+      </div>
+      <div class="c-block">
+        <h4>出版伦理</h4>
+        <ul>
+          <li>遵循 <a href="https://www.elsevier.com/about/policies-and-standards" target="_blank">Elsevier Publishing Ethics Policy</a></li>
+          <li>禁止一稿多投、数据造假、抄袭</li>
+          <li>涉及人类/动物实验需提供伦理审批文件</li>
+          <li>所有作者需对论文内容负责（CRediT 声明）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <div class="link-row">
+          <a class="link-btn" href="https://www.sciencedirect.com/journal/journal-of-cleaner-production" target="_blank">🏠 期刊主页</a>
+          <a class="link-btn" href="https://www.editorialmanager.com/JCLP/" target="_blank">📤 投稿系统</a>
+          <a class="link-btn" href="https://www.elsevier.com/journals/journal-of-cleaner-production/0959-6526/guide-for-authors" target="_blank">📋 官方 Guide for Authors</a>
+          <a class="link-btn" href="https://www.elsevier.com/researcher/author/policies-and-guidelines" target="_blank">⚖️ Elsevier 出版政策</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 Journal of Cleaner Production 官方 Guide for Authors · <a href="/journals/">返回期刊列表</a> · <a href="https://citeglow.com">CiteGlow</a>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link[data-section]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.section === e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(link.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+<script src="theme-toggle.js"></script>
+</body>
+</html>

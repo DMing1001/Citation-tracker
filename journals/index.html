@@ -63,6 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .jbadge-q1{background:rgba(52,211,153,.12);color:var(--green)}
 .jbadge-pub{background:rgba(99,102,241,.12);color:var(--pri2)}
 .jbadge-oa{background:rgba(251,191,36,.12);color:var(--gold)}
+.jbadge-q2{background:rgba(251,191,36,.12);color:var(--gold)}
 .jcard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .jstat{text-align:center;padding:8px 0;background:var(--bg2);border-radius:8px}
 .jstat-val{font-size:1rem;font-weight:700;color:var(--bright)}
@@ -221,6 +222,28 @@ const journals = [
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '4.7', partition: 'JCR Q1', review: '2–4 月' },
     keywords: 'water resources management hydrology groundwater flood drought irrigation water quality optimization WRM'
+  },
+  {
+    slug: 'journal-of-cleaner-production',
+    name: 'Journal of Cleaner Production',
+    icon: '♻️',
+    publisher: 'Elsevier',
+    issn: '0959-6526',
+    badges: ['SCI Q1', 'Elsevier'],
+    badgesClass: ['jbadge-q1', 'jbadge-pub'],
+    stats: { if: '9.8', partition: 'JCR Q1', review: '2–3 月' },
+    keywords: 'cleaner production sustainability sustainable development circular economy environmental assessment corporate sustainability green technology JCP'
+  },
+  {
+    slug: 'land-degradation-development',
+    name: 'Land Degradation & Development',
+    icon: '🏜️',
+    publisher: 'Wiley',
+    issn: '1085-3278',
+    badges: ['SCI Q2', 'Wiley'],
+    badgesClass: ['jbadge-q2', 'jbadge-pub'],
+    stats: { if: '3.7', partition: 'JCR Q2', review: '2–4 月' },
+    keywords: 'land degradation soil erosion restoration rehabilitation remote sensing soil quality sustainable land management desertification LDD'
   }
 ];
 

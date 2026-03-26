@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Land Degradation & Development 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>Land Degradation & Development — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>🏜️</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#d97706;--pri2:#fbbf24;--acc:#fcd34d;--acc2:#fef3c7;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(217,119,6,.15);--glow:rgba(217,119,6,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(217,119,6,.1)}
+
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(217,119,6,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(217,119,6,.08);border-left-color:var(--pri)}
+
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+.c-block code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:.85rem}
+
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(217,119,6,.03)}
+
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(59,130,246,.12);color:#60a5fa}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+.tag-purple{background:rgba(167,139,250,.12);color:#a78bfa}
+
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'☐';position:absolute;left:0;top:8px;font-size:1rem;color:var(--dim)}
+
+.link-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.link-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:500;text-decoration:none;color:var(--pri2);background:rgba(217,119,6,.08);border:1px solid var(--border);transition:.2s}
+.link-btn:hover{background:rgba(217,119,6,.15);border-color:var(--pri)}
+
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+@media(max-width:800px){
+  .j-layout{flex-direction:column;gap:20px;padding:16px}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .nav-section{margin-bottom:0;display:flex;gap:2px}
+  .nav-title{display:none}
+  .nav-link{white-space:nowrap;padding:8px 12px;border-left:none;border-bottom:2px solid transparent;font-size:.82rem}
+  .nav-link.active{border-left:none;border-bottom-color:var(--pri)}
+  .j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / Land Degradation & Development</div>
+
+<div class="j-hero">
+  <div class="icon">🏜️</div>
+  <h1>Land Degradation & Development</h1>
+  <div class="subtitle">Wiley · ISSN 1085-3278（印刷）/ 1099-081X（在线）</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">3.7</div><div class="meta-lbl">影响因子 (2024)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q2</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">2–4 月</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">$3,300</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">单盲</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">Hybrid OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</div>
+
+<div class="j-layout">
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview" data-section="overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope" data-section="scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types" data-section="types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review" data-section="review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission" data-section="submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript" data-section="manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format" data-section="format">📐 格式要求</a>
+      <a class="nav-link" href="#reference" data-section="reference">📖 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist" data-section="checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics" data-section="ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <main class="j-main">
+
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📊</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">期刊全称</div><div class="info-value">Land Degradation & Development</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Wiley</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">1085-3278（印刷）/ 1099-081X（在线）</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">3.7 (2024) / 5 年 IF 4.4</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q2 (Environmental Sciences / Soil Science)</div></div>
+        <div class="info-item"><div class="info-label">开放获取</div><div class="info-value">Hybrid OA</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">约 $3,300 (USD)*</div></div>
+        <div class="info-item"><div class="info-label">平均审稿</div><div class="info-value">约 2–4 个月</div></div>
+        <div class="info-item"><div class="info-label">投稿系统</div><div class="info-value">Wiley ScholarOne</div></div>
+        <div class="info-item"><div class="info-label">ORCID</div><div class="info-value">必填（提交作者）</div></div>
+        <div class="info-item"><div class="info-label">引用格式</div><div class="info-value">APA 第 6 版</div></div>
+        <div class="info-item"><div class="info-label">投稿格式</div><div class="info-value">Free Format（不限格式）</div></div>
+      </div>
+      <div class="c-block" style="background:rgba(217,119,6,.05);border-color:rgba(217,119,6,.2)">
+        <p style="margin:0;font-size:.85rem;color:var(--dim)">* OA 费用以 Wiley 官方 APC 列表为准，不同地区/机构可能有差异。</p>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>核心领域</h4>
+        <p>Land Degradation & Development 是国际性期刊，关注陆地环境中退化的识别、监测、控制和修复：</p>
+        <ul>
+          <li><strong>土地退化定义与成因</strong> — 生物地球物理（自然）与社会经济（人为）因素</li>
+          <li><strong>退化影响</strong> — 对生态系统服务、土地质量的影响</li>
+          <li><strong>退化规模与历史</strong> — 现状、趋势、时空分布</li>
+          <li><strong>避免与缓解</strong> — 防治与控制策略</li>
+          <li><strong>修复与恢复</strong> — 退化土地的修复措施</li>
+          <li><strong>可持续土地管理</strong> — 可持续发展视角下的土地利用</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>Research Topics（研究方向标签）</h4>
+        <ul>
+          <li>Effects of Fire & Land Contamination（火灾与土地污染）</li>
+          <li>Socio-Economic Aspects（社会经济方面）</li>
+          <li>Remote Sensing and Emerging Technologies（遥感与新兴技术）</li>
+          <li>Restoration and Reclamation（修复与复垦）</li>
+          <li>Soil Hydrology（土壤水文学）</li>
+          <li>Climate Change（气候变化）</li>
+          <li>Land & Soil Quality - Land Quality and Ecosystem Services（土地质量与生态系统服务）</li>
+          <li>Land & Soil Quality - Soil Degradation（土壤退化）</li>
+          <li>Soil Erosion（土壤侵蚀）</li>
+          <li>Soil Ecology（土壤生态学）</li>
+          <li>Contamination and Pollution（污染）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <div class="c-block" style="padding:0;overflow-x:auto">
+        <table class="j-table">
+          <thead><tr><th>类型</th><th>字数限制</th><th>图表/引用</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Original Paper</strong></td><td>≤ 6,000 词</td><td>—</td><td><span class="tag tag-blue">最常见</span> 必须 IMRAD 结构，Results & Discussion 分开</td></tr>
+            <tr><td><strong>Research Article</strong></td><td>≤ 6,000 词</td><td>—</td><td>灵活结构，按需设小标题</td></tr>
+            <tr><td><strong>Short Report</strong></td><td>≤ 1,500 词</td><td>≤ 2 图表，≤ 10 引用</td><td><span class="tag tag-green">快速发表</span> 新颖或重要初步结果</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 注意事项</h4>
+        <ul>
+          <li>字数限制 <strong>不含</strong> 参考文献和图注</li>
+          <li>超过 6,000 词的稿件需在投稿前与 Section Editor 沟通</li>
+          <li>Original Paper 要求 <strong>Results 和 Discussion 必须分开</strong></li>
+          <li>摘要必须为结构化摘要（Structured Abstract）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <div class="info-grid" style="margin-bottom:16px">
+          <div class="info-item"><div class="info-label">审稿方式</div><div class="info-value">单盲审稿 (Single anonymized)</div></div>
+          <div class="info-item"><div class="info-label">审稿人数量</div><div class="info-value">至少 2 位</div></div>
+          <div class="info-item"><div class="info-label">首轮审稿</div><div class="info-value">约 2–4 个月</div></div>
+          <div class="info-item"><div class="info-label">修改轮数</div><div class="info-value">通常 1–2 轮</div></div>
+        </div>
+        <p><strong>单盲审稿</strong>：稿件先由 Editor-in-Chief 评估质量和相关性，符合要求后送审。使用 iThenticate CrossCheck 检测抄袭。</p>
+      </div>
+      <div class="c-block">
+        <h4>审稿流程时间线</h4>
+        <ol>
+          <li><strong>提交 (Submit)</strong> → 经 Wiley Authors 提交系统</li>
+          <li><strong>编辑初审 (Desk Review)</strong> → EIC 评估质量和相关性</li>
+          <li><strong>送审 (Send for Review)</strong> → 邀请 2 位以上审稿人</li>
+          <li><strong>审稿 (Under Review)</strong> → 通常 6–10 周</li>
+          <li><strong>决定 (Decision)</strong> → 接收 / 修改 / 拒稿</li>
+          <li><strong>修改 (Revise)</strong> → 通过同一提交系统上传修改稿</li>
+          <li><strong>最终决定</strong> → 编辑确认修改</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>申诉 (Appeal)</h4>
+        <p>若认为拒稿基于对稿件核心内容的误解或编辑流程问题，可通过邮件申诉（注明稿件编号）。编辑的最终决定不可再上诉。</p>
+      </div>
+      <div class="c-block">
+        <h4>Refer & Transfer Program</h4>
+        <p>被拒稿件可能收到转投其他 Wiley 期刊的建议，通过 Transfer Desk Assistant 或编辑推荐。</p>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>Free Format 投稿（简化流程）</h4>
+        <p>本刊支持 <strong>Free Format</strong> 投稿，无需预先排版，只需准备以下材料：</p>
+        <ol>
+          <li>稿件文件（Word 格式，含文字、图表，或分开上传均可）</li>
+          <li>包含所有必要章节：摘要、引言、方法、结果、结论</li>
+          <li>图表需有图注/表注</li>
+          <li>参考文献不限格式（但需全文一致）</li>
+          <li>补充材料作为独立文件上传</li>
+          <li>通讯作者 <strong>ORCID ID</strong>（必填）</li>
+          <li>Title page 含：共同作者信息（单位 + 邮箱）、伦理声明</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>Title Page 必填内容</h4>
+        <ul>
+          <li>共同作者详细信息（单位 + 邮箱）</li>
+          <li>Data availability statement（数据可用性声明）</li>
+          <li>Funding statement（基金声明）</li>
+          <li>Conflict of interest disclosure（利益冲突声明）</li>
+          <li>Ethics approval statement（伦理审批声明，如适用）</li>
+          <li>Patient consent statement（知情同意声明，如适用）</li>
+          <li>Permission to reproduce material（材料转载许可，如适用）</li>
+          <li>Clinical trial registration（临床试验注册，如适用）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>投稿地址</h4>
+        <p>通过 <a href="https://authorsubmission.wiley.com/" target="_blank">Wiley Authors Submission Portal</a> 提交。如有问题联系：<code>ldd.office@wiley.com</code></p>
+      </div>
+      <div class="c-block">
+        <h4>修改稿提交注意事项</h4>
+        <ul>
+          <li>记录稿件编号（如 LDD-2024-xxxx），修改稿会自动加后缀 .R1、.R2</li>
+          <li>修改稿需附带逐条回复（Response to Reviewers）</li>
+          <li>主稿中清除修改痕迹，确保干净版本</li>
+          <li>若曾被拒后重投，需在 Cover Letter 中说明修改内容</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li><strong>首选格式</strong>：Word (.doc / .docx)</li>
+          <li><strong>不接受</strong>：LaTeX / TeX（会被退回）</li>
+          <li>图片可嵌入文中或单独上传（修改阶段必须单独上传）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构（Original Paper）</h4>
+        <ol>
+          <li><strong>Title</strong> — 简洁、信息量大</li>
+          <li><strong>Short running title</strong> — ≤ 70 字符</li>
+          <li><strong>Author names & affiliations</strong> — 全名 + 单位地址</li>
+          <li><strong>Corresponding author</strong> — 标注通讯作者及邮箱</li>
+          <li><strong>Structured Abstract</strong> — ≤ 250 词，含关键词（6 个，以连字符分隔）</li>
+          <li><strong>1. Introduction</strong> — 研究目标陈述</li>
+          <li><strong>2. Materials and Methods</strong></li>
+          <li><strong>3. Results</strong> — <strong>必须与 Discussion 分开</strong></li>
+          <li><strong>4. Discussion</strong> — <strong>必须与 Results 分开</strong></li>
+          <li><strong>Acknowledgments</strong> — 含基金信息（含 grant 编号）</li>
+          <li><strong>Conflict of Interest Statement</strong></li>
+          <li><strong>References</strong></li>
+          <li><strong>Tables</strong>（每个表含标题和脚注）</li>
+          <li><strong>Figure Legends</strong></li>
+          <li><strong>Figures</strong></li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>结构化摘要格式</h4>
+        <p>摘要必须包含以下要素（≤ 250 词）：</p>
+        <ul>
+          <li>研究目的（hypothesis / purpose / aim）</li>
+          <li>实验材料（experimental material）</li>
+          <li>研究方法（method of investigation）</li>
+          <li>数据收集（data collection）</li>
+          <li>结果（result）</li>
+          <li>结论（conclusions）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 强制要求</h4>
+        <ul>
+          <li><strong>Results 和 Discussion 必须分开</strong>（不可合并为一个章节）</li>
+          <li><strong>摘要必须结构化</strong>（非结构化摘要会被退回）</li>
+          <li><strong>关键词 6 个</strong>，以连字符分隔</li>
+          <li><strong>不接受 LaTeX</strong>，仅 Word 格式</li>
+          <li>ORCID 为必填项</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">📐</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范</h4>
+        <ul>
+          <li>初审阶段：接受各种格式和分辨率</li>
+          <li>录用后：需提供高分辨率 TIF 或 EPS 文件</li>
+          <li>彩色图表在线免费（印刷版黑白为主，彩色需付费）</li>
+          <li>图表标题需独立可读（不依赖正文）</li>
+          <li>每个图表需在文中有对应引用</li>
+          <li>线条图建议使用黑白，确保黑白打印可读</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>语言要求</h4>
+        <ul>
+          <li>美国作者用美式拼写，其他地区用英式拼写</li>
+          <li>语言质量差的稿件可能被退回修改</li>
+          <li>Wiley Editing Services 提供语言润色服务</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>补充材料</h4>
+        <ul>
+          <li>Supporting Information 不经过排版，以原格式发布</li>
+          <li>需在正文中注明 "Supporting Information" 段落（位于 References 之后）</li>
+          <li>所有补充材料需在正文中有对应引用</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>数据政策</h4>
+        <ul>
+          <li>鼓励将数据上传至公开数据仓库</li>
+          <li>需提供 <strong>Data Accessibility Statement</strong>，含数据仓库链接</li>
+          <li>公开数据和代码需在论文中引用仓库位置</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📖</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式</h4>
+        <p>采用 <strong>APA 第 6 版</strong>（Publication Manual of the American Psychological Association）。Free Format 投稿时不限格式（需一致），录用后由排版处理。</p>
+        <ul>
+          <li>单作者：<code>(Smith, 2020)</code> 或 <code>Smith (2020)</code></li>
+          <li>双作者：<code>(Smith and Jones, 2019)</code></li>
+          <li>三作者及以上：<code>(Smith et al., 2021)</code></li>
+          <li>同一作者同年多篇：<code>(Smith, 2020a, 2020b)</code></li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>参考文献格式示例</h4>
+        <p><strong>期刊文章：</strong></p>
+        <p><code>Smith, J.A., Brown, K.L., 2020. Soil erosion and land degradation in semi-arid regions. Land Degradation & Development, 31(4), 512–525. https://doi.org/10.1002/ldr.3567</code></p>
+        <br>
+        <p><strong>格式要点：</strong></p>
+        <ul>
+          <li>APA 第 6 版格式（最终发表时）</li>
+          <li>Free Format 投稿时不强制，录用后排版处理</li>
+          <li>文献列表按字母顺序排列</li>
+          <li>DOI 为推荐项</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查以下事项</h4>
+        <ul class="checklist">
+          <li>稿件格式为 Word (.doc / .docx)（<strong>不接受 LaTeX</strong>）</li>
+          <li>摘要为结构化摘要，≤ 250 词</li>
+          <li>关键词 <strong>恰好 6 个</strong>，以连字符分隔</li>
+          <li>Original Paper 的 Results 和 Discussion <strong>已分开</strong></li>
+          <li>字数 ≤ 6,000 词（不含参考文献和图注）</li>
+          <li>Short Report 字数 ≤ 1,500 词，图表 ≤ 2 个，引用 ≤ 10 条</li>
+          <li>所有共同作者信息完整（单位 + 邮箱）</li>
+          <li>通讯作者已标注</li>
+          <li>ORCID ID 已提供</li>
+          <li>Data Accessibility Statement 已填写</li>
+          <li>Funding Statement 已填写（含 grant 编号）</li>
+          <li>Conflict of Interest Statement 已填写</li>
+          <li>Ethics approval / patient consent 声明（如适用）</li>
+          <li>图表清晰、有图注/表注</li>
+          <li>参考文献格式一致</li>
+          <li>英文语言质量良好</li>
+          <li>已选择合适的 Research Topic 标签</li>
+          <li>Running title ≤ 70 字符</li>
+          <li>未同时投其他期刊</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突 (Conflict of Interest)</h4>
+        <p>所有作者必须披露任何潜在利益冲突。若无冲突也需明确声明。提交作者有责任确保所有共同作者达成一致声明。</p>
+      </div>
+      <div class="c-block">
+        <h4>出版伦理</h4>
+        <ul>
+          <li>COPE（Committee on Publication Ethics）成员</li>
+          <li>使用 iThenticate CrossCheck 检测抄袭</li>
+          <li>禁止一稿多投、数据造假</li>
+          <li>违规者可能被禁止在本刊发表（有申诉渠道）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>ORCID</h4>
+        <p>提交作者必须提供 ORCID iD（免费注册：<a href="https://orcid.org" target="_blank">orcid.org</a>）。录用文章将关联至作者的 ORCID 个人主页。</p>
+      </div>
+      <div class="c-block">
+        <h4>Preprint 政策</h4>
+        <p>支持在投稿同时预印（通过 Wiley Under Review Service / Authorea 平台），可实现实时跟踪同行评审过程。</p>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <div class="link-row">
+          <a class="link-btn" href="https://onlinelibrary.wiley.com/journal/1099081x" target="_blank">🏠 期刊主页</a>
+          <a class="link-btn" href="https://authorsubmission.wiley.com/" target="_blank">📤 投稿系统</a>
+          <a class="link-btn" href="https://onlinelibrary.wiley.com/page/journal/1099081x/homepage/forauthors" target="_blank">📋 官方 Author Guidelines</a>
+          <a class="link-btn" href="mailto:ldd.office@wiley.com" target="_blank">✉️ 编辑部邮箱</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 Land Degradation & Development 官方 Author Guidelines · <a href="/journals/">返回期刊列表</a> · <a href="https://citeglow.com">CiteGlow</a>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link[data-section]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.section === e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(link.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+<script src="theme-toggle.js"></script>
+</body>
+</html>
