@@ -1,7 +1,7 @@
-/* CiteGlow Feedback Widget v1 */
+/* CiteGlow Feedback Widget v2 */
 (function(){
   // ===== CONFIG =====
-  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/PLACEHOLDER'; // ← 替换为你的 endpoint
+  var GOOGLE_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSfs_HTjB9PAi_soI9O02ID7E7IrKHOCe3tfnryNeXehx-FEvw/viewform?usp=pp_url';
   var GH_REPO = 'DMing1001/Citation-tracker';
   var GH_NEW_ISSUE = 'https://github.com/' + GH_REPO + '/issues/new';
   // ==================
@@ -30,36 +30,31 @@
         '<button class="fb-tab active" data-tab="form">📝 留言</button>',
         '<button class="fb-tab" data-tab="github">🐙 GitHub</button>',
       '</div>',
-      // Form panel
+      // Form panel — Google Forms
       '<div class="fb-panel active" id="fbPanelForm">',
-        '<form id="fbForm">',
-          '<div class="fb-field">',
-            '<label>反馈类型</label>',
-            '<select name="type" required>',
-              '<option value="">请选择...</option>',
-              '<option value="journal">📖 建议收录期刊</option>',
-              '<option value="feature">💡 功能建议</option>',
-              '<option value="error">🐛 错误报告</option>',
-              '<option value="other">💬 其他</option>',
-            '</select>',
-          '</div>',
-          '<div class="fb-field">',
-            '<label>内容 <span style="color:#f87171">*</span></label>',
-            '<textarea name="message" placeholder="比如：建议收录 Water Resources Research，或者某页面显示异常..." required></textarea>',
-          '</div>',
-          '<div class="fb-row">',
-            '<div class="fb-field">',
-              '<label>称呼（选填）</label>',
-              '<input name="name" placeholder="怎么称呼你">',
-            '</div>',
-            '<div class="fb-field">',
-              '<label>邮箱（选填）</label>',
-              '<input name="email" type="email" placeholder="需要回复时填写">',
-            '</div>',
-          '</div>',
-          '<input type="hidden" name="page" value="' + location.pathname + '">',
-          '<button type="submit" class="fb-submit" id="fbSubmit">提交反馈</button>',
-        '</form>',
+        '<div class="fb-gf-intro">',
+          '<p>有建议、想加新期刊、发现错误？点下面的按钮填写表单，我会尽快处理。</p>',
+        '</div>',
+        '<div class="fb-gf-cards">',
+          '<a class="fb-gf-card" href="' + GOOGLE_FORM + '" target="_blank" rel="noopener">',
+            '<span class="gf-icon">📖</span>',
+            '<span class="gf-text"><strong>建议收录期刊</strong><span>给我一个期刊名，我来添加</span></span>',
+            '<span class="gf-arrow">→</span>',
+          '</a>',
+          '<a class="fb-gf-card" href="' + GOOGLE_FORM + '" target="_blank" rel="noopener">',
+            '<span class="gf-icon">💡</span>',
+            '<span class="gf-text"><strong>功能建议 / 错误报告</strong><span>任何改进想法都欢迎</span></span>',
+            '<span class="gf-arrow">→</span>',
+          '</a>',
+          '<a class="fb-gf-card" href="' + GOOGLE_FORM + '" target="_blank" rel="noopener">',
+            '<span class="gf-icon">💬</span>',
+            '<span class="gf-text"><strong>其他反馈</strong><span>随便聊聊也行</span></span>',
+            '<span class="gf-arrow">→</span>',
+          '</a>',
+        '</div>',
+        '<div class="fb-gf-footer">',
+          '<span>表单在新窗口打开，填完关闭即可</span>',
+        '</div>',
       '</div>',
       // GitHub panel
       '<div class="fb-panel" id="fbPanelGithub">',
@@ -75,14 +70,6 @@
           '</a>',
         '</div>',
       '</div>',
-      // Success panel
-      '<div class="fb-panel" id="fbPanelSuccess">',
-        '<div class="fb-success">',
-          '<div class="check">✅</div>',
-          '<h4>感谢反馈！</h4>',
-          '<p>我已经收到你的建议，会尽快处理。<br>如果是期刊收录请求，通常 1–2 天内完成。</p>',
-        '</div>',
-      '</div>',
     '</div>'
   ].join('');
 
@@ -96,14 +83,9 @@
   var backdrop = document.getElementById('fbBackdrop');
   var modal = document.getElementById('fbModal');
   var closeBtn = document.getElementById('fbClose');
-  var form = document.getElementById('fbForm');
-  var submitBtn = document.getElementById('fbSubmit');
   var tabs = document.querySelectorAll('.fb-tab');
-  var panels = {
-    form: document.getElementById('fbPanelForm'),
-    github: document.getElementById('fbPanelGithub'),
-    success: document.getElementById('fbPanelSuccess')
-  };
+  var panelForm = document.getElementById('fbPanelForm');
+  var panelGithub = document.getElementById('fbPanelGithub');
 
   // Open / Close
   function openModal(){
@@ -127,50 +109,8 @@
       tabs.forEach(function(t){ t.classList.remove('active'); });
       tab.classList.add('active');
       var name = tab.dataset.tab;
-      Object.keys(panels).forEach(function(k){
-        panels[k].classList.toggle('active', k === name);
-      });
-      if(name === 'github'){
-        panels.form.classList.remove('active');
-        panels.github.classList.add('active');
-        panels.success.classList.remove('active');
-      }
-    });
-  });
-
-  // Submit
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    if(FORMSPREE_ENDPOINT.includes('PLACEHOLDER')){
-      alert('⚠️ Formspree endpoint 尚未配置，请联系站长。');
-      return;
-    }
-    submitBtn.disabled = true;
-    submitBtn.textContent = '提交中...';
-
-    var data = new FormData(form);
-    fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      body: data,
-      headers: { 'Accept': 'application/json' }
-    })
-    .then(function(res){
-      if(res.ok){
-        // Show success
-        panels.form.classList.remove('active');
-        panels.github.classList.remove('active');
-        panels.success.classList.add('active');
-        form.reset();
-      } else {
-        throw new Error('Server error');
-      }
-    })
-    .catch(function(){
-      alert('提交失败，请稍后重试或通过 GitHub Issues 反馈。');
-    })
-    .finally(function(){
-      submitBtn.disabled = false;
-      submitBtn.textContent = '提交反馈';
+      panelForm.classList.toggle('active', name === 'form');
+      panelGithub.classList.toggle('active', name === 'github');
     });
   });
 })();
