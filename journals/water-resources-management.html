@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Water Resources Management 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>Water Resources Management — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>🌊</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#2563eb;--pri2:#3b82f6;--acc:#60a5fa;--acc2:#93c5fd;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(37,99,235,.15);--glow:rgba(37,99,235,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+/* Top nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(37,99,235,.1)}
+
+/* Hero banner */
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(37,99,235,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+
+/* Layout */
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+
+/* Sidebar */
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(37,99,235,.08);border-left-color:var(--pri)}
+
+/* Main content */
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+
+/* Content blocks */
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+.c-block code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:.85rem}
+
+/* Table */
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(37,99,235,.03)}
+
+/* Tags */
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(37,99,235,.12);color:var(--pri2)}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+.tag-purple{background:rgba(167,139,250,.12);color:var(--acc2)}
+
+/* Checklist */
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'☐';position:absolute;left:0;top:8px;font-size:1rem;color:var(--dim)}
+
+/* Link row */
+.link-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.link-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:500;text-decoration:none;color:var(--pri2);background:rgba(37,99,235,.08);border:1px solid var(--border);transition:.2s}
+.link-btn:hover{background:rgba(37,99,235,.15);border-color:var(--pri)}
+
+/* Footer */
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+/* Mobile sidebar */
+@media(max-width:800px){
+  .j-layout{flex-direction:column;gap:20px;padding:16px}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .nav-section{margin-bottom:0;display:flex;gap:2px}
+  .nav-title{display:none}
+  .nav-link{white-space:nowrap;padding:8px 12px;border-left:none;border-bottom:2px solid transparent;font-size:.82rem}
+  .nav-link.active{border-left:none;border-bottom-color:var(--pri)}
+  .j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<!-- Nav -->
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<!-- Breadcrumb -->
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / Water Resources Management</div>
+
+<!-- Hero -->
+<div class="j-hero">
+  <div class="icon">💧</div>
+  <h1>Water Resources Management</h1>
+  <div class="subtitle">Springer · ISSN 0920-4741 · 创刊于 1987 年</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">4.7</div><div class="meta-lbl">影响因子 (2024)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q1</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">2–4 月</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">$2,990</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">单盲</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">Hybrid OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="j-layout">
+  <!-- Sidebar -->
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview" data-section="overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope" data-section="scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types" data-section="types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review" data-section="review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission" data-section="submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript" data-section="manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format" data-section="format">📐 格式要求</a>
+      <a class="nav-link" href="#reference" data-section="reference">📖 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist" data-section="checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics" data-section="ethics">⚖️ 伦理与政策</a>
+    </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="j-main">
+
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📊</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">期刊全称</div><div class="info-value">Water Resources Management</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Springer</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">0920-4741</div></div>
+        <div class="info-item"><div class="info-label">创刊年份</div><div class="info-value">1987</div></div>
+        <div class="info-item"><div class="info-label">出版频率</div><div class="info-value">月刊（12 期/年）</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">4.7 (2024)</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q1 (Water Resources)</div></div>
+        <div class="info-item"><div class="info-label">中科院分区</div><div class="info-value">2 区</div></div>
+        <div class="info-item"><div class="info-label">开放获取</div><div class="info-value">Hybrid OA (Open Choice)</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">$2,990 (USD)</div></div>
+        <div class="info-item"><div class="info-label">平均审稿</div><div class="info-value">约 2–4 个月</div></div>
+        <div class="info-item"><div class="info-label">审稿制度</div><div class="info-value">单盲审稿</div></div>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>Aims & Scope</h4>
+        <p>Water Resources Management 是水资源管理领域的核心期刊，发表水资源规划、管理、优化和政策方面的原创研究。</p>
+        <ul>
+          <li>水资源规划与管理 (Water Resources Planning & Management)</li>
+          <li>水文模拟与预报 (Hydrological Modeling & Forecasting)</li>
+          <li>地表水与地下水管理 (Surface & Groundwater Management)</li>
+          <li>水质管理与污染控制 (Water Quality Management)</li>
+          <li>水资源配置与优化 (Water Allocation & Optimization)</li>
+          <li>灌溉与排水管理 (Irrigation & Drainage Management)</li>
+          <li>洪水与干旱管理 (Flood & Drought Management)</li>
+          <li>水与社会经济 (Water & Society)</li>
+          <li>气候变化对水资源的影响 (Climate Change Impacts)</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 不接受的稿件类型</h4>
+        <ul>
+          <li>缺乏管理视角的纯水文过程研究</li>
+          <li>仅描述性或定性的案例研究</li>
+          <li>与水资源管理无直接关联的水质分析</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <div class="c-block" style="padding:0;overflow-x:auto">
+        <table class="j-table">
+          <thead><tr><th>类型</th><th>说明</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Original Research</strong></td><td>完整的研究论文</td><td><span class="tag tag-blue">最常见</span></td></tr>
+            <tr><td><strong>Review Article</strong></td><td>综述文章</td><td><span class="tag tag-purple">领域总结</span></td></tr>
+            <tr><td><strong>Short Communication</strong></td><td>短篇快报</td><td><span class="tag tag-green">快速发表</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <div class="info-grid" style="margin-bottom:16px">
+          <div class="info-item"><div class="info-label">审稿方式</div><div class="info-value">单盲审稿</div></div>
+          <div class="info-item"><div class="info-label">审稿人数量</div><div class="info-value">至少 2 位</div></div>
+          <div class="info-item"><div class="info-label">首轮审稿</div><div class="info-value">约 2–4 个月</div></div>
+          <div class="info-item"><div class="info-label">修改轮数</div><div class="info-value">通常 1–2 轮</div></div>
+        </div>
+        <p>单盲审稿 (Single-blind)：审稿人知道作者信息，但作者不知道审稿人身份。</p>
+      </div>
+      <div class="c-block">
+        <h4>审稿流程</h4>
+        <ol>
+          <li><strong>提交</strong> → 编辑初审（Desk Review）</li>
+          <li><strong>分配编辑</strong> → 领域编辑评估稿件</li>
+          <li><strong>送审</strong> → 邀请 2+ 位审稿人</li>
+          <li><strong>审稿</strong> → 通常 4–8 周</li>
+          <li><strong>决定</strong> → Accept / Minor Revision / Major Revision / Reject</li>
+          <li><strong>修改</strong> → 逐条回复审稿意见</li>
+          <li><strong>最终决定</strong> → 编辑确认</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>登录 <a href="https://www.editorialmanager.com/warm/" target="_blank">Springer Editorial Manager</a> 系统</li>
+          <li>选择文章类型</li>
+          <li>填写标题、摘要、关键词</li>
+          <li>添加所有作者信息及 ORCID</li>
+          <li>上传稿件文件（Word 或 LaTeX）</li>
+          <li>填写附加信息（Funding、Competing Interests 等）</li>
+          <li>确认并提交</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>投稿后注意事项</h4>
+        <ul>
+          <li>通过 Editorial Manager 跟踪稿件状态</li>
+          <li>修改稿需及时提交</li>
+          <li>校样阶段仅允许改正排版错误</li>
+          <li>在线彩色图表<strong>免费</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li><strong>首选格式</strong>：LaTeX（推荐使用 Springer Nature LaTeX 模板）</li>
+          <li><strong>也可接受</strong>：Word (.docx)</li>
+          <li>LaTeX 提交需包含源文件 + PDF 编译输出</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构</h4>
+        <ol>
+          <li><strong>Title</strong> — 简洁明确</li>
+          <li><strong>Abstract</strong> — 150–250 词，不包含未定义的缩写或引用</li>
+          <li><strong>Keywords</strong> — 4–6 个</li>
+          <li><strong>Introduction</strong> — 研究背景与目的</li>
+          <li><strong>Methods / Study Area</strong> — 方法与数据</li>
+          <li><strong>Results</strong> — 客观结果呈现</li>
+          <li><strong>Discussion</strong> — 结果分析与讨论</li>
+          <li><strong>Conclusions</strong> — 主要发现总结</li>
+          <li><strong>References</strong> — 参考文献</li>
+          <li><strong>Statements & Declarations</strong> — 声明与声明（在 References 之后）</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>标题编号</h4>
+        <p>使用<strong>十进制标题编号</strong>（Decimal numbering），最多三级：1, 1.1, 1.1.1</p>
+      </div>
+      <div class="c-block">
+        <h4>AI 使用声明</h4>
+        <p>LLM（如 ChatGPT）不能列为作者。AI 辅助写作需在 Methods 部分声明。AI 辅助的语言润色（AI-assisted copy editing）无需声明。</p>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">📐</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范</h4>
+        <ul>
+          <li>线条图：≥ 1200 dpi（TIFF/EPS）</li>
+          <li>半色调（照片）：≥ 300 dpi</li>
+          <li>组合图：≥ 600 dpi</li>
+          <li>矢量图首选 EPS 格式（字体嵌入）</li>
+          <li>在线彩色图表免费</li>
+          <li>图片宽度：单栏 84 mm，通栏 174 mm</li>
+          <li>图注（Figure Caption）放在正文文件中，不放在图片文件中</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>补充材料</h4>
+        <ul>
+          <li>上传 Supplementary Information (SI)</li>
+          <li>以原格式发布，不经排版</li>
+          <li>SI 中的图表单独编号</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>数据政策</h4>
+        <ul>
+          <li>鼓励数据公开共享</li>
+          <li>推荐数据仓库：<a href="https://zenodo.org/" target="_blank">Zenodo</a>、<a href="https://figshare.com/" target="_blank">Figshare</a></li>
+          <li>需在 Statements & Declarations 中声明数据可用性</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📖</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式 — Author-Date (Harvard 风格)</h4>
+        <p>⚠️ <strong>注意：与 Elsevier 格式不同！括号内引用没有逗号</strong></p>
+        <ul>
+          <li>单作者：<code>(Thompson 1990)</code> — <strong>无逗号</strong></li>
+          <li>双作者：<code>(Becker and Seligman 1996)</code></li>
+          <li>多作者：<code>(Barakat et al. 1995a, b)</code></li>
+          <li>多篇文献：<code>(Abbott 1991; Kelso and Smith 1998)</code></li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>参考文献格式示例</h4>
+        <p><strong>期刊文章：</strong></p>
+        <p><code>Gamelin FX, Baquet G, Berthoin S, Thevenet D, Nourry C, Nottin S, Bosquet L (2009) Effect of high intensity intermittent training on heart rate variability in prepubescent children. Eur J Appl Physiol 105:731-738. https://doi.org/10.1007/s00421-008-0955-8</code></p>
+        <br>
+        <p><strong>书籍：</strong></p>
+        <p><code>South J, Blass B (2001) The future of modern genomics. Blackwell, London</code></p>
+        <br>
+        <p><strong>书籍章节：</strong></p>
+        <p><code>Brown B, Aaron M (2001) The politics of nature. In: Smith J (ed) The rise of modern genomics, 3rd edn. Wiley, New York, pp 230-257</code></p>
+        <br>
+        <p><strong>在线文档：</strong></p>
+        <p><code>Cartwright J (2007) Big stars have weather too. IOP Publishing PhysicsWeb. http://physicsweb.org/articles/news/11/6/16/1. Accessed 26 June 2007</code></p>
+      </div>
+      <div class="c-block">
+        <h4>格式要点</h4>
+        <ul>
+          <li>参考文献按第一作者姓氏字母排列</li>
+          <li>同一作者同年多篇：1995a, 1995b</li>
+          <li>DOI 推荐使用完整链接（https://doi.org/...）</li>
+          <li>期刊名使用 ISSN LTWA 标准缩写</li>
+          <li>只列出已发表或已接受的文献，未发表的仅在正文中提及</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查</h4>
+        <ul class="checklist">
+          <li>稿件符合期刊收稿范围（水资源管理视角）</li>
+          <li>文章类型选择正确</li>
+          <li>标题页包含完整作者信息</li>
+          <li>摘要 150–250 词，无未定义缩写</li>
+          <li>关键词 4–6 个</li>
+          <li>使用十进制标题编号（最多三级）</li>
+          <li>所有作者信息完整，含 ORCID</li>
+          <li>通讯作者已标注并提供邮箱</li>
+          <li>利益冲突声明已填写</li>
+          <li>基金信息完整</li>
+          <li>图表分辨率达标（线图 ≥1200 dpi，照片 ≥300 dpi）</li>
+          <li>参考文献格式正确（Harvard 风格，无逗号）</li>
+          <li>所有图表在正文中已引用</li>
+          <li>补充材料已上传</li>
+          <li>语言经过润色</li>
+          <li>Statements & Declarations 章节已准备</li>
+          <li>未同时投其他期刊</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>Statements & Declarations（必填章节）</h4>
+        <p>需在参考文献之后添加 "Statements and Declarations" 章节，包含以下内容：</p>
+        <ul>
+          <li><strong>Funding</strong> — 资金来源声明</li>
+          <li><strong>Competing Interests</strong> — 利益冲突声明（3 年内的利益需披露）</li>
+          <li><strong>Author Contributions</strong> — 作者贡献声明</li>
+          <li><strong>Availability of data and materials</strong> — 数据可用性声明</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>利益冲突</h4>
+        <p>无冲突时声明："The authors have no relevant financial or non-financial interests to disclose."</p>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <div class="link-row">
+          <a class="link-btn" href="https://link.springer.com/journal/11269" target="_blank">🏠 期刊主页</a>
+          <a class="link-btn" href="https://www.editorialmanager.com/warm/" target="_blank">📤 投稿系统</a>
+          <a class="link-btn" href="https://link.springer.com/journal/11269/submission-guidelines" target="_blank">📋 官方 Submission Guidelines</a>
+          <a class="link-btn" href="https://www.springer.com/gp/open-access" target="_blank">🔓 Springer Open Choice</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 Water Resources Management 官方 Submission Guidelines · <a href="/journals/">返回期刊列表</a> · <a href="https://citeglow.com">CiteGlow</a>
+</footer>
+
+<script>
+// Scroll spy
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link[data-section]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.section === e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// Smooth scroll + mobile close
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(link.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+<script src="theme-toggle.js"></script>
+</body>
+</html>
