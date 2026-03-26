@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Water Research 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>Water Research — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>💧</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#3b82f6;--pri2:#60a5fa;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(59,130,246,.15);--glow:rgba(59,130,246,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(59,130,246,.1)}
+
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(59,130,246,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(59,130,246,.08);border-left-color:var(--pri)}
+
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(59,130,246,.03)}
+
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(59,130,246,.12);color:var(--pri2)}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'✓';position:absolute;left:0;top:8px;color:var(--green);font-weight:700}
+
+.ref-example{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:.85rem;line-height:1.7;font-family:'SF Mono',Consolas,monospace;color:var(--dim)}
+
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+@media(max-width:900px){
+  .j-layout{flex-direction:column;gap:16px}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px}
+  .nav-section{display:flex;gap:4px}
+  .nav-title{display:none}
+  .nav-link{white-space:nowrap;font-size:.8rem;padding:6px 10px}
+}
+@media(max-width:600px){
+  .j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}
+  .topnav{flex-direction:column;gap:10px}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / Water Research</div>
+
+<section class="j-hero">
+  <div class="icon">💧</div>
+  <h1>Water Research</h1>
+  <div class="subtitle">Elsevier · 与国际水协会 (IWA) 联合出版 · ISSN 0043-1354</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">12.8</div><div class="meta-lbl">影响因子 (2024)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q1</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">2–3 月</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">$3,500</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">单盲</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">Hybrid OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</section>
+
+<div class="j-layout">
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format">🎨 格式要求</a>
+      <a class="nav-link" href="#reference">📚 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <main class="j-main">
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📋</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">全称</div><div class="info-value">Water Research</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Elsevier (IWA)</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">0043-1354</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">12.8 (2024)</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q1 (Water Resources / Environmental Sciences)</div></div>
+        <div class="info-item"><div class="info-label">审稿周期</div><div class="info-value">约 2–3 个月</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">$3,500 (USD)</div></div>
+        <div class="info-item"><div class="info-label">OA 类型</div><div class="info-value">Hybrid (可选 OA)</div></div>
+        <div class="info-item"><div class="info-label">投稿系统</div><div class="info-value">Editorial Manager</div></div>
+        <div class="info-item"><div class="info-label">姊妹刊</div><div class="info-value">Water Research X (OA)</div></div>
+      </div>
+      <div class="c-block">
+        <h4>关于期刊</h4>
+        <p>Water Research 是水科学与技术领域的顶级期刊之一，与国际水协会 (IWA) 联合出版。期刊聚焦人工水循环、水质及其全球管理的科学与技术研究，覆盖从基础研究到工程应用的全产业链。</p>
+        <p>Water Research 是一本具有应用导向的跨学科期刊。过于深入某一支撑学科（如化学、毒理学、微生物学、材料科学等）而未与水研究建立良好联系的论文可能会被直接拒稿。</p>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>Aims & Scope</h4>
+        <p>Water Research 发表关于人工水循环、水科学与技术各个方面的原创研究论文，范围包括：</p>
+        <ul>
+          <li>水与废水处理工艺（市政、工业、农业及现场处理），包括资源回收与残余物管理</li>
+          <li>城市水文学，包括排水系统、雨水管理与绿色基础设施</li>
+          <li>饮用水处理与分配</li>
+          <li>饮用水与非饮用水回用</li>
+          <li>卫生设施、公共卫生与风险评估</li>
+          <li>厌氧消化、固体与有害废物管理，包括渗滤液与气体排放的控制</li>
+          <li>污染物（化学、微生物、纳米颗粒或微塑料等人为颗粒物）及相关水质传感、监测、归趋与评估</li>
+          <li>人为活动对内陆、潮汐、沿海及城市水域的影响（地表水与地下水，点源与面源污染）</li>
+          <li>环境修复，联系地表水、地下水及地下水修复</li>
+          <li>沉积物-水及水-大气界面分析，聚焦人为影响</li>
+          <li>数学建模、系统分析、机器学习及大数据在人工水循环中的有益应用</li>
+          <li>社会经济、政策与法规研究</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 不接受的稿件类型</h4>
+        <ul>
+          <li>过于深入某一支撑学科而未与水研究建立联系的论文</li>
+          <li>案例研究（除非具有广泛行业影响）</li>
+          <li>Water Research/Water Research X 不提供投稿前评估，请自行判断稿件是否符合范围</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <table class="j-table">
+        <thead><tr><th>类型</th><th>说明</th><th>字数限制</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Research Paper</strong></td><td>描述原创研究，包括理论阐述、大量数据及深入的批判性评估</td><td>≤ 8,000 词（含参考文献）</td></tr>
+          <tr><td><strong>Review Paper</strong></td><td>仅接受批判性综述，提供新颖视角和批判性评估，非简单的知识汇总。需在 Cover Letter 中说明自身专业背景和相关发表论文</td><td>≤ 12,000 词（含参考文献）</td></tr>
+          <tr><td><strong>Making Waves</strong></td><td>识别新兴课题与方法，提供观点与展望，讨论某领域的前瞻方向。标题须以 "Making Waves: " 开头</td><td>≤ 3,000 词 + 2 个图表</td></tr>
+          <tr><td><strong>Comment</strong></td><td>对已发表论文的评论/批评，须论证理性、非对抗。限 4 个月内提交</td><td>≤ 1,200 词</td></tr>
+        </tbody>
+      </table>
+      <div class="c-block">
+        <h4>重要提示</h4>
+        <ul>
+          <li>不接受多部分论文 (multi-part papers)</li>
+          <li>被要求修改的论文须在 <strong>4 周</strong>内返回，否则视为撤稿</li>
+          <li>每位作者须同意对工作的所有方面负责</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <ul>
+          <li><strong>审稿方式</strong>：单盲审稿 (Single Anonymized)</li>
+          <li><strong>审稿人数</strong>：至少 2 位独立审稿人</li>
+          <li><strong>初筛</strong>：编辑评估稿件是否适合本刊</li>
+          <li><strong>决策</strong>：由编辑决定接受或拒稿</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>编辑回避制度</h4>
+        <p>编辑不参与处理以下稿件：自己撰写的论文、由家人或同事撰写的论文、涉及其有利益关系的产品或服务的论文。</p>
+      </div>
+      <div class="c-block">
+        <h4>申诉 (Appeal)</h4>
+        <ul>
+          <li>仅通过期刊邮箱提交，主题行包含 "Appeal" 和稿件编号</li>
+          <li>申诉理由不超过 1 页，需有明确证据支持</li>
+          <li>仅基于意见差异（新颖性、趣味性、适合性）的申诉不被考虑</li>
+          <li>收到决定后 <strong>1 个月</strong>内可申诉，每篇稿件仅允许一次申诉</li>
+          <li>申诉期间不得向其他期刊投稿或转稿</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>特刊</h4>
+        <p>特刊和文章合集的审稿流程与常规投稿相同，Guest Editor 可推荐审稿人并建议决定，但最终决定权归期刊编辑。</p>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>通过 <a href="https://www.editorialmanager.com/watres/" target="_blank">Editorial Manager</a> 在线提交</li>
+          <li>系统将文件转为单一 PDF 供同行评审</li>
+          <li>编辑初审 → 外审（至少 2 位审稿人）→ 编辑决定</li>
+          <li>修改稿须在 <strong>4 周</strong>内返回</li>
+          <li>接收后 2 天内完成校对</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>Cover Letter</h4>
+        <p>投稿时需提交 Cover Letter，说明稿件的创新性与适合性。对于 Review Paper，还须在 Cover Letter 中说明：</p>
+        <ul>
+          <li>作者在该主题的专业背景</li>
+          <li>相关已发表论文列表</li>
+          <li>与现有综述的差异，及本文提供的重要新见解和视角</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>投稿后</h4>
+        <ul>
+          <li>接受后通过 Editorial Manager 在线校对（类似 Word 环境）</li>
+          <li>可选择注释 PDF 版本进行修改</li>
+          <li>校样检查阶段的实质性修改需编辑批准</li>
+          <li>OA 文章：最终版本在 ScienceDirect 开放获取</li>
+          <li>非 OA 文章：获得 50 天免费 Share Link</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li>接受 <code>.doc/.docx</code> (Word) 和 <code>.tex</code> (LaTeX) 格式</li>
+          <li>不接受 PDF 作为源文件</li>
+          <li>Word 使用单栏排版；LaTeX 可使用双栏</li>
+          <li>移除删除线和下划线文本（除非具有科学意义）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构</h4>
+        <p>按编号分节：<strong>1. Introduction → 2. Methods → 3. Results → 4. Discussion → 5. Conclusion</strong></p>
+        <ul>
+          <li>使用数字编号格式进行交叉引用</li>
+          <li>小节编号如 1.1, 1.1.1, 1.2 等</li>
+          <li>不要将文章摘要纳入编号系统</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>标题页</h4>
+        <ul>
+          <li><strong>文章标题</strong>：简洁、信息丰富，避免缩写和公式</li>
+          <li><strong>作者姓名</strong>：提供每位作者的名和姓，顺序与投稿系统一致</li>
+          <li><strong>单位</strong>：用小写上标字母标注，提供完整通讯地址</li>
+          <li><strong>通讯作者</strong>：明确指定，邮箱地址需保持更新</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>摘要与关键词</h4>
+        <ul>
+          <li><strong>摘要</strong>：简洁、事实性，不超过 <strong>250 词</strong>，须能独立阅读</li>
+          <li><strong>关键词</strong>：1–7 个，避免多词关键词</li>
+          <li><strong>Highlights</strong>：必填，3–5 个要点，每条最多 85 字符（含空格）</li>
+          <li><strong>Graphical Abstract</strong>：鼓励提供</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>CRediT 作者贡献声明</h4>
+        <p>通讯作者须使用 CRediT (Contributor Roles Taxonomy) 标注合著者贡献：Conceptualization, Data curation, Formal analysis, Funding acquisition, Investigation, Methodology, Project administration, Resources, Software, Supervision, Validation, Visualization, Writing – original draft, Writing – review & editing。</p>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">🎨</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范</h4>
+        <ul>
+          <li><strong>表格</strong>：可编辑文本格式，非图片；按出现顺序编号；表格注释置于表体下方</li>
+          <li><strong>矢量图</strong>：EPS 或 PDF 格式，嵌入字体或文字转为图形</li>
+          <li><strong>彩色/灰度照片</strong>：TIFF/JPG/PNG，≥ 300 dpi</li>
+          <li><strong>线描图</strong>：TIFF/JPG/PNG，≥ 1000 dpi</li>
+          <li><strong>组合图</strong>：TIFF/JPG/PNG，≥ 500 dpi</li>
+          <li>不接受 AI 生成或修改的图片</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>补充材料</h4>
+        <ul>
+          <li>补充材料须在稿件中引用，并提供简洁描述性标题</li>
+          <li>补充文件在 Production 阶段不会被排版，以提交时的格式原样上线</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>数据政策</h4>
+        <ul>
+          <li>鼓励将研究数据存入相关数据仓库并引用数据集</li>
+          <li>Option A：鼓励但不强制公开数据</li>
+          <li>可选择将 Data/Methods 合并提交至 Data in Brief 或 MethodsX</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📚</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式</h4>
+        <ul>
+          <li>正文中按出现顺序编号，使用方括号 <code>[1]</code></li>
+          <li>可同时引用作者姓名和编号，如 "Smith demonstrated [3,6]"</li>
+          <li>参考文献列表也按出现顺序排列</li>
+          <li>使用 DOI 作为永久链接（推荐）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>格式示例</h4>
+        <p><strong>期刊论文：</strong></p>
+        <div class="ref-example">[1] J. van der Geer, T. Handgraaf, R.A. Lupton, The art of writing a scientific article, J. Sci. Commun. 163 (2020) 51–59. https://doi.org/10.1016/j.sc.2020.00372.</div>
+        <p><strong>带文章编号的期刊论文：</strong></p>
+        <div class="ref-example">[2] J. van der Geer, T. Handgraaf, R.A. Lupton, 2022. The art of writing a scientific article. Heliyon. 19, e00205. https://doi.org/10.1016/j.heliyon.2022.e00205.</div>
+        <p><strong>书籍：</strong></p>
+        <div class="ref-example">[3] W. Strunk Jr., E.B. White, The Elements of Style, fourth ed., Longman, New York, 2000.</div>
+        <p><strong>书籍章节：</strong></p>
+        <div class="ref-example">[4] G.R. Mettam, L.B. Adams, How to prepare an electronic version of your article, in: B.S. Jones, R.Z. Smith (Eds.), Introduction to the Electronic Age, E-Publishing Inc., New York, 2020, pp. 281–304.</div>
+        <p><strong>数据集：</strong></p>
+        <div class="ref-example">[6] M. Oguro, S. Imahiro, S. Saito, T. Nakashizuka, Mortality data for Japanese oak wilt disease [dataset], Mendeley Data, v1, 2015. https://doi.org/10.1234/abc12nb39r.1.</div>
+        <p><strong>软件：</strong></p>
+        <div class="ref-example">[7] E. Coon et al., Advanced Terrestrial Simulator (ATS) v0.88 [software], Zenodo, March 25, 2020. https://doi.org/10.1234/zenodo.3727209.</div>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查项</h4>
+        <ul class="checklist">
+          <li>通讯作者已指定，完整联系信息已提供</li>
+          <li>所有文件已上传（关键词、图注、表格，含补充材料和视频）</li>
+          <li>已进行拼写和语法检查</li>
+          <li>正文中的所有引用均在参考文献列表中，反之亦然</li>
+          <li>已获得使用其他来源版权材料的许可</li>
+          <li>Highlights 已准备（3–5 条，每条 ≤ 85 字符）</li>
+          <li>Graphical Abstract 已准备（如适用）</li>
+          <li>数据已存入相关数据仓库（鼓励）</li>
+          <li>利益冲突声明已准备</li>
+          <li>资金来源声明已准备</li>
+          <li>AI 使用声明已准备（如适用）</li>
+          <li>CRediT 作者贡献声明已准备</li>
+          <li>稿件字数符合要求（Research Paper ≤ 8000 词，Review ≤ 12000 词）</li>
+          <li>稿件不包含 AI 生成或修改的图片</li>
+          <li>修改稿在 4 周内返回（如适用）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突</h4>
+        <ul>
+          <li>所有作者须披露财务和个人关系中的潜在利益冲突</li>
+          <li>使用 Elsevier 声明工具完成，保存为 .doc/.docx 格式上传</li>
+          <li>无利益冲突的作者选择 "I have nothing to declare"</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>AI 声明</h4>
+        <ul>
+          <li>使用 AI 工具辅助撰写须在稿件末尾声明（置于参考文献前的新章节）</li>
+          <li>声明模板：<em>"During the preparation of this work the author(s) used [工具名称] in order to [目的]. After using this tool/service, the author(s) reviewed and edited the content as needed and take(s) full responsibility for the content of the published article."</em></li>
+          <li>AI 不得列为作者或合著者</li>
+          <li>禁止 AI 生成或修改稿件图片</li>
+          <li>审稿人和编辑不得使用 AI 工具进行评审</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>其他政策</h4>
+        <ul>
+          <li><strong>预印本</strong>：允许分享预印本，不视为先前发表</li>
+          <li><strong>作者变更</strong>：投稿后一般不考虑变更作者，需使用 Authorship Change Request 表格</li>
+          <li><strong>抄袭筛查</strong>：可能使用筛查工具检查稿件</li>
+          <li><strong>Elsevier 发表伦理政策</strong>须严格遵守</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <ul>
+          <li><a href="https://www.sciencedirect.com/journal/water-research" target="_blank">期刊主页</a></li>
+          <li><a href="https://www.editorialmanager.com/watres/" target="_blank">投稿系统 (Editorial Manager)</a></li>
+          <li><a href="https://www.elsevier.com/journals/water-research/0043-1354/guide-for-authors" target="_blank">Guide for Authors (官方)</a></li>
+          <li><a href="https://www.elsevier.com/researcheracademy" target="_blank">Elsevier Researcher Academy</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 Water Research 官方 Guide for Authors · <a href="https://citeglow.com">CiteGlow</a> · 2026-03-26 更新
+</footer>
+
+<script src="theme-toggle.js"></script>
+<script>
+// Sidebar active state on scroll
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

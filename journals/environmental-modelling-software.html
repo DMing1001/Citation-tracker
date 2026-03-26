@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Environmental Modelling & Software 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>Environmental Modelling & Software — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>🌿</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#059669;--pri2:#34d399;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(5,150,105,.15);--glow:rgba(5,150,105,.2)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.06;animation:orbFloat 20s ease-in-out infinite alternate}
+.orb:nth-child(1){width:500px;height:500px;background:var(--pri);top:-15%;left:-15%}
+.orb:nth-child(2){width:350px;height:350px;background:var(--acc);bottom:-10%;right:-10%;animation-delay:-7s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.2)}100%{transform:translate(-30px,80px) scale(.9)}}
+
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;position:relative;z-index:2}
+.topnav-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:var(--bright);text-decoration:none}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;color:var(--dim);transition:.2s}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+.topnav-links a.active{color:var(--pri2);background:rgba(5,150,105,.1)}
+
+.j-hero{position:relative;z-index:1;padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(5,150,105,.08),transparent);border-bottom:1px solid var(--border)}
+.j-hero .icon{font-size:3rem;margin-bottom:12px}
+.j-hero h1{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;color:var(--bright);margin-bottom:8px}
+.j-hero .subtitle{color:var(--dim);font-size:.9rem;margin-bottom:16px}
+.j-hero .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto}
+.j-hero .meta-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.j-hero .meta-val{font-size:1.1rem;font-weight:700;color:var(--bright)}
+.j-hero .meta-lbl{font-size:.75rem;color:var(--dim);margin-top:2px}
+.j-breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px 0;font-size:.82rem;color:var(--dim);position:relative;z-index:1}
+.j-breadcrumb a{color:var(--pri2);text-decoration:none}
+.j-breadcrumb a:hover{text-decoration:underline}
+
+.j-layout{display:flex;max-width:1200px;margin:0 auto;padding:24px;gap:32px;position:relative;z-index:1}
+.j-sidebar{width:220px;flex-shrink:0;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.j-sidebar::-webkit-scrollbar{width:3px}
+.j-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.nav-section{margin-bottom:8px}
+.nav-title{font-size:.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.85rem;color:var(--dim);text-decoration:none;transition:.2s;border-left:2px solid transparent}
+.nav-link:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--pri2);background:rgba(5,150,105,.08);border-left-color:var(--pri)}
+
+.j-main{flex:1;min-width:0}
+.j-section{margin-bottom:40px;scroll-margin-top:24px}
+.j-section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.j-section-icon{font-size:1.3rem}
+.j-section-title{font-size:1.3rem;font-weight:700;color:var(--bright)}
+
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.info-label{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.info-value{font-size:.95rem;font-weight:600;color:var(--bright)}
+
+.c-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;line-height:1.75;font-size:.92rem}
+.c-block h4{font-size:.95rem;font-weight:700;color:var(--bright);margin-bottom:10px}
+.c-block p{margin-bottom:10px}
+.c-block ul,.c-block ol{margin:8px 0 8px 20px}
+.c-block li{margin-bottom:6px;line-height:1.7}
+.c-block a{color:var(--pri2);text-decoration:none}
+.c-block a:hover{text-decoration:underline}
+
+.j-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.j-table th{background:var(--bg2);padding:10px 14px;text-align:left;font-weight:600;color:var(--pri2);border-bottom:2px solid var(--border);font-size:.82rem}
+.j-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+.j-table tr:hover td{background:rgba(5,150,105,.03)}
+
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.tag-blue{background:rgba(59,130,246,.12);color:#60a5fa}
+.tag-green{background:rgba(52,211,153,.12);color:var(--green)}
+.tag-gold{background:rgba(251,191,36,.12);color:var(--gold)}
+
+.checklist{list-style:none;margin:0}
+.checklist li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem;line-height:1.6}
+.checklist li::before{content:'✓';position:absolute;left:0;top:8px;color:var(--green);font-weight:700}
+
+.ref-example{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:8px 0;font-size:.85rem;line-height:1.7;font-family:'SF Mono',Consolas,monospace;color:var(--dim)}
+
+.j-footer{text-align:center;padding:40px 24px 30px;color:var(--dim);font-size:.82rem;position:relative;z-index:1}
+.j-footer a{color:var(--pri2);text-decoration:none}
+
+@media(max-width:900px){
+  .j-layout{flex-direction:column;gap:16px}
+  .j-sidebar{width:100%;position:static;max-height:none;display:flex;overflow-x:auto;gap:4px;padding-bottom:8px}
+  .nav-section{display:flex;gap:4px}
+  .nav-title{display:none}
+  .nav-link{white-space:nowrap;font-size:.8rem;padding:6px 10px}
+}
+@media(max-width:600px){
+  .j-hero .meta-grid{grid-template-columns:repeat(2,1fr)}
+  .topnav{flex-direction:column;gap:10px}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / Environmental Modelling & Software</div>
+
+<section class="j-hero">
+  <div class="icon">🌿</div>
+  <h1>Environmental Modelling & Software</h1>
+  <div class="subtitle">Elsevier · 国际环境建模与软件学会 (iEMSs) 官方期刊 · ISSN 1364-8152</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">5.5</div><div class="meta-lbl">影响因子 (2024)</div></div>
+    <div class="meta-item"><div class="meta-val">JCR Q1</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">2–4 月</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">$2,650</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">单盲</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">Hybrid OA</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</section>
+
+<div class="j-layout">
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format">🎨 格式要求</a>
+      <a class="nav-link" href="#reference">📚 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <main class="j-main">
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📋</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">全称</div><div class="info-value">Environmental Modelling & Software</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">Elsevier</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">1364-8152</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">5.5 (2024)</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">Q1 (Environmental Sciences / Water Resources)</div></div>
+        <div class="info-item"><div class="info-label">审稿周期</div><div class="info-value">约 2–4 个月</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">$2,650 (USD)</div></div>
+        <div class="info-item"><div class="info-label">OA 类型</div><div class="info-value">Hybrid (可选 OA)</div></div>
+        <div class="info-item"><div class="info-label">投稿系统</div><div class="info-value">Editorial Manager</div></div>
+        <div class="info-item"><div class="info-label">学会</div><div class="info-value">国际环境建模与软件学会 (iEMSs)</div></div>
+      </div>
+      <div class="c-block">
+        <h4>关于期刊</h4>
+        <p>Environmental Modelling & Software (EMS) 是国际环境建模与软件学会 (iEMSs) 的官方期刊，致力于发表环境建模与软件领域的研究文章、综述、介绍性概述和立场论文。期刊旨在提高我们对自然环境系统（包括空气、水和陆地组分）的表征、理解、预测或管理能力，并将这些改进传达给广大科学和专业受众。</p>
+        <p>EMS 的独特之处在于强调 <strong>跨学科通用性</strong> 和 <strong>可泛化的见解</strong> — 研究成果应能引起其他系统和领域研究者的兴趣。</p>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>Aims & Scope</h4>
+        <p>EMS 寻求以下方面的稿件：</p>
+        <ul>
+          <li><strong>通用框架与技术</strong>：跨学科和跨领域的集成框架、技术与议题</li>
+          <li><strong>模型开发与评估</strong>：模型开发、模型评估、过程识别及在环境各领域的应用，需揭示可泛化的见解</li>
+          <li><strong>环境软件开发</strong>：环境软件、信息与决策支持系统的开发与应用</li>
+          <li><strong>软件实际应用</strong>：能处理复杂需求、冲突用户视角和演化数据结构的先进环境软件，包括可用性、可靠性、验证与确认，须有定量结果支持</li>
+          <li><strong>集成建模与评估</strong>：环境系统的集成建模、评估与管理，包括政策分析、公众参与、决策方法、模型集成与质量保证</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>研究领域</h4>
+        <ul>
+          <li>通用框架与技术（系统识别、模型概念化、模型集成、灵敏度与不确定性评估、可视化、尺度问题）</li>
+          <li>系统集成评估与管理（流域、区域等），包括社会经济与生物物理耦合模型</li>
+          <li>AI 技术（专家系统、案例推理、数据挖掘、多智能体系统、贝叶斯网络、神经网络、模糊逻辑）</li>
+          <li>决策支持系统与环境信息系统</li>
+          <li>环境动力学过程识别（地表/地下水文学、湖泊学、气象学、地球物理学）</li>
+          <li>GIS、遥感与图像处理</li>
+          <li>水资源、土地、生物资源管理</li>
+          <li>各类介质污染（空气、水、土壤、噪声、辐射）</li>
+          <li>全球污染与气候变化</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 投稿前须知</h4>
+        <ul>
+          <li>除标准 Research Article 外，投稿前建议与 Editor-in-Chief 讨论以评估适合性</li>
+          <li>作者须明确说明模型/软件的目标及其开发的基本步骤</li>
+          <li>鼓励与替代方法进行比较</li>
+          <li>软件/数据须可获取（"联系作者"不可接受）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <table class="j-table">
+        <thead><tr><th>类型</th><th>说明</th><th>限制</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Research Article</strong></td><td>高质量原创研究贡献，改进现有技术水平。须技术扎实且足够新颖，数学/算法基础须充分文档化</td><td>—</td></tr>
+          <tr><td><strong>Review Paper</strong></td><td>对特定领域近期发展的广泛综述，须有详尽文献综述和深入分析，鼓励使用定量数据分析方法</td><td>—</td></tr>
+          <tr><td><strong>Position Paper</strong></td><td>综合环境建模/软件研究的关键方面，建立未来方向、重大挑战和研究机遇</td><td>—</td></tr>
+          <tr><td><strong>Introductory Overview</strong></td><td>为 EMS 读者提供简洁的主题概述，是非技术入门读物。<strong>仅限邀请</strong></td><td>仅邀请</td></tr>
+          <tr><td><strong>Commentary</strong></td><td>对 EMS 已发表作品的短篇评论</td><td>—</td></tr>
+          <tr><td><strong>Book Review</strong></td><td>介绍环境建模/软件领域的新书</td><td>—</td></tr>
+          <tr><td><strong>EnviroFutures</strong></td><td>跨界观点论文系列，聚焦环境与社会挑战。<strong>仅限邀请</strong>，≤ 4000 词 + 2 图</td><td>仅邀请</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <ul>
+          <li><strong>审稿方式</strong>：单盲审稿 (Single Anonymized)</li>
+          <li><strong>审稿人数</strong>：至少 2 位独立审稿人</li>
+          <li><strong>初筛</strong>：编辑评估稿件是否适合本刊</li>
+          <li><strong>决策</strong>：由编辑决定接受或拒稿</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>编辑回避制度</h4>
+        <p>编辑不参与处理以下稿件：自己撰写的论文、由家人或同事撰写的论文、涉及其有利益关系的产品或服务的论文。</p>
+      </div>
+      <div class="c-block">
+        <h4>申诉</h4>
+        <ul>
+          <li>遵循 Elsevier 申诉政策</li>
+          <li>仅一次申诉机会，申诉决定为最终决定</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>特刊</h4>
+        <ul>
+          <li>每个特刊最多接受 3 位 Guest Editor</li>
+          <li>联系 Prof. Min Chen 或 envsoft@elsevier.com 了解详情</li>
+          <li>审稿流程与常规投稿相同，Guest Editor 可推荐决定，最终决定权归期刊编辑</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>通过 <a href="https://www.editorialmanager.com/envsoft/" target="_blank">Editorial Manager</a> 在线提交</li>
+          <li>系统将文件转为单一 PDF 供同行评审</li>
+          <li>编辑初审 → 外审（至少 2 位审稿人）→ 编辑决定</li>
+          <li>接收后 2 天内完成校对</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>投稿前建议</h4>
+        <ul>
+          <li>Research Article 以外的稿件类型，建议先与 Editor-in-Chief 讨论</li>
+          <li>这允许编辑委员会为独特的同行评审需求做准备</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>预印本</h4>
+        <ul>
+          <li>允许通过 SSRN 免费发布预印本</li>
+          <li>投稿时可选择在 SSRN 发布预印本，通过初审后即可公开</li>
+          <li>预印本发表不影响编辑流程或出版结果</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文件格式</h4>
+        <ul>
+          <li>接受 <code>.doc/.docx</code> (Word) 和 <code>.tex</code> (LaTeX) 格式</li>
+          <li>鼓励使用 LaTeX 模板</li>
+          <li>不接受 PDF 作为源文件</li>
+          <li>Word 使用单栏排版；LaTeX 可使用双栏</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>文章结构</h4>
+        <ul>
+          <li>按编号分节：1. Introduction → 2. Methods → ... → Conclusion</li>
+          <li>使用数字编号格式进行交叉引用</li>
+          <li>不要将文章摘要纳入编号系统</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>软件/数据可用性</h4>
+        <p>大多数 EMS 论文应包含 Software/Data Availability 部分，尽可能提供：软件/数据集名称、开发者及联系方式、首次可用年份、所需硬件、所需软件、可用性与费用。对于软件还需：编程语言、程序大小；对于数据还需：仓库形式、存档大小、访问方式。<strong>"联系作者"不可接受</strong>。请使用 GitHub、BitBucket、FigShare、HydroShare 等平台。</p>
+      </div>
+      <div class="c-block">
+        <h4>标题页</h4>
+        <ul>
+          <li><strong>文章标题</strong>：简洁、信息丰富，避免缩写和公式</li>
+          <li><strong>作者姓名</strong>：提供每位作者的名和姓</li>
+          <li><strong>单位</strong>：用小写上标字母标注，提供完整通讯地址</li>
+          <li><strong>通讯作者</strong>：明确指定</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>摘要与关键词</h4>
+        <ul>
+          <li><strong>摘要</strong>：简洁、事实性，不超过 <strong>150 词</strong>，须能独立阅读</li>
+          <li><strong>关键词</strong>：1–7 个，避免多词关键词</li>
+          <li><strong>Highlights</strong>：必填，3–5 个要点，每条最多 85 字符</li>
+          <li><strong>Graphical Abstract</strong>：<strong>必填</strong>，531 × 1328 像素</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>CRediT 作者贡献声明</h4>
+        <p>通讯作者须使用 CRediT (Contributor Roles Taxonomy) 标注合著者贡献。</p>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">🎨</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>图表规范</h4>
+        <ul>
+          <li><strong>表格</strong>：可编辑文本格式，非图片</li>
+          <li><strong>矢量图</strong>：EPS 或 PDF 格式</li>
+          <li><strong>彩色/灰度照片</strong>：TIFF/JPG/PNG，≥ 300 dpi</li>
+          <li><strong>线描图</strong>：TIFF/JPG/PNG，≥ 1000 dpi</li>
+          <li><strong>组合图</strong>：TIFF/JPG/PNG，≥ 500 dpi</li>
+          <li>不接受 AI 生成或修改的图片</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>补充材料</h4>
+        <ul>
+          <li>鼓励使用补充材料（应用、图片、音频等）</li>
+          <li>补充文件在 Production 阶段不会被排版</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>数据政策</h4>
+        <ul>
+          <li><strong>Option C（强制）</strong>：必须将研究数据存入相关数据仓库并在文章中引用和链接</li>
+          <li>如数据无法公开，须在提交时说明原因</li>
+          <li>可选择将 Data/Methods 合并提交至 Data in Brief 或 MethodsX</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📚</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式</h4>
+        <ul>
+          <li>正文中的引用使用作者-年份格式</li>
+          <li>一位作者：<code>(Allan, 2020)</code></li>
+          <li>两位作者：<code>(Allan and Jones, 2019)</code></li>
+          <li>三位及以上：<code>(Kramer et al., 2023)</code> 或 <code>Kramer et al. (2023)</code></li>
+          <li>同一作者同一年多篇：用 a, b, c 区分，如 <code>(Allan, 2020a, 2020b)</code></li>
+          <li>参考文献列表按作者字母序排列，再按年份排列</li>
+          <li>使用 DOI 作为永久链接（推荐）</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>格式示例</h4>
+        <p><strong>期刊论文：</strong></p>
+        <div class="ref-example">Van der Geer, J., Handgraaf, T., Lupton, R.A., 2020. The art of writing a scientific article. J. Sci. Commun. 163, 51–59. https://doi.org/10.1016/j.sc.2020.00372.</div>
+        <p><strong>带文章编号的期刊论文：</strong></p>
+        <div class="ref-example">Van der Geer, J., Handgraaf, T., Lupton, R.A., 2022. The art of writing a scientific article. Heliyon. 19, e00205. https://doi.org/10.1016/j.heliyon.2022.e00205.</div>
+        <p><strong>书籍：</strong></p>
+        <div class="ref-example">Strunk Jr., W., White, E.B., 2000. The Elements of Style, fourth ed. Longman, New York.</div>
+        <p><strong>书籍章节：</strong></p>
+        <div class="ref-example">Mettam, G.R., Adams, L.B., 2023. How to prepare an electronic version of your article, in: Jones, B.S., Smith, R.Z. (Eds.), Introduction to the Electronic Age. E-Publishing Inc., New York, pp. 281–304.</div>
+        <p><strong>数据集：</strong></p>
+        <div class="ref-example">Oguro, M., Imahiro, S., Saito, S., Nakashizuka, T., 2015. Mortality data for Japanese oak wilt disease and surrounding forest compositions [dataset]. Mendeley Data, v1. https://doi.org/10.17632/xwj98nb39r.1.</div>
+        <p><strong>软件：</strong></p>
+        <div class="ref-example">Coon, E., Berndt, M., Jan, A., et al., 2020. Advanced Terrestrial Simulator (ATS) v0.88 (Version 0.88) [software]. Zenodo. https://doi.org/10.5281/zenodo.3727209.</div>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 与 Water Research 的区别</h4>
+        <ul>
+          <li>EMS 使用 <strong>作者-年份</strong> 格式（Author-Year），不使用编号 [1]</li>
+          <li>参考文献列表按 <strong>字母序</strong> 排列（Water Research 按出现顺序）</li>
+          <li>摘要字数限制更短：<strong>150 词</strong>（Water Research 为 250 词）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查项</h4>
+        <ul class="checklist">
+          <li>通讯作者已指定，完整联系信息已提供</li>
+          <li>所有文件已上传（关键词、图注、表格，含补充材料和视频）</li>
+          <li>已进行拼写和语法检查</li>
+          <li>正文中的所有引用均在参考文献列表中，反之亦然</li>
+          <li>已获得使用其他来源版权材料的许可</li>
+          <li>Highlights 已准备（3–5 条，每条 ≤ 85 字符）</li>
+          <li><strong>Graphical Abstract 已准备（必填）</strong></li>
+          <li>Software/Data Availability 部分已准备，软件/数据可通过公共仓库获取</li>
+          <li>利益冲突声明已准备</li>
+          <li>资金来源声明已准备</li>
+          <li>AI 使用声明已准备（如适用）</li>
+          <li>CRediT 作者贡献声明已准备</li>
+          <li>引用格式为作者-年份（非编号格式）</li>
+          <li>研究数据已存入相关数据仓库（强制）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突</h4>
+        <ul>
+          <li>所有作者须披露财务和个人关系中的潜在利益冲突</li>
+          <li>使用 Elsevier 声明工具完成，保存为 .doc/.docx 格式上传</li>
+          <li>无利益冲突的作者选择 "I have nothing to declare"</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>AI 声明</h4>
+        <ul>
+          <li>使用 AI 工具辅助撰写须在稿件末尾声明（置于参考文献前的新章节）</li>
+          <li>AI 不得列为作者或合著者</li>
+          <li>禁止 AI 生成或修改稿件图片</li>
+          <li>审稿人和编辑不得使用 AI 工具进行评审</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>其他政策</h4>
+        <ul>
+          <li><strong>预印本</strong>：允许通过 SSRN 发布预印本</li>
+          <li><strong>作者变更</strong>：投稿后一般不考虑变更作者，需使用 Authorship Change Request 表格</li>
+          <li><strong>抄袭筛查</strong>：可能使用筛查工具检查稿件</li>
+          <li><strong>Elsevier 发表伦理政策</strong>须严格遵守</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <ul>
+          <li><a href="https://www.sciencedirect.com/journal/environmental-modelling-and-software" target="_blank">期刊主页</a></li>
+          <li><a href="https://www.editorialmanager.com/envsoft/" target="_blank">投稿系统 (Editorial Manager)</a></li>
+          <li><a href="https://www.elsevier.com/journals/environmental-modelling-and-software/1364-8152/guide-for-authors" target="_blank">Guide for Authors (官方)</a></li>
+          <li><a href="http://www.iemss.org/society/index.php/position-papers" target="_blank">iEMSs Position Papers</a></li>
+          <li><a href="https://www.elsevier.com/researcheracademy" target="_blank">Elsevier Researcher Academy</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 Environmental Modelling & Software 官方 Guide for Authors · <a href="https://citeglow.com">CiteGlow</a> · 2026-03-26 更新
+</footer>
+
+<script src="theme-toggle.js"></script>
+<script>
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
