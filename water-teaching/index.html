@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>水利数值模拟教学 | HEC-RAS & ArcGIS Pro</title>
+  <meta name="description" content="HEC-RAS 水动力数值模拟与 ArcGIS Pro 地理信息处理教学视频，从入门到实战。">
+  <meta name="referrer" content="no-referrer">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --c-bg: #0a1628;
+      --c-bg-card: #0f1f38;
+      --c-bg-card-hover: #142a4a;
+      --c-primary: #3b9eff;
+      --c-accent: #00d4aa;
+      --c-accent2: #f0b429;
+      --c-text: #e2e8f0;
+      --c-text-dim: #8899b0;
+      --c-text-bright: #ffffff;
+      --c-border: rgba(59,158,255,0.15);
+      --c-glow: rgba(59,158,255,0.25);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+      --shadow-glow: 0 0 40px var(--c-glow);
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--c-bg);
+      color: var(--c-text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-water { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .bg-water .wave { position: absolute; bottom: -10%; left: -10%; width: 120%; height: 60%; border-radius: 45% 48% 40% 42%; opacity: 0.04; animation: waveFloat 12s ease-in-out infinite alternate; }
+    .bg-water .wave:nth-child(1) { background: var(--c-primary); }
+    .bg-water .wave:nth-child(2) { background: var(--c-accent); animation-duration: 16s; animation-delay: -4s; bottom: -15%; }
+    .bg-water .wave:nth-child(3) { background: var(--c-primary); animation-duration: 20s; animation-delay: -8s; bottom: -20%; opacity: 0.025; }
+    @keyframes waveFloat { 0% { transform: translateX(0) rotate(0deg); } 100% { transform: translateX(3%) rotate(3deg); } }
+
+    .particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: var(--c-primary); opacity: 0; animation: particleFloat linear infinite; }
+    @keyframes particleFloat { 0% { opacity: 0; transform: translateY(100vh) scale(0); } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-10vh) scale(1); } }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    /* Nav */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 16px 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(10,22,40,0.8); border-bottom: 1px solid var(--c-border); }
+    .nav .container { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--c-text-bright); font-weight: 700; font-size: 1.2rem; }
+    .nav-logo svg { width: 32px; height: 32px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--c-text-dim); text-decoration: none; font-size: 0.95rem; transition: var(--transition); position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--c-primary); transition: var(--transition); }
+    .nav-links a:hover { color: var(--c-text-bright); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-mobile-btn { display: none; background: none; border: none; color: var(--c-text); font-size: 1.5rem; cursor: pointer; }
+
+    /* Hero */
+    .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 120px 24px 80px; }
+    .hero-content { max-width: 800px; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; border-radius: 999px; background: rgba(59,158,255,0.1); border: 1px solid var(--c-border); color: var(--c-primary); font-size: 0.85rem; margin-bottom: 28px; animation: fadeInUp 0.8s ease; }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero h1 { font-size: clamp(2.2rem,5vw,3.6rem); font-weight: 800; color: var(--c-text-bright); line-height: 1.2; margin-bottom: 20px; animation: fadeInUp 0.8s ease 0.1s both; }
+    .hero h1 .gradient { background: linear-gradient(135deg, var(--c-primary), var(--c-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: 1.15rem; color: var(--c-text-dim); max-width: 600px; margin: 0 auto 36px; animation: fadeInUp 0.8s ease 0.2s both; }
+    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeInUp 0.8s ease 0.3s both; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 12px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: var(--transition); cursor: pointer; border: none; }
+    .btn-primary { background: linear-gradient(135deg, var(--c-primary), #2d7de0); color: #fff; box-shadow: 0 4px 20px rgba(59,158,255,0.35); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,158,255,0.5); }
+    .btn-ghost { background: rgba(255,255,255,0.05); color: var(--c-text); border: 1px solid var(--c-border); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: var(--c-primary); color: var(--c-text-bright); }
+
+    /* Sections */
+    section { padding: 100px 0; position: relative; z-index: 1; }
+    .section-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--c-accent); margin-bottom: 12px; }
+    .section-title { font-size: clamp(1.8rem,3vw,2.5rem); font-weight: 700; color: var(--c-text-bright); margin-bottom: 16px; }
+    .section-desc { color: var(--c-text-dim); font-size: 1.05rem; max-width: 600px; margin-bottom: 48px; }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; padding: 60px 0; }
+    .stat-card { text-align: center; padding: 32px 20px; border-radius: var(--radius); background: var(--c-bg-card); border: 1px solid var(--c-border); transition: var(--transition); }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-glow); border-color: rgba(59,158,255,0.3); }
+    .stat-number { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--c-primary), var(--c-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-label { color: var(--c-text-dim); margin-top: 4px; font-size: 0.95rem; }
+
+    /* Course Grid */
+    .courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    .course-card { background: var(--c-bg-card); border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden; transition: var(--transition); cursor: pointer; }
+    .course-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-glow); border-color: rgba(59,158,255,0.35); }
+    .course-thumb { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; }
+    .course-thumb-bg { width: 100%; height: 100%; object-fit: cover; }
+    .play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); opacity: 0; transition: var(--transition); }
+    .course-card:hover .play-overlay { opacity: 1; }
+    .play-btn { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+    .play-btn svg { width: 22px; height: 22px; fill: var(--c-bg); margin-left: 3px; }
+    .course-card:hover .play-btn { transform: scale(1.1); }
+    .course-tag { position: absolute; top: 12px; left: 12px; padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(8px); }
+    .tag-arcgis { background: rgba(0,180,90,0.8); color: #fff; }
+    .tag-hecras { background: rgba(100,60,180,0.8); color: #fff; }
+    .tag-series { background: rgba(59,158,255,0.8); color: #fff; }
+    .tag-general { background: rgba(240,180,40,0.8); color: #1a1a1a; }
+    .course-duration { position: absolute; bottom: 12px; right: 12px; padding: 3px 10px; border-radius: 6px; background: rgba(0,0,0,0.7); color: #fff; font-size: 0.8rem; backdrop-filter: blur(4px); }
+    .course-body { padding: 20px 24px 24px; }
+    .course-title { font-size: 1.1rem; font-weight: 600; color: var(--c-text-bright); margin-bottom: 8px; line-height: 1.4; }
+    .course-desc { color: var(--c-text-dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px; }
+    .course-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--c-text-dim); }
+    .course-meta-left { display: flex; align-items: center; gap: 12px; }
+    .course-meta-item { display: flex; align-items: center; gap: 4px; }
+    .course-level { padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+    .level-beginner { background: rgba(0,212,170,0.15); color: var(--c-accent); }
+    .level-intermediate { background: rgba(59,158,255,0.15); color: var(--c-primary); }
+    .level-advanced { background: rgba(240,180,40,0.15); color: var(--c-accent2); }
+
+    /* Experience / Article Cards */
+    .experience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .article-card { display: flex; flex-direction: column; background: var(--c-bg-card); border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden; transition: var(--transition); text-decoration: none; }
+    .article-card:hover { transform: translateY(-4px); border-color: var(--c-primary); box-shadow: 0 8px 24px rgba(59,158,255,0.12); }
+    .article-card.is-collapsed { display: none; }
+    .course-card.is-collapsed { display: none; }
+    .article-thumb { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; }
+    .article-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .article-card:hover .article-thumb img { transform: scale(1.05); }
+    .article-body { padding: 20px 24px 24px; flex: 1; display: flex; flex-direction: column; }
+    .article-title { font-size: 1.1rem; font-weight: 600; color: var(--c-text-bright); margin-bottom: 8px; line-height: 1.4; }
+    .article-desc { color: var(--c-text-dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px; flex: 1; }
+    .article-meta { display: flex; gap: 16px; font-size: 0.82rem; color: var(--c-text-dim); }
+
+    /* Roadmap */
+    .roadmap { position: relative; padding-left: 40px; }
+    .roadmap::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--c-primary), var(--c-accent), transparent); }
+    .roadmap-item { position: relative; padding: 0 0 48px 40px; }
+    .roadmap-item:last-child { padding-bottom: 0; }
+    .roadmap-dot { position: absolute; left: -33px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--c-bg); border: 3px solid var(--c-primary); z-index: 2; }
+    .roadmap-item:nth-child(even) .roadmap-dot { border-color: var(--c-accent); }
+    .roadmap-phase { font-size: 0.8rem; color: var(--c-primary); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 8px; }
+    .roadmap-item:nth-child(even) .roadmap-phase { color: var(--c-accent); }
+    .roadmap-title { font-size: 1.3rem; font-weight: 700; color: var(--c-text-bright); margin-bottom: 8px; }
+    .roadmap-desc { color: var(--c-text-dim); font-size: 0.95rem; max-width: 550px; }
+    .roadmap-tools { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .roadmap-tool { padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; background: rgba(59,158,255,0.1); color: var(--c-primary); border: 1px solid var(--c-border); }
+
+    /* About */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .about-avatar { width: 280px; height: 280px; border-radius: 50%; background: linear-gradient(135deg, var(--c-primary), var(--c-accent)); display: flex; align-items: center; justify-content: center; font-size: 6rem; margin: 0 auto; position: relative; }
+    .about-avatar::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px dashed var(--c-border); animation: rotate 20s linear infinite; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    .about-text h3 { font-size: 1.6rem; color: var(--c-text-bright); margin-bottom: 16px; }
+    .about-text p { color: var(--c-text-dim); margin-bottom: 16px; font-size: 1rem; }
+    .about-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .about-tag { padding: 6px 16px; border-radius: 8px; font-size: 0.85rem; background: rgba(59,158,255,0.1); color: var(--c-primary); border: 1px solid var(--c-border); }
+
+    /* Filter Tabs */
+    .filter-tabs { display: flex; gap: 12px; margin-bottom: 36px; flex-wrap: wrap; }
+    .filter-tab { padding: 8px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; background: rgba(255,255,255,0.05); color: var(--c-text-dim); border: 1px solid var(--c-border); cursor: pointer; transition: var(--transition); }
+    .filter-tab:hover, .filter-tab.active { background: rgba(59,158,255,0.15); color: var(--c-primary); border-color: var(--c-primary); }
+
+    /* Video Modal */
+    .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; backdrop-filter: blur(8px); }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal-content { width: 90%; max-width: 960px; position: relative; transform: scale(0.9); transition: transform 0.3s ease; }
+    .modal-overlay.active .modal-content { transform: scale(1); }
+    .modal-close { position: absolute; top: -44px; right: 0; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; opacity: 0.7; transition: var(--transition); line-height: 1; }
+    .modal-close:hover { opacity: 1; transform: rotate(90deg); }
+    .modal-video-wrap { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: var(--radius); overflow: hidden; background: #000; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+    .modal-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .modal-title { color: #fff; font-size: 1.1rem; font-weight: 600; margin-top: 16px; text-align: center; }
+
+    /* Contact */
+    .contact-section { text-align: center; padding: 80px 0 40px; }
+    .contact-links { display: flex; gap: 20px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+    .contact-link { display: flex; align-items: center; gap: 10px; padding: 14px 28px; border-radius: var(--radius-sm); background: var(--c-bg-card); border: 1px solid var(--c-border); color: var(--c-text); text-decoration: none; transition: var(--transition); font-size: 0.95rem; }
+    .contact-link:hover { border-color: var(--c-primary); background: var(--c-bg-card-hover); transform: translateY(-2px); }
+    .contact-link svg { width: 20px; height: 20px; }
+
+    footer { text-align: center; padding: 40px 24px; color: var(--c-text-dim); font-size: 0.85rem; border-top: 1px solid var(--c-border); position: relative; z-index: 1; }
+
+    /* Scroll Reveal */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Doc Detail Modal */
+    .doc-modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; backdrop-filter: blur(8px); }
+    .doc-modal-overlay.active { opacity: 1; pointer-events: all; }
+    .doc-modal-box { width: 92%; max-width: 860px; max-height: 85vh; background: var(--c-bg-card); border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden; transform: scale(0.92); transition: transform 0.3s ease; display: flex; flex-direction: column; }
+    .doc-modal-overlay.active .doc-modal-box { transform: scale(1); }
+    .doc-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--c-border); flex-shrink: 0; }
+    .doc-modal-header h3 { color: var(--c-text-bright); font-size: 1.15rem; font-weight: 700; }
+    .doc-modal-close { background: none; border: none; color: var(--c-text-dim); font-size: 1.5rem; cursor: pointer; transition: var(--transition); line-height: 1; padding: 4px 8px; border-radius: 6px; }
+    .doc-modal-close:hover { color: var(--c-text-bright); background: rgba(255,255,255,0.05); }
+    .doc-modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .doc-modal-body h4 { color: var(--c-text-bright); font-size: 1.05rem; font-weight: 700; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--c-border); }
+    .doc-modal-body h4:first-child { margin-top: 0; }
+    .doc-modal-body p { color: var(--c-text-dim); margin-bottom: 10px; font-size: 0.92rem; line-height: 1.7; }
+    .doc-modal-body ul { margin: 6px 0 14px 0; padding-left: 20px; }
+    .doc-modal-body li { margin-bottom: 6px; color: var(--c-text-dim); font-size: 0.92rem; line-height: 1.6; }
+    .doc-modal-body li strong { color: var(--c-text); }
+    .doc-modal-body .step-list { counter-reset: step; list-style: none; padding-left: 0; }
+    .doc-modal-body .step-list li { counter-increment: step; position: relative; padding-left: 36px; margin-bottom: 14px; }
+    .doc-modal-body .step-list li::before { content: counter(step); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; background: rgba(59,158,255,0.15); color: var(--c-primary); font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .doc-modal-body .tip-box { padding: 12px 16px; border-radius: var(--radius-sm); background: rgba(0,212,170,0.08); border-left: 3px solid var(--c-accent); margin: 12px 0; }
+    .doc-modal-body .tip-box p { color: var(--c-text); margin: 0; }
+    .doc-modal-body .warn-box { padding: 12px 16px; border-radius: var(--radius-sm); background: rgba(240,180,40,0.08); border-left: 3px solid var(--c-accent2); margin: 12px 0; }
+    .doc-modal-body .warn-box p { color: var(--c-text); margin: 0; }
+    .doc-modal-footer { padding: 16px 24px; border-top: 1px solid var(--c-border); display: flex; gap: 12px; justify-content: flex-end; flex-shrink: 0; }
+    .doc-modal-footer .btn { padding: 10px 20px; font-size: 0.85rem; border-radius: 8px; }
+    .doc-section { cursor: pointer; position: relative; }
+    .doc-section:hover { border-color: rgba(59,158,255,0.3); }
+    .doc-section .expand-hint { display: flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 0.85rem; color: var(--c-primary); opacity: 0.7; transition: var(--transition); }
+    .doc-section:hover .expand-hint { opacity: 1; }
+    .doc-section .expand-hint svg { width: 16px; height: 16px; transition: transform 0.3s ease; }
+    .doc-section:hover .expand-hint svg { transform: translateX(3px); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--c-bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(59,158,255,0.3); border-radius: 4px; }
+
+    /* Doc Mirror Styles */
+    .doc-layout { }
+    .doc-toc { display: flex; flex-direction: column; gap: 2px; }
+    .toc-link { display: block; padding: 6px 12px; border-radius: 6px; color: var(--c-text-dim); text-decoration: none; font-size: 0.88rem; transition: var(--transition); }
+    .toc-link:hover, .toc-link.active { background: rgba(59,158,255,0.1); color: var(--c-primary); }
+    .toc-group { margin-top: 12px; }
+    .toc-group-title { display: block; padding: 4px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-dim); opacity: 0.6; }
+    .doc-content { min-width: 0; }
+    .doc-section { margin-bottom: 40px; padding: 28px 32px; background: var(--c-bg-card); border: 1px solid var(--c-border); border-radius: var(--radius); }
+
+    /* Doc Collapse */
+    .doc-collapse-btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; border-radius: var(--radius-sm); background: rgba(59,158,255,0.1); border: 1px solid var(--c-border); color: var(--c-primary); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-bottom: 32px; }
+    .doc-collapse-btn:hover { background: rgba(59,158,255,0.18); border-color: var(--c-primary); }
+    .doc-collapse-btn .arrow { display: inline-block; transition: transform 0.3s ease; font-size: 0.8em; }
+    .doc-collapse-btn.open .arrow { transform: rotate(180deg); }
+    .doc-collapse-body { overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.5s ease, opacity 0.4s ease; }
+    .doc-collapse-body.open { max-height: 8000px; opacity: 1; }
+    .doc-heading { font-size: 1.25rem; font-weight: 700; color: var(--c-text-bright); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--c-border); }
+    .doc-body { color: var(--c-text); font-size: 0.95rem; line-height: 1.8; }
+    .doc-body p { margin-bottom: 12px; color: var(--c-text-dim); }
+    .doc-body ul { margin: 8px 0 16px 0; padding-left: 20px; }
+    .doc-body li { margin-bottom: 6px; color: var(--c-text-dim); }
+    .doc-body li strong { color: var(--c-text); }
+    .doc-body a { color: var(--c-primary); text-decoration: none; }
+    .doc-body a:hover { text-decoration: underline; }
+    .doc-subsection { margin-top: 20px; }
+    .doc-subsection h4 { color: var(--c-text-bright); font-size: 1rem; font-weight: 600; margin-bottom: 10px; }
+    .doc-feature-list { display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
+    .doc-feature { padding: 16px 20px; border-radius: var(--radius-sm); background: rgba(59,158,255,0.04); border: 1px solid var(--c-border); }
+    .doc-feature strong { color: var(--c-text-bright); }
+    .doc-feature p, .doc-feature li { font-size: 0.9rem; }
+    .doc-tutorial-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .tutorial-item { display: flex; align-items: flex-start; gap: 14px; padding: 12px 16px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); transition: var(--transition); }
+    .tutorial-item:hover { background: rgba(59,158,255,0.06); border-color: var(--c-border); }
+    .tutorial-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px; background: rgba(59,158,255,0.1); color: var(--c-primary); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+    .tutorial-item strong { color: var(--c-text-bright); font-size: 0.95rem; display: block; margin-bottom: 2px; }
+    .tutorial-desc { color: var(--c-text-dim); font-size: 0.85rem; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-mobile-btn { display: block; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(10,22,40,0.95); backdrop-filter: blur(20px); padding: 20px 24px; gap: 16px; border-bottom: 1px solid var(--c-border); }
+      .about-grid { grid-template-columns: 1fr; text-align: center; }
+      .courses-grid, .experience-grid { grid-template-columns: 1fr; }
+      .doc-layout { grid-template-columns: 1fr !important; }
+      .doc-layout nav { position: static !important; max-height: none !important; }
+      .hero { padding: 100px 20px 60px; }
+      .roadmap { padding-left: 30px; }
+      .roadmap-item { padding-left: 30px; }
+    }
+    @media (min-width: 769px) and (max-width: 1100px) {
+      .courses-grid, .experience-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-water"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="container">
+      <a href="#" class="nav-logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M4 20c2-4 6-8 12-8s10 4 12 8" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/><path d="M6 24c2-3 5-6 10-6s8 3 10 6" stroke="url(#g2)" stroke-width="2" stroke-linecap="round" opacity="0.6"/><circle cx="16" cy="10" r="3" fill="url(#g1)"/><defs><linearGradient id="g1" x1="4" y1="20" x2="28" y2="12"><stop stop-color="#3b9eff"/><stop offset="1" stop-color="#00d4aa"/></linearGradient><linearGradient id="g2" x1="6" y1="24" x2="26" y2="18"><stop stop-color="#3b9eff"/><stop offset="1" stop-color="#00d4aa"/></linearGradient></defs></svg>
+        水利数值模拟
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#courses">课程</a></li>
+        <li><a href="#resources">官方资源</a></li>
+        <li><a href="#roadmap">学习路线</a></li>
+        <li><a href="#services">服务</a></li>
+        <li><a href="#about">关于</a></li>
+        <li><a href="#contact">联系</a></li>
+      </ul>
+      <button class="nav-mobile-btn" id="navBtn" aria-label="菜单">☰</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge"><span class="dot"></span>持续更新中</div>
+      <h1>从零掌握<br><span class="gradient">HEC-RAS & ArcGIS Pro</span><br>水动力数值模拟</h1>
+      <p>Bilibili 视频教学 + HEC-RAS 官方文档中文镜像。一维/二维水动力建模、洪水模拟与分析，从入门到工程实战。</p>
+      <div class="hero-actions">
+        <a href="#courses" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          📺 看视频学操作
+        </a>
+        <a href="#resources" class="btn btn-ghost">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          📖 查文档找细节
+        </a>
+        <a href="#experience" class="btn btn-ghost">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          📝 读经验学技巧
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section style="padding-top:0;">
+    <div class="container">
+      <div class="stats reveal">
+        <div class="stat-card"><div class="stat-number">12+</div><div class="stat-label">教学视频</div></div>
+        <div class="stat-card"><div class="stat-number">3.8w+</div><div class="stat-label">总播放量</div></div>
+        <div class="stat-card"><div class="stat-number">16</div><div class="stat-label">文档镜像</div></div>
+        <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">核心软件</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses -->
+  <section id="courses">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">📺 路径一：视频教学</div>
+        <h2 class="section-title">全部教学视频</h2>
+        <p class="section-desc">Bilibili 视频讲解，适合跟着操作一步步学。涵盖 ArcGIS Pro 地理数据处理与 HEC-RAS 水动力模拟。</p>
+        <div style="margin-top:16px;padding:14px 20px;border-radius:var(--radius-sm);background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);color:var(--c-accent);font-size:0.9rem;text-align:center;">
+          📦 视频实例相关数据文件可在微信公众号 <strong>「题序羊」</strong> 获取，有进一步交流也欢迎前往公众号留言。
+        </div>
+      </div>
+
+      <div class="filter-tabs reveal">
+        <button class="filter-tab active" data-filter="all">全部课程</button>
+        <button class="filter-tab" data-filter="hec-ras">HEC-RAS</button>
+        <button class="filter-tab" data-filter="arcgis">ArcGIS Pro</button>
+      </div>
+
+      <div class="courses-grid" id="coursesGrid">
+
+        <!-- ===== HEC-RAS 入门合集 ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1yZ4y1R75B" data-p="1" data-title="HEC-RAS 软件简单讲解（合集）">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i0.hdslb.com/bfs/archive/b18491886beaaaee121908017e9b5695c3d4d060.png" alt="HEC-RAS 软件简单讲解" loading="lazy">
+            <span class="course-tag tag-series">合集 · 入门必看</span>
+            <span class="course-duration">38:10</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS软件简单讲解</div>
+            <div class="course-desc">HEC-RAS 操作的简单教学，整理成合集方便大家学习使用，涵盖一维恒定流与非恒定流演示。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 3.1w</span><span class="course-meta-item">👍 515</span></div>
+              <span class="course-level level-beginner">入门</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-RAS 一维恒定流 ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1iq4y117JQ" data-title="HEC-RAS 一维恒定流计算简单演示">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i0.hdslb.com/bfs/archive/d44e6ced0bccda893a01ae3959a6248b1ccb7813.jpg" alt="HEC-RAS 一维恒定流" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS</span>
+            <span class="course-duration">11:49</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS一维恒定流计算简单演示</div>
+            <div class="course-desc">一维恒定流计算的快速入门演示，从建模到出结果的完整流程。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 1.3w</span><span class="course-meta-item">👍 215</span></div>
+              <span class="course-level level-beginner">入门</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-RAS 一维断面编辑 ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1Yb4y1n7Dq" data-title="HEC-RAS 一维断面编辑简单演示">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i2.hdslb.com/bfs/archive/011ba0d308ae83179e8f347dab9cb19db80ce9b6.jpg" alt="HEC-RAS 一维断面编辑" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS</span>
+            <span class="course-duration">33:07</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS一维断面编辑简单演示</div>
+            <div class="course-desc">详细讲解河道断面数据的编辑方法，包括断面导入、间距调整、无效区域处理等关键操作。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 8,095</span><span class="course-meta-item">👍 141</span></div>
+              <span class="course-level level-intermediate">进阶</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-RAS 一维非恒定流 ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1e44y1j7FW" data-title="HEC-RAS 一维非恒定流计算简单演示">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i0.hdslb.com/bfs/archive/3157ef65a508b87d28180977e4aa0c6ca2452410.jpg" alt="HEC-RAS 一维非恒定流" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS</span>
+            <span class="course-duration">26:21</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS一维非恒定流计算简单演示</div>
+            <div class="course-desc">在恒定流基础上进阶到非恒定流模拟，讲解边界条件设定、时间步长选择与结果分析。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 1.1w</span><span class="course-meta-item">👍 174</span></div>
+              <span class="course-level level-intermediate">进阶</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-RAS 一维计算结果查看 ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1Ei4y1y7ke" data-title="HEC-RAS 一维计算结果查看">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i1.hdslb.com/bfs/archive/087cf9a07912bea311036a087359e5efe22c02f9.jpg" alt="HEC-RAS 一维计算结果查看" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS</span>
+            <span class="course-duration">16:09</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS一维计算结果查看</div>
+            <div class="course-desc">模拟完成后如何查看水面线、流速分布、流量过程线等结果，导出数据用于报告制作。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 5,591</span><span class="course-meta-item">👍 85</span></div>
+              <span class="course-level level-beginner">入门</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-RAS 一维支流汇入 ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1Hr4y1x73b" data-title="HEC-RAS 一维支流汇入（手动绘制）">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i0.hdslb.com/bfs/archive/7944f8dc0c171aac50900e1cd5fab3337622a412.jpg" alt="HEC-RAS 一维支流汇入" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS</span>
+            <span class="course-duration">28:05</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS一维支流汇入（手动绘制）</div>
+            <div class="course-desc">讲解如何在 HEC-RAS 中手动绘制支流汇入节点，处理干支流交汇的复杂河道拓扑关系。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 5,986</span><span class="course-meta-item">👍 112</span></div>
+              <span class="course-level level-advanced">高级</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-RAS 圆柱绕流 ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1Z5gpzqEN3" data-title="HEC-RAS 圆柱绕流效果">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i2.hdslb.com/bfs/archive/87d65dc7936768012e80b1b7d8139e45400a4c20.jpg" alt="HEC-RAS 圆柱绕流" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS</span>
+            <span class="course-duration">00:17</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS圆柱绕流效果</div>
+            <div class="course-desc">二维模型圆柱绕流的数值模拟效果展示，直观呈现流场涡旋结构。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 760</span><span class="course-meta-item">👍 11</span></div>
+              <span class="course-level level-advanced">演示</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-RAS Basics (English) ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1HP4y1A7PV" data-title="HEC-RAS Basics">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i2.hdslb.com/bfs/archive/528be79c566f42993a1bfa34306e2ced24c9899f.png" alt="HEC-RAS Basics" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS · EN</span>
+            <span class="course-duration">55:15</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-RAS Basics</div>
+            <div class="course-desc">HEC-RAS 基础英文教程，适合想接触英文原版资料的学习者。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 715</span><span class="course-meta-item">👍 6</span></div>
+              <span class="course-level level-beginner">入门</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== HEC-HMS for HEC-RAS ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1fa41117Jx" data-title="HEC-HMS for HEC-RAS Users">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i0.hdslb.com/bfs/archive/c34ad2e5241142ce8f1b7449a6e7aca734d70693.png" alt="HEC-HMS for HEC-RAS" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-HMS · EN</span>
+            <span class="course-duration">48:54</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">HEC-HMS for HEC-RAS Users</div>
+            <div class="course-desc">从 HEC-HMS 降雨-径流模拟到 HEC-RAS 水动力模拟的耦合流程，英文教程。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 820</span><span class="course-meta-item">👍 11</span></div>
+              <span class="course-level level-intermediate">进阶</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Terrain Modification ===== -->
+        <div class="course-card reveal" data-category="hec-ras" data-bvid="BV1bR4y1j7KV" data-title="Terrain Modification in HEC-RAS">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i2.hdslb.com/bfs/archive/cbb399484742f78403a2ae6792546ecccb8e144e.png" alt="Terrain Modification" loading="lazy">
+            <span class="course-tag tag-hecras">HEC-RAS · EN</span>
+            <span class="course-duration">46:44</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">Terrain Modification in HEC-RAS</div>
+            <div class="course-desc">HEC-RAS 地形修改功能详解，如何在模型中调整地形以模拟堤防、桥梁等工程构筑物，英文教程。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 842</span><span class="course-meta-item">👍 14</span></div>
+              <span class="course-level level-advanced">高级</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== ArcGIS Pro 水文分析 ===== -->
+        <div class="course-card reveal" data-category="arcgis" data-bvid="BV1A24y1w7Gd" data-title="ArcGIS Pro 水文分析——河网提取+流域划分">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i0.hdslb.com/bfs/archive/b4400af77525c12d750951bda00fa77c9c4e3d58.jpg" alt="ArcGIS Pro 水文分析" loading="lazy">
+            <span class="course-tag tag-arcgis">ArcGIS Pro</span>
+            <span class="course-duration">31:30</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">ArcGIS Pro水文分析——河网提取+流域划分</div>
+            <div class="course-desc">利用 ArcGIS Pro 水文分析工具，从 DEM 数据完成填洼、流向计算、汇流累积、河网提取与流域边界划分的完整流程。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 2.4w</span><span class="course-meta-item">👍 453</span></div>
+              <span class="course-level level-intermediate">进阶</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== ArcGIS Pro CAD转DEM ===== -->
+        <div class="course-card reveal" data-category="arcgis" data-bvid="BV1HN411w7b9" data-title="ArcGIS Pro CAD 高程数据转 DEM 栅格文件">
+          <div class="course-thumb">
+            <img class="course-thumb-bg" src="http://i1.hdslb.com/bfs/archive/a548f3560568826e2381c10e7ed529cb977da71e.jpg" alt="ArcGIS Pro CAD转DEM" loading="lazy">
+            <span class="course-tag tag-arcgis">ArcGIS Pro</span>
+            <span class="course-duration">25:19</span>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+          </div>
+          <div class="course-body">
+            <div class="course-title">ArcGIS Pro CAD高程数据转DEM栅格文件</div>
+            <div class="course-desc">将 CAD 测量数据中的高程信息转换为 GIS 可用的 DEM 栅格，为后续水文分析和数值建模提供地形数据。</div>
+            <div class="course-meta">
+              <div class="course-meta-left"><span class="course-meta-item">👁 7,032</span><span class="course-meta-item">👍 166</span></div>
+              <span class="course-level level-intermediate">进阶</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div id="coursesToggle" style="text-align:center;margin-top:24px;display:none;">
+        <button onclick="toggleCourses()" class="btn btn-ghost" style="font-size:0.9rem;">
+          <span id="coursesToggleText">展开全部 ▼</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+    <!-- HEC-RAS Documentation Mirror -->
+
+  <!-- Experience Posts -->
+  <section id="resources">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">📖 路径二：文档镜像</div>
+        <h2 class="section-title">HEC-RAS 操作手册镜像</h2>
+        <p class="section-desc">适合查阅细节、查找参数说明、追溯理论公式。基于 USACE 官方文档整理，无需翻墙。可下载 PDF 离线阅读。</p>
+      </div>
+
+      <!-- Attribution -->
+      <div class="reveal" style="margin-bottom:24px;padding:12px 20px;border-radius:var(--radius-sm);background:rgba(59,158,255,0.06);border:1px solid var(--c-border);color:var(--c-text-dim);font-size:0.85rem;">
+        ⚠️ 本站内容整理自 <a href="https://www.hec.usace.army.mil/confluence/rasdocs" target="_blank" style="color:var(--c-primary);">HEC-RAS 官方文档</a>，版权归 USACE Hydrologic Engineering Center 所有。如有更新请以官网为准。
+      </div>
+
+      <!-- Version Badge -->
+      <div class="reveal" style="margin-bottom:24px;">
+        <div style="display:inline-flex;align-items:center;gap:12px;padding:12px 24px;border-radius:var(--radius-sm);background:rgba(59,158,255,0.08);border:1px solid var(--c-border);">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c-accent);animation:pulse 2s infinite;"></span>
+          <span style="color:var(--c-text-bright);font-weight:700;font-size:1.05rem;">最新版本：HEC-RAS 6.7 Beta 5</span>
+          <span style="color:var(--c-text-dim);font-size:0.9rem;">发布于 2025.10.31 · 仅支持 64 位 Windows</span>
+        </div>
+      </div>
+
+      <!-- Quick Links to Official Docs -->
+      <div class="reveal" style="margin-bottom:36px;">
+        <div style="font-weight:700;color:var(--c-text-bright);font-size:0.95rem;margin-bottom:12px;">🔗 官方文档直达链接</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" style="padding:8px 16px;border-radius:8px;background:rgba(59,158,255,0.1);border:1px solid var(--c-border);color:var(--c-primary);text-decoration:none;font-size:0.85rem;transition:var(--transition);">📘 一维用户手册</a>
+          <a href="https://www.hec.usace.army.mil/confluence/rasdocs/r2dum/latest" target="_blank" style="padding:8px 16px;border-radius:8px;background:rgba(59,158,255,0.1);border:1px solid var(--c-border);color:var(--c-primary);text-decoration:none;font-size:0.85rem;transition:var(--transition);">📗 二维用户手册</a>
+          <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rmum/latest" target="_blank" style="padding:8px 16px;border-radius:8px;background:rgba(59,158,255,0.1);border:1px solid var(--c-border);color:var(--c-primary);text-decoration:none;font-size:0.85rem;transition:var(--transition);">🗺️ RAS Mapper</a>
+          <a href="https://www.hec.usace.army.mil/confluence/rasdocs/ras1dtechref/latest" target="_blank" style="padding:8px 16px;border-radius:8px;background:rgba(59,158,255,0.1);border:1px solid var(--c-border);color:var(--c-primary);text-decoration:none;font-size:0.85rem;transition:var(--transition);">📐 水力学参考</a>
+          <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" style="padding:8px 16px;border-radius:8px;background:rgba(59,158,255,0.1);border:1px solid var(--c-border);color:var(--c-primary);text-decoration:none;font-size:0.85rem;transition:var(--transition);">📖 教程与指南</a>
+          <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasrn/latest" target="_blank" style="padding:8px 16px;border-radius:8px;background:rgba(59,158,255,0.1);border:1px solid var(--c-border);color:var(--c-primary);text-decoration:none;font-size:0.85rem;transition:var(--transition);">📋 更新日志</a>
+          <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rastraining/latest" target="_blank" style="padding:8px 16px;border-radius:8px;background:rgba(59,158,255,0.1);border:1px solid var(--c-border);color:var(--c-primary);text-decoration:none;font-size:0.85rem;transition:var(--transition);">🎓 官方培训</a>
+        </div>
+        <p style="color:var(--c-text-dim);font-size:0.8rem;margin-top:8px;">💡 以上链接指向 HEC 官网，可能需要代理访问。本站已将核心内容镜像在下方，可直接查阅。</p>
+      </div>
+
+      <!-- Toggle Button -->
+      <button class="doc-collapse-btn" id="docToggleBtn" onclick="toggleDocCollapse()">
+        📚 点击展开全部操作手册与教程
+        <span class="arrow">▼</span>
+      </button>
+
+      <!-- Doc Layout: Sidebar + Content (Collapsible) -->
+      <div class="doc-collapse-body" id="docCollapseBody">
+      <div style="display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start;" class="doc-layout">
+
+        <!-- Sidebar TOC -->
+        <nav class="reveal" style="position:sticky;top:80px;background:var(--c-bg-card);border:1px solid var(--c-border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 100px);overflow-y:auto;">
+          <div style="font-weight:700;color:var(--c-text-bright);font-size:0.95rem;margin-bottom:16px;">📑 文档目录</div>
+          <div class="doc-toc">
+            <a href="#doc-overview" class="toc-link active">软件概览</a>
+            <div class="toc-group">
+              <span class="toc-group-title">水力学文档</span>
+              <a href="#doc-user-manual" class="toc-link">📘 用户手册 (1D)</a>
+              <a href="#doc-2d-manual" class="toc-link">📗 二维用户手册 (2D)</a>
+              <a href="#doc-mapper" class="toc-link">🗺️ RAS Mapper 手册</a>
+              <a href="#doc-hydraulic-ref" class="toc-link">📐 水力学参考手册</a>
+            </div>
+            <div class="toc-group">
+              <span class="toc-group-title">教程指南</span>
+              <a href="#doc-tutorial-terrain" class="toc-link">地形处理</a>
+              <a href="#doc-tutorial-1dsteady" class="toc-link">1D 恒定流</a>
+              <a href="#doc-tutorial-1dunsteady" class="toc-link">1D 非恒定流</a>
+              <a href="#doc-tutorial-2d" class="toc-link">2D 非恒定流</a>
+              <a href="#doc-tutorial-sediment" class="toc-link" style="opacity:0.6;">泥沙输移教程</a>
+              <a href="#doc-tutorial-pipe" class="toc-link" style="opacity:0.6;">管道网络</a>
+            </div>
+            <div class="toc-group">
+              <span class="toc-group-title" style="opacity:0.5;">泥沙文档 <span style="font-size:0.75em;">▾</span></span>
+              <a href="#doc-sed1d" class="toc-link" style="opacity:0.5;">一维泥沙输移</a>
+              <a href="#doc-sed2d" class="toc-link" style="opacity:0.5;">二维泥沙输移</a>
+              <a href="#doc-mud" class="toc-link" style="opacity:0.5;">泥石流建模</a>
+            </div>
+            <div class="toc-group">
+              <span class="toc-group-title">更新与支持</span>
+              <a href="#doc-release" class="toc-link">版本更新说明</a>
+              <a href="#doc-known" class="toc-link">已知问题</a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Main Doc Content -->
+        <div class="doc-content">
+
+          <!-- Overview -->
+          <div class="doc-section reveal" id="doc-overview" data-doc="overview">
+            <h3 class="doc-heading">🌊 HEC-RAS 软件概览</h3>
+            <div class="doc-body">
+              <p>HEC-RAS（Hydrologic Engineering Center's River Analysis System）由美国陆军工程兵团（USACE）水文工程中心开发，是一款专业的河流水力学分析系统。</p>
+              <ul>
+                <li><strong>一维恒定流水面线计算</strong> — 标准步推法（Standard Step Method）</li>
+                <li><strong>一维非恒定流模拟</strong> — 完整圣维南方程组求解</li>
+                <li><strong>二维非恒定流模拟</strong> — 浅水方程（SWE）/ 扩散波方程</li>
+                <li><strong>泥沙输移与河床演变</strong> — 一维和二维移动河床计算</li>
+                <li><strong>雨水管网模拟</strong> — 管道网络（Pipe Networks）建模</li>
+                <li><strong>水温与水质模拟</strong></li>
+              </ul>
+              <p>HEC-RAS 自 6.0 版本起仅支持 64 位 Windows（7/8/10/11）。新版本可与旧版本并行安装，完全兼容旧项目文件。</p>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看软件详细介绍 →</div>
+            </div>
+          </div>
+
+          <!-- 1D User Manual -->
+          <div class="doc-section reveal" id="doc-user-manual" data-doc="user-manual">
+            <h3 class="doc-heading">📘 用户手册（一维 · User's Manual）</h3>
+            <div class="doc-body">
+              <p>一维用户手册是 HEC-RAS 最核心的操作文档，涵盖从项目创建到结果输出的完整工作流。</p>
+              <div class="doc-subsection">
+                <h4>主要章节</h4>
+                <ul>
+                  <li><strong>Getting Started</strong> — 软件安装、界面介绍、项目管理</li>
+                  <li><strong>Geometric Data</strong> — 河道断面编辑、河段连接、桥梁/涵洞/堰/闸门几何定义</li>
+                  <li><strong>Steady Flow Data</strong> — 恒定流边界条件、流量输入、水面线计算</li>
+                  <li><strong>Unsteady Flow Data</strong> — 非恒定流边界条件、初始条件、时间步长设定</li>
+                  <li><strong>Running a Model</strong> — 计算执行、收敛检查、诊断信息</li>
+                  <li><strong>Viewing Results</strong> — 水面线图、断面属性表、过程线、动画回放</li>
+                  <li><strong>Hydraulic Design</strong> — 桥梁/涵洞水力设计工具</li>
+                </ul>
+              </div>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看详细操作步骤 →</div>
+              <div style="margin-top:14px;"><a href="docs/HEC-RAS 6.0 Users Manual.pdf" download style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.3);color:var(--c-accent);text-decoration:none;font-size:0.85rem;font-weight:600;transition:var(--transition);">📥 下载用户手册 PDF</a> <span style="color:var(--c-text-dim);font-size:0.75rem;margin-left:6px;">本站为 6.0 版本，如需最新版请<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" style="color:var(--c-primary);text-decoration:underline;">前往官网</a></span></div>
+            </div>
+          </div>
+
+          <!-- 2D User Manual -->
+          <div class="doc-section reveal" id="doc-2d-manual" data-doc="2d-manual">
+            <h3 class="doc-heading">📗 二维用户手册（2D User's Manual）</h3>
+            <div class="doc-body">
+              <p>二维用户手册详细讲解 HEC-RAS 二维水动力模拟的完整工作流程，是进行洪水漫滩、溃坝、城市内涝等二维分析的必备文档。</p>
+              <ul>
+                <li><strong>2D Flow Area Concepts</strong> — 二维计算区域概念、网格类型</li>
+                <li><strong>Mesh Generation</strong> — 网格生成与细化，Breaklines 和 Breakpoints</li>
+                <li><strong>2D Boundary Conditions</strong> — 流量/水位/内边界条件</li>
+                <li><strong>Running a Model</strong> — 并行计算、Numerical Reproducibility</li>
+                <li><strong>2D Results</strong> — 水深/流速/水位可视化、Reference Line 输出</li>
+                <li><strong>Combined 1D/2D Modeling</strong> — 一维与二维耦合</li>
+                <li><strong>Dam Breach Analysis</strong> — 溃坝分析</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看二维建模详细说明 →</div>
+            </div>
+          </div>
+
+          <!-- RAS Mapper -->
+          <div class="doc-section reveal" id="doc-mapper" data-doc="mapper">
+            <h3 class="doc-heading">🗺️ RAS Mapper 用户手册</h3>
+            <div class="doc-body">
+              <p>RAS Mapper 是 HEC-RAS 内置的 GIS 系统，用于管理地理空间数据、创建二维网格、查看结果和生成地图输出。</p>
+              <ul>
+                <li><strong>Terrain Data</strong> — 地形数据导入（DEM、TIN）、地形修改</li>
+                <li><strong>2D Mesh Editing</strong> — 在地图上直接编辑二维网格</li>
+                <li><strong>Mapping Results</strong> — 结果的空间可视化渲染</li>
+                <li><strong>Reference Lines</strong> — 参考线输出（平均流速、水力深度等）</li>
+                <li><strong>Map Output</strong> — 地图导出与打印</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看 RAS Mapper 详细操作 →</div>
+              <div style="margin-top:14px;"><a href="docs/HEC-RAS Mapper User's Manual.pdf" download style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.3);color:var(--c-accent);text-decoration:none;font-size:0.85rem;font-weight:600;transition:var(--transition);">📥 下载 Mapper 手册 PDF</a> <span style="color:var(--c-text-dim);font-size:0.75rem;margin-left:6px;">如需最新版请<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rmum/latest" target="_blank" style="color:var(--c-primary);text-decoration:underline;">前往官网</a></span></div>
+            </div>
+          </div>
+
+          <!-- Hydraulic Reference -->
+          <div class="doc-section reveal" id="doc-hydraulic-ref" data-doc="hydraulic-ref">
+            <h3 class="doc-heading">📐 水力学参考手册</h3>
+            <div class="doc-body">
+              <p>详细阐述 HEC-RAS 中使用的水力学理论和数值方法，适合需要深入理解计算原理的用户。</p>
+              <ul>
+                <li><strong>1D Steady Flow</strong> — 一维恒定流能量方程、步推法推导</li>
+                <li><strong>1D Unsteady Flow</strong> — 圣维南方程组、Preissmann 窄缝法</li>
+                <li><strong>2D Shallow Water Equations</strong> — 有限体积法、Roe 近似黎曼解</li>
+                <li><strong>Bridges & Culverts</strong> — 桥梁/涵洞水力学（能量法、动量法）</li>
+                <li><strong>Sediment Transport</strong> — 泥沙输移方程、河床演变方程</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看理论公式详解 →</div>
+              <div style="margin-top:14px;"><a href="docs/HEC-RAS 6.0 Reference Manual.pdf" download style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.3);color:var(--c-accent);text-decoration:none;font-size:0.85rem;font-weight:600;transition:var(--transition);">📥 下载参考手册 PDF</a> <span style="color:var(--c-text-dim);font-size:0.75rem;margin-left:6px;">如需最新版请<a href="https://www.hec.usace.army.mil/confluence/rasdocs/ras1dtechref/latest" target="_blank" style="color:var(--c-primary);text-decoration:underline;">前往官网</a></span></div>
+            </div>
+          </div>
+
+          <!-- Tutorials -->
+          <div class="doc-section reveal" id="doc-tutorial-terrain" data-doc="tutorial-terrain">
+            <h3 class="doc-heading">🛠️ 教程：地形处理（Terrain）</h3>
+            <div class="doc-body">
+              <ul>
+                <li>从 DEM / LiDAR 数据导入地形</li>
+                <li>Terrain Modification — 修筑堤防、修改桥台地形、填挖方</li>
+                <li>多层地形叠加（河道实测断面 + 区域 DEM）</li>
+                <li>地形数据质量检查与修复</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看地形处理详细步骤 →</div>
+            </div>
+          </div>
+
+          <div class="doc-section reveal" id="doc-tutorial-1dsteady" data-doc="tutorial-1dsteady">
+            <h3 class="doc-heading">📘 教程：一维恒定流</h3>
+            <div class="doc-body">
+              <ul>
+                <li>创建河段（River Reach）与编辑断面</li>
+                <li>设定流量边界条件与下游水位</li>
+                <li>添加桥梁/涵洞/堰等水工建筑物</li>
+                <li>执行计算并查看水面线结果</li>
+                <li>多流量工况计算与对比</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看一维恒定流详细教程 →</div>
+            </div>
+          </div>
+
+          <div class="doc-section reveal" id="doc-tutorial-1dunsteady" data-doc="tutorial-1dunsteady">
+            <h3 class="doc-heading">📗 教程：一维非恒定流</h3>
+            <div class="doc-body">
+              <ul>
+                <li>设定流量过程线（Hydrograph）边界条件</li>
+                <li>初始条件设定（Initial Flow / Restart File）</li>
+                <li>时间步长选择与 CFL 稳定性条件</li>
+                <li>水库/蓄水区（Storage Area）的使用</li>
+                <li>侧向结构物（Lateral Structure）连接</li>
+                <li>溃坝（Dam Breach）参数设定</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看非恒定流详细教程 →</div>
+            </div>
+          </div>
+
+          <div class="doc-section reveal" id="doc-tutorial-2d" data-doc="tutorial-2d">
+            <h3 class="doc-heading">📙 教程：二维非恒定流（13 个子教程）</h3>
+            <div class="doc-body">
+              <p>二维模拟能捕捉水流的空间分布，是洪水风险分析的核心工具。官方教程包含以下专题：</p>
+              <div class="doc-tutorial-list">
+                <div class="tutorial-item"><span class="tutorial-num">01</span><div><strong>Mesh Generation and Refinement</strong><span class="tutorial-desc">网格生成与细化 — Breaklines / Breakpoints 控制网格质量</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">02</span><div><strong>Creating a Simple 2D Model</strong><span class="tutorial-desc">创建简单二维模型 — 从地形到结果的完整流程</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">03</span><div><strong>Land Cover and Manning's n Data</strong><span class="tutorial-desc">土地覆盖与曼宁系数 — 从 GIS 数据生成糙率分布</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">04</span><div><strong>2D Model Development and Refinement</strong><span class="tutorial-desc">二维模型开发与优化 — 网格调整、结果验证</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">05</span><div><strong>Storage Area and 2D Connections</strong><span class="tutorial-desc">蓄水区与二维连接 — 堰/溢洪道与二维区域耦合</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">06</span><div><strong>Combined 1D/2D Modeling</strong><span class="tutorial-desc">一维与二维耦合建模 — 河道用 1D、漫滩用 2D</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">07</span><div><strong>Dam Breach Analysis with 2D Areas</strong><span class="tutorial-desc">二维溃坝分析（含 4 个子教程：简单几何/堤防细化/敏感性分析）</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">08</span><div><strong>Simplified 2D Bridge Modeling</strong><span class="tutorial-desc">简化二维桥梁建模</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">09</span><div><strong>2D Rules</strong><span class="tutorial-desc">二维规则控制 — 闸门/泵站自动运行</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">10</span><div><strong>Flow Hydrograph Optimization</strong><span class="tutorial-desc">流量过程线优化 — 自动率定边界</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">11</span><div><strong>Floodway Encroachment Analysis (2D)</strong><span class="tutorial-desc">二维洪泛区侵占分析</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">12</span><div><strong>Floodway Encroachment using Zones</strong><span class="tutorial-desc">使用分区进行洪泛区侵占分析</span></div></div>
+                <div class="tutorial-item"><span class="tutorial-num">13</span><div><strong>Troubleshooting a 2D Model</strong><span class="tutorial-desc">二维模型故障排除 — 常见错误诊断与修复</span></div></div>
+              </div>
+              <div class="expand-hint" style="margin-top:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看各子教程详细步骤 →</div>
+            </div>
+          </div>
+
+          <!-- Collapsible: Sediment Tutorial + Pipe Networks -->
+          <div style="margin:32px 0 16px;">
+            <button class="doc-collapse-btn" style="margin-bottom:0;font-size:0.9rem;padding:10px 20px;" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open');this.innerHTML=this.classList.contains('open')?'▼ 收起进阶教程（泥沙/管道）':'▶ 展开进阶教程（泥沙输移 · 管道网络）'">
+              ▶ 展开进阶教程（泥沙输移 · 管道网络）
+            </button>
+            <div class="doc-collapse-body">
+
+          <div class="doc-section reveal" id="doc-tutorial-sediment" data-doc="tutorial-sediment" style="margin-top:24px;">
+            <h3 class="doc-heading">🏖️ 教程：泥沙输移</h3>
+            <div class="doc-body">
+              <div class="doc-subsection">
+                <h4>一维泥沙输移</h4>
+                <ul>
+                  <li>泥沙级配设定与床沙初始化</li>
+                  <li>输沙公式选择与率定</li>
+                  <li>河床演变模拟与结果分析</li>
+                  <li>BSTEM 岸坡稳定性与趾部侵蚀模型</li>
+                </ul>
+              </div>
+              <div class="doc-subsection">
+                <h4>二维泥沙输移</h4>
+                <ul>
+                  <li>二维泥沙模型配置</li>
+                  <li>形态加速因子的使用</li>
+                  <li>2D Bridge Scour 桥梁冲刷分析（6.7 新增）</li>
+                </ul>
+              </div>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看泥沙教程详细步骤 →</div>
+            </div>
+          </div>
+
+          <div class="doc-section reveal" id="doc-tutorial-pipe" data-doc="tutorial-pipe">
+            <h3 class="doc-heading">🔧 教程：管道网络（Pipe Networks）</h3>
+            <div class="doc-body">
+              <ul>
+                <li>管道形状：圆形、矩形、拱形、椭圆形、半圆形、ConSpan 等</li>
+                <li>进水口类型：Top Inlet（顶部）、Side Inlet（侧向）— 6.7 新增</li>
+                <li>管道闸门（Sluice Gate）— 6.7 新增</li>
+                <li>Speed Draw 快速绘制模式</li>
+                <li>管道剖面结果查看与动画</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看管道建模详情 →</div>
+            </div>
+          </div>
+
+            </div>
+          </div>
+
+          <!-- Collapsible: Sediment Documents -->
+          <div style="margin:32px 0 16px;">
+            <button class="doc-collapse-btn" style="margin-bottom:0;font-size:0.9rem;padding:10px 20px;" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open');this.innerHTML=this.classList.contains('open')?'▼ 收起泥沙文档（一维/二维/泥石流）':'▶ 展开泥沙文档（一维泥沙 · 二维泥沙 · 泥石流）'">
+              ▶ 展开泥沙文档（一维泥沙 · 二维泥沙 · 泥石流）
+            </button>
+            <div class="doc-collapse-body">
+
+          <div class="doc-section reveal" id="doc-sed1d" data-doc="sed1d" style="margin-top:24px;">
+            <h3 class="doc-heading">🏖️ 一维泥沙输移手册</h3>
+            <div class="doc-body">
+              <ul>
+                <li>泥沙级配定义与床沙分层</li>
+                <li>输沙能力公式（Engelund-Hansen、Meyer-Peter Müller、Yang 等）</li>
+                <li>河床演变方程（Exner 方程）</li>
+                <li>形态加速因子（Morphological Acceleration Factor）</li>
+                <li>岸坡稳定性分析（BSTEM 模型）</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看泥沙建模详细步骤 →</div>
+            </div>
+          </div>
+
+          <div class="doc-section reveal" id="doc-sed2d" data-doc="sed2d">
+            <h3 class="doc-heading">🌊 二维泥沙输移手册</h3>
+            <div class="doc-body">
+              <ul>
+                <li>河道横向冲淤分布模拟</li>
+                <li>弯道二次流对泥沙输移的影响（6.7 新增）</li>
+                <li>河口/海岸演变</li>
+                <li>2D Bridge Scour 桥梁冲刷分析（6.7 新增）</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看二维泥沙详细说明 →</div>
+            </div>
+          </div>
+
+          <div class="doc-section reveal" id="doc-mud" data-doc="mud">
+            <h3 class="doc-heading">🏔️ 泥石流建模文档</h3>
+            <div class="doc-body">
+              <ul>
+                <li>固定床非牛顿流体模拟（Bingham / Herschel-Bulkley 模型）</li>
+                <li>变浓度泥石流混合模拟（清水与泥石流交汇）</li>
+                <li>大坝溃决泥石流分析</li>
+                <li>支流泥石流入汇干流清水的耦合场景</li>
+              </ul>
+              <div class="expand-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg> 点击查看泥石流建模详情 →</div>
+            </div>
+          </div>
+
+            </div>
+          </div>
+
+          <!-- Release Notes -->
+          <div class="doc-section reveal" id="doc-release" data-doc="release">
+            <h3 class="doc-heading">📋 版本更新说明</h3>
+            <div class="doc-body">
+              <div class="doc-subsection">
+                <h4 style="color:var(--c-accent);">HEC-RAS 6.7 Beta 5（2025.10.31）</h4>
+                <p>主要修复 Beta 4 Bug，新增功能：</p>
+                <ul>
+                  <li><strong>🔧 管道网络增强</strong> — Side Inlets、Top Inlets（替代 Drop Inlets）、Surcharge Only（模拟有盖检修孔）、管道闸门（Sluice Gate，支持 Rules/Time Series/Elevation 控制）、涵洞进水口改进</li>
+                  <li><strong>🐧 Linux 支持 (WSL)</strong> — 通过 WSL 运行 Linux 计算引擎，用于云端蒙特卡洛模拟</li>
+                  <li><strong>📊 数值可重现性</strong> — 三级选项：默认（最快）、严格、最严格</li>
+                  <li><strong>⚡ 多方案运行</strong> — 自动测试不同处理器数量的运行效率</li>
+                  <li><strong>🌊 堰方程能量坡度选项</strong> — SA/2D Connections 可选 Energy Grade</li>
+                  <li><strong>🌉 2D 桥梁冲刷导出 (Beta)</strong> — 导出至 FHWA Hydraulic Toolbox</li>
+                  <li><strong>📈 绘图改进</strong> — 水位/流量过程线绘图器大幅改版</li>
+                  <li><strong>🌀 二次流效应</strong> — 2D 泥沙弯道二次流，经 Koch & Folkstra (1980) 验证</li>
+                  <li><strong>🔄 地理参考涵洞动量</strong> — SWE 中包含涵洞出流动量（需手动开启）</li>
+                </ul>
+              </div>
+              <div class="doc-subsection">
+                <h4>HEC-RAS 6.7 Beta 4</h4>
+                <ul>
+                  <li><strong>CPU 亲和性</strong> — 区分 P-core / E-core，计算仅用 P-core</li>
+                  <li><strong>二次流 (Beta)</strong> — 弯道螺旋流模拟（平衡/非平衡方法）</li>
+                  <li><strong>结构物剖面图</strong> — 剖面中显示水工建筑物</li>
+                  <li><strong>时间序列绘图</strong> — 过程线集成表格快速切换</li>
+                  <li><strong>USGS 下载</strong> — 支持按数据集过滤</li>
+                </ul>
+              </div>
+              <div class="doc-subsection">
+                <h4>HEC-RAS 6.7 Beta 2/3</h4>
+                <ul>
+                  <li><strong>2D 桥梁</strong> — 压力流与越顶流新方法</li>
+                  <li><strong>1D 桥梁动量法</strong> — General 方法（推荐）替代 Legacy</li>
+                  <li><strong>RAS Mapper</strong> — 菜单重组，结果访问更直观</li>
+                  <li><strong>参考线变量</strong> — 新增平均/最大流速、水力深度</li>
+                </ul>
+              </div>
+              <div class="doc-subsection">
+                <h4>HEC-RAS 6.7 Beta 1</h4>
+                <ul>
+                  <li><strong>管道新管型</strong> — 拱形、椭圆形、ConSpan 等</li>
+                  <li><strong>管道剖面</strong> — 流量/流速/临界深度剖面图</li>
+                  <li><strong>Speed Draw</strong> — 自动在端点放置节点</li>
+                  <li><strong>形态加速因子自动化</strong></li>
+                  <li><strong>BSTEM 更新</strong> — 修复多层算法 Bug</li>
+                  <li><strong>变浓度泥石流指南</strong></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Known Issues -->
+          <div class="doc-section reveal" id="doc-known" data-doc="known">
+            <h3 class="doc-heading">⚠️ 已知问题（Known Issues）</h3>
+            <div class="doc-body">
+              <p>HEC-RAS 维护已知问题列表，记录当前版本中已发现但尚未修复的问题。遇到异常时请先查阅此列表。</p>
+              <ul>
+                <li>如发现新问题，请邮件 <a href="mailto:ras@usace.army.mil" style="color:var(--c-primary);">ras@usace.army.mil</a> 或通过官方 Bug Report 页面提交</li>
+                <li>提交时请附上复现步骤和项目文件</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Support -->
+          <div class="doc-section reveal">
+            <h3 class="doc-heading">📮 技术支持与反馈</h3>
+            <div class="doc-body">
+              <p>HEC 对非 USACE 用户不提供电话/邮件技术支持，但鼓励报告软件问题：</p>
+              <ul>
+                <li>📧 邮件：<a href="mailto:ras@usace.army.mil" style="color:var(--c-primary);">ras@usace.army.mil</a></li>
+                <li>🌐 官网：<a href="https://www.hec.usace.army.mil/software/hec-ras/" target="_blank" style="color:var(--c-primary);">hec.usace.army.mil/software/hec-ras</a></li>
+                <li>请描述：操作步骤、预期结果、实际结果、HEC-RAS 版本号</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      </div><!-- end doc-collapse-body -->
+
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">📝 路径三：经验分享</div>
+        <h2 class="section-title">实战经验与踩坑记录</h2>
+        <p class="section-desc">建模过程中遇到的实际问题与解决方案。</p>
+      </div>
+      <div class="experience-grid reveal" id="experienceList">
+        <!-- ⬇️ 添加经验贴：复制下面的 article-card 块，修改 data-cvid 和内容即可 -->
+        <a class="article-card" href="https://www.bilibili.com/read/cv19162842/" target="_blank" data-cvid="cv19162842">
+          <div class="article-thumb">
+            <img src="https://i0.hdslb.com/bfs/article/banner/13161f6ed6ba760b498623f2a9578853dcafd219.png" alt="HEC RAS二维计算步长设置" loading="lazy">
+          </div>
+          <div class="article-body">
+            <h3 class="article-title">HEC RAS二维计算步长设置</h3>
+            <p class="article-desc">详解 Courant 数原理，教你快速判断计算步长是否合理，避免模型跑崩报 'unstable'。</p>
+            <div class="article-meta">
+              <span>👁 1,142 阅读</span>
+              <span>👍 7 点赞</span>
+            </div>
+          </div>
+        </a>
+        <!-- 👆 示例结束 -->
+
+        <a class="article-card" href="https://www.bilibili.com/read/cv22969341/" target="_blank" data-cvid="cv22969341">
+          <div class="article-thumb">
+            <img src="https://i0.hdslb.com/bfs/article/banner/a2513db7c5285b70399b219c8b318e46b6bc958e.png" alt="地球坐标系与投影方式的理解" loading="lazy">
+          </div>
+          <div class="article-body">
+            <h3 class="article-title">地球坐标系与投影方式的理解(关于北京54,西安80,WGS84;高斯,兰勃特,墨卡托投影)</h3>
+            <p class="article-desc">详解北京 54、西安 80、WGS84 坐标系区别，以及高斯、兰勃特、墨卡托投影的适用场景。</p>
+            <div class="article-meta">
+              <span>👁 3,726 阅读</span>
+              <span>👍 33 点赞</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="article-card" href="https://www.bilibili.com/read/cv22450046/" target="_blank" data-cvid="cv22450046">
+          <div class="article-thumb">
+            <img src="https://i0.hdslb.com/bfs/article/e7c045995bf915c5ed25ffc6967b3a8fbc0476b0.png" alt="GISPRO中如何添加底图" loading="lazy">
+          </div>
+          <div class="article-body">
+            <h3 class="article-title">GISPRO中如何添加底图</h3>
+            <p class="article-desc">ArcGIS Pro 添加在线底图的步骤与常见问题，适合 GIS 新手快速上手。</p>
+            <div class="article-meta">
+              <span>👁 2,391 阅读</span>
+              <span>👍 15 点赞</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div id="experienceToggle" style="text-align:center;margin-top:20px;display:none;">
+        <button onclick="toggleExperience()" class="btn btn-ghost" style="font-size:0.9rem;">
+          <span id="toggleText">展开全部 ▼</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section id="roadmap">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">🗺️ 学习路线</div>
+        <h2 class="section-title">从零到工程实战的进阶之路</h2>
+        <p class="section-desc">按照这个路线循序渐进，你将完整掌握水利数值模拟的核心能力。</p>
+      </div>
+      <div class="roadmap reveal">
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-phase">第一阶段</div>
+          <div class="roadmap-title">GIS 数据准备</div>
+          <div class="roadmap-desc">掌握 ArcGIS Pro 核心操作，学会 CAD 转 DEM、水文分析、河网提取与流域划分，为数值建模打好数据基础。</div>
+          <div class="roadmap-tools"><span class="roadmap-tool">ArcGIS Pro</span><span class="roadmap-tool">DEM 处理</span><span class="roadmap-tool">河网提取</span></div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-phase">第二阶段</div>
+          <div class="roadmap-title">HEC-RAS 一维建模</div>
+          <div class="roadmap-desc">从软件入门到一维恒定流/非恒定流计算，掌握断面编辑、支流汇入、结果查看等关键技能。</div>
+          <div class="roadmap-tools"><span class="roadmap-tool">HEC-RAS 1D</span><span class="roadmap-tool">恒定流</span><span class="roadmap-tool">非恒定流</span></div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-phase">第三阶段</div>
+          <div class="roadmap-title">进阶与拓展</div>
+          <div class="roadmap-desc">学习 HEC-HMS 降雨径流耦合、地形修改、二维模拟等进阶内容，拓展水利数值模拟的技术边界。</div>
+          <div class="roadmap-tools"><span class="roadmap-tool">HEC-HMS</span><span class="roadmap-tool">Terrain</span><span class="roadmap-tool">2D 模拟</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">💼 服务</div>
+        <h2 class="section-title">需要帮助？我可以协助</h2>
+        <p class="section-desc">如果你在 HEC-RAS 建模过程中遇到困难，或者需要专业的水利数值模拟支持，欢迎联系我。</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;" class="reveal">
+        <!-- Service 1 -->
+        <div style="padding:28px;background:var(--c-bg-card);border:1px solid var(--c-border);border-radius:var(--radius);transition:var(--transition);">
+          <div style="font-size:2rem;margin-bottom:12px;">🔧</div>
+          <h3 style="color:var(--c-text-bright);font-size:1.15rem;font-weight:700;margin-bottom:10px;">建模代做</h3>
+          <p style="color:var(--c-text-dim);font-size:0.92rem;line-height:1.7;margin-bottom:16px;">承接 HEC-RAS 一维/二维水动力建模、溃坝分析、洪水风险评估等项目。从数据处理到模型搭建、结果分析，全流程交付。</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(59,158,255,0.1);color:var(--c-primary);border:1px solid var(--c-border);">一维恒定流</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(59,158,255,0.1);color:var(--c-primary);border:1px solid var(--c-border);">一维非恒定流</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(59,158,255,0.1);color:var(--c-primary);border:1px solid var(--c-border);">二维建模</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(59,158,255,0.1);color:var(--c-primary);border:1px solid var(--c-border);">溃坝分析</span>
+          </div>
+        </div>
+        <!-- Service 2 -->
+        <div style="padding:28px;background:var(--c-bg-card);border:1px solid var(--c-border);border-radius:var(--radius);transition:var(--transition);">
+          <div style="font-size:2rem;margin-bottom:12px;">📚</div>
+          <h3 style="color:var(--c-text-bright);font-size:1.15rem;font-weight:700;margin-bottom:10px;">一对一指导</h3>
+          <p style="color:var(--c-text-dim);font-size:0.92rem;line-height:1.7;margin-bottom:16px;">针对你的具体项目，手把手带你走通建模全流程。从软件安装、数据准备到模型率定，解决你卡住的每一个环节。</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(0,212,170,0.1);color:var(--c-accent);border:1px solid var(--c-border);">软件入门</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(0,212,170,0.1);color:var(--c-accent);border:1px solid var(--c-border);">项目指导</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(0,212,170,0.1);color:var(--c-accent);border:1px solid var(--c-border);">问题答疑</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(0,212,170,0.1);color:var(--c-accent);border:1px solid var(--c-border);">毕业设计</span>
+          </div>
+        </div>
+        <!-- Service 3 -->
+        <div style="padding:28px;background:var(--c-bg-card);border:1px solid var(--c-border);border-radius:var(--radius);transition:var(--transition);">
+          <div style="font-size:2rem;margin-bottom:12px;">📊</div>
+          <h3 style="color:var(--c-text-bright);font-size:1.15rem;font-weight:700;margin-bottom:10px;">数据处理</h3>
+          <p style="color:var(--c-text-dim);font-size:0.92rem;line-height:1.7;margin-bottom:16px;">ArcGIS Pro 数据预处理：CAD 转 DEM、水文分析、河网提取、流域划分，为 HEC-RAS 建模准备好地形数据。</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(240,180,40,0.1);color:var(--c-accent2);border:1px solid var(--c-border);">CAD → DEM</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(240,180,40,0.1);color:var(--c-accent2);border:1px solid var(--c-border);">水文分析</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(240,180,40,0.1);color:var(--c-accent2);border:1px solid var(--c-border);">河网提取</span>
+            <span style="padding:4px 12px;border-radius:6px;font-size:0.8rem;background:rgba(240,180,40,0.1);color:var(--c-accent2);border:1px solid var(--c-border);">流域划分</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal" style="text-align:center;margin-top:36px;">
+        <a href="mailto:Minghao_xut1011@outlook.com?subject=HEC-RAS 建模咨询" class="btn btn-primary" style="font-size:1rem;">
+          📧 发邮件咨询
+        </a>
+        <p style="color:var(--c-text-dim);font-size:0.85rem;margin-top:12px;">描述你的需求和预算，我会尽快回复</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid reveal">
+        <div><div class="about-avatar">🌊</div></div>
+        <div class="about-text">
+          <div class="section-label">👤 关于</div>
+          <h3>水利数值模拟教学</h3>
+          <p>专注于水利水电工程领域的数值模拟教学，主攻 HEC-RAS 水动力数值模拟与 ArcGIS Pro 水动力数值模拟两大方向。</p>
+          <p>内容覆盖从软件入门到工程实战的完整链条，注重「做中学」——每节课都围绕真实案例展开，让你不只是学会操作，更理解背后的水力学原理。</p>
+          <div class="about-tags">
+            <span class="about-tag">ArcGIS Pro</span>
+            <span class="about-tag">HEC-RAS</span>
+            <span class="about-tag">HEC-HMS</span>
+            <span class="about-tag">水动力模拟</span>
+            <span class="about-tag">洪水分析</span>
+            <span class="about-tag">GIS 数据处理</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="contact-section">
+    <div class="container reveal">
+      <div class="section-label">📬 联系</div>
+      <h2 class="section-title">一起交流学习</h2>
+      <p class="section-desc" style="margin-left:auto;margin-right:auto;text-align:center;">有问题、有建议、想合作？欢迎随时联系。</p>
+      <div class="contact-links">
+        <a href="https://space.bilibili.com/159048530" target="_blank" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+          Bilibili 主页
+        </a>
+        <a href="mailto:Minghao_xut1011@outlook.com" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          邮箱联系
+        </a>
+        <a class="contact-link" style="cursor:default;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8.5 11a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" fill="currentColor" stroke="none"/><path d="M15.5 11a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" fill="currentColor" stroke="none"/><path d="M12 2C6.477 2 2 5.925 2 10.75c0 2.625 1.375 4.97 3.5 6.55V22l3.82-2.09A11.6 11.6 0 0012 20.5c5.523 0 10-3.925 10-8.75S17.523 2 12 2z"/></svg>
+          微信公众号：题序羊
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer><p>© 2026 水利数值模拟教学 · 用数据驱动水利智慧</p></footer>
+
+  <!-- Video Modal -->
+  <div class="modal-overlay" id="videoModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-video-wrap" id="modalVideoWrap"></div>
+      <div class="modal-title" id="modalTitle"></div>
+    </div>
+  </div>
+
+  <!-- Doc Detail Modal -->
+  <div class="doc-modal-overlay" id="docModal">
+    <div class="doc-modal-box">
+      <div class="doc-modal-header">
+        <h3 id="docModalTitle"></h3>
+        <button class="doc-modal-close" id="docModalClose">✕</button>
+      </div>
+      <div class="doc-modal-body" id="docModalBody"></div>
+      <div class="doc-modal-footer">
+        <a id="docModalLink" href="#" target="_blank" class="btn btn-ghost" style="font-size:0.85rem;">🔗 查看官方原文</a>
+        <button class="btn btn-primary" onclick="closeDocModal()" style="font-size:0.85rem;">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Particles
+    (function(){const c=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(8+Math.random()*12)+'s';p.style.animationDelay=Math.random()*10+'s';p.style.width=p.style.height=(2+Math.random()*3)+'px';if(Math.random()>0.5)p.style.background='var(--c-accent)';c.appendChild(p)}})();
+
+    // Mobile Nav
+    document.getElementById('navBtn').addEventListener('click',()=>{document.getElementById('navLinks').classList.toggle('open')});
+    document.querySelectorAll('.nav-links a').forEach(a=>{a.addEventListener('click',()=>{document.getElementById('navLinks').classList.remove('open')})});
+
+    // Scroll Reveal
+    const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target)}})},{threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+    // Filter Tabs
+    document.querySelectorAll('.filter-tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        const f=tab.dataset.filter;
+        document.querySelectorAll('.course-card').forEach(c=>{
+          c.style.display=(f==='all'||c.dataset.category===f)?'':'none';
+        });
+      });
+    });
+
+    // TOC Active on Scroll
+    (function(){
+      const tocLinks=document.querySelectorAll('.toc-link');
+      const sections=[];
+      tocLinks.forEach(link=>{
+        const id=link.getAttribute('href')?.replace('#','');
+        if(id){const el=document.getElementById(id);if(el)sections.push({el,link})}
+      });
+      if(!sections.length)return;
+      const obs2=new IntersectionObserver(entries=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            tocLinks.forEach(l=>l.classList.remove('active'));
+            const match=sections.find(s=>s.el===e.target);
+            if(match)match.link.classList.add('active');
+          }
+        });
+      },{rootMargin:'-20% 0px -70% 0px'});
+      sections.forEach(s=>obs2.observe(s.el));
+    })();
+
+    // Courses: collapse beyond first 6 (3×2)
+    (function(){
+      const cards=document.querySelectorAll('#coursesGrid .course-card');
+      const toggle=document.getElementById('coursesToggle');
+      if(cards.length>6){
+        cards.forEach((c,i)=>{if(i>=6)c.classList.add('is-collapsed')});
+        toggle.style.display='';
+      }
+    })();
+    function toggleCourses(){
+      const cards=document.querySelectorAll('#coursesGrid .course-card');
+      const text=document.getElementById('coursesToggleText');
+      const anyHidden=cards[6]?.classList.contains('is-collapsed');
+      cards.forEach((c,i)=>{if(i>=6)c.classList.toggle('is-collapsed')});
+      text.textContent=anyHidden?'收起 ▲':'展开全部 ▼';
+    }
+
+    // Experience Posts: collapse beyond first 3 (3×1)
+    (function(){
+      const cards=document.querySelectorAll('#experienceList .article-card');
+      const toggle=document.getElementById('experienceToggle');
+      if(cards.length>3){
+        cards.forEach((c,i)=>{if(i>=3)c.classList.add('is-collapsed')});
+        toggle.style.display='';
+      }
+    })();
+    function toggleExperience(){
+      const cards=document.querySelectorAll('#experienceList .article-card');
+      const text=document.getElementById('toggleText');
+      const anyHidden=cards[3]?.classList.contains('is-collapsed');
+      cards.forEach((c,i)=>{if(i>=3)c.classList.toggle('is-collapsed')});
+      text.textContent=anyHidden?'收起 ▲':'展开全部 ▼';
+    }
+
+    // Video Modal
+    const modal=document.getElementById('videoModal'),mWrap=document.getElementById('modalVideoWrap'),mTitle=document.getElementById('modalTitle');
+    document.querySelectorAll('.course-card').forEach(card=>{
+      card.addEventListener('click',()=>{
+        const bvid=card.dataset.bvid,p=card.dataset.p||'',title=card.dataset.title;
+        const src=`https://player.bilibili.com/player.html?bvid=${bvid}${p?'&p='+p:''}&autoplay=1&high_quality=1`;
+        mWrap.innerHTML=`<iframe src="${src}" allowfullscreen allow="autoplay"></iframe>`;
+        mTitle.textContent=title;
+        modal.classList.add('active');
+        document.body.style.overflow='hidden';
+      });
+    });
+    function closeModal(){modal.classList.remove('active');mWrap.innerHTML='';document.body.style.overflow=''}
+    document.getElementById('modalClose').addEventListener('click',closeModal);
+    modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDocModal()}});
+
+    // Doc Detail Modal
+    const docModalEl=document.getElementById('docModal');
+    const docModalBody=document.getElementById('docModalBody');
+    const docModalTitle=document.getElementById('docModalTitle');
+    const docModalLink=document.getElementById('docModalLink');
+    const BASE='https://www.hec.usace.army.mil/confluence/rasdocs';
+
+    const docContent={
+      'overview':{
+        title:'🌊 HEC-RAS 软件详细介绍',
+        link:BASE+'/rasum/latest/introduction-to-hec-ras',
+        html:`<h4>软件定位</h4>
+<p>HEC-RAS（Hydrologic Engineering Center's River Analysis System）由美国陆军工程兵团（USACE）水文工程中心开发，是全球使用最广泛的河流水力学分析系统之一。它是 HEC "Next Generation"（NexGen）水文工程软件系列的核心组件，同系列还包括 HEC-HMS（降雨径流）、HEC-ResSim（水库调度）、HEC-FDA/FIA（洪水损失评估）等。</p>
+<h4>四大核心分析模块</h4>
+<ul>
+<li><strong>一维恒定流水面线计算</strong> — 基于一维能量方程的标准步推法（Standard Step Method），支持亚临界流、超临界流和混合流态。能量损失由摩擦（Manning 方程）和收缩/扩张（系数 × 速度头变化）评估。动量方程用于急变流（水跃、桥梁水力学、汇流口）场景。可计算包含桥梁、涵洞、堰、闸门等水工建筑物的复杂河网。支持多工况（Multiple Plan）、多水面线（Multiple Profile）、多桥/涵洞方案对比。</li>
+<li><strong>一维/二维非恒定流模拟</strong> — 求解完整圣维南方程组（1D）和浅水方程（2D）。一维非恒定流支持亚临界、超临界和混合流态。二维基于有限体积法离散，使用 Roe 近似黎曼解计算界面通量，支持干湿界面自动处理。可进行一维与二维耦合建模（Storage Area Connection / Lateral Structure）。特殊功能包括：溃坝分析（Dam Break）、堤防漫顶与溃决（Levee Overtopping & Breaching）、泵站（Pumping Stations）、船闸运行、有压管道系统、自动率定、用户自定义规则。</li>
+<li><strong>泥沙输移与河床演变</strong> — 支持一维和二维移动河床计算（Quasi-Unsteady / Fully Unsteady）。按粒径分组计算输沙能力，模拟长期冲淤趋势、水库淤积、航道维护疏浚、洪水最大冲刷深度等。支持的输沙公式包括：Engelund-Hansen、Meyer-Peter Müller、Yang、Parker 等。6.7 版新增弯道二次流对泥沙横向输移的影响（经 Koch & Folkstra 1980 验证）和 2D Bridge Scour 桥梁冲刷分析。</li>
+<li><strong>水温与水质模拟</strong> — 一维河道水温分析和有限水质组分（藻类、溶解氧、CBOD、氮磷等）的迁移转化模拟。</li>
+</ul>
+<h4>软件界面与数据管理</h4>
+<p>HEC-RAS 采用图形用户界面（GUI），提供文件管理、数据编辑、计算执行、结果可视化（图表、动画、淹没图）、报告生成等功能。用户界面设计注重易用性和效率，支持在线帮助。</p>
+<p>内置 RAS Mapper GIS 系统（6.0 起成为地理空间数据管理的统一入口），支持地形数据管理（DEM/TIN 导入、多层地形叠加）、二维网格编辑（Breaklines/Breakpoints）、结果空间可视化（水深/流速/水位/淹没范围）、地图导出（Shapefile/GeoTIFF/图片）。</p>
+<p>数据存储使用平面文件（ASCII/二进制）、HEC-DSS 和 HDF5 格式。用户只需输入项目文件名，系统自动创建和管理所有相关文件。</p>
+<h4>HEC-RAS 文档体系</h4>
+<ul>
+<li><strong>User's Manual（用户手册）</strong> — 软件使用指南，从安装到各个分析模块的详细操作（共 14 章 + 4 个附录）</li>
+<li><strong>2D User's Manual（二维用户手册）</strong> — 二维建模完整工作流，含 RAS Mapper 网格生成和淹没图</li>
+<li><strong>HEC-RAS Mapper Manual</strong> — 坐标系建立、地形模型开发、几何数据提取、结果可视化</li>
+<li><strong>Sediment Transport User's Manual</strong> — 1D/2D 泥沙建模、SIAM、BSTEM 岸坡稳定性</li>
+<li><strong>Hydraulic Reference Manual（水力学参考手册）</strong> — 理论公式、参数估计方法、建模指南</li>
+<li><strong>Applications Guide（应用指南）</strong> — 一系列工程实例演示</li>
+</ul>
+<h4>系统要求</h4>
+<ul>
+<li>64 位 Windows 操作系统（7/8/8.1/10/11），必须安装最新系统补丁</li>
+<li>Intel I5 或更高处理器（二维建模推荐多核 CPU，6.7 版自动区分 P-core/E-core）</li>
+<li>最低 8GB 内存（推荐 16GB+，大型二维模型可能需要 32GB+）</li>
+<li>10GB 以上可用磁盘空间</li>
+<li>6.7 版支持通过 WSL 在 Windows 上运行 Linux 计算引擎</li>
+</ul>
+<div class="tip-box"><p>💡 提示：新版本可与旧版本并行安装，完全兼容旧项目文件。首次安装后建议从官网下载示例项目进行练习。6.7 版新增多方案运行（Run Multiple Plans），可自动测试不同处理器数量的运行效率。</p></div>`
+      },
+      'user-manual':{
+        title:'📘 一维用户手册 — 详细操作步骤',
+        link:BASE+'/rasum/latest',
+        html:`<h4>一、软件安装</h4>
+<ol class="step-list">
+<li>从 HEC 官网下载 HEC-RAS 安装包（HEC-RAS_Version_Setup.exe）</li>
+<li>以管理员身份运行安装程序，选择安装目录</li>
+<li>按屏幕提示完成安装，可选择创建桌面快捷方式</li>
+<li>安装完成后，程序文件位于 C:\\Program Files\\HEC\\HEC-RAS\\RAS.EXE</li>
+</ol>
+<div class="warn-box"><p>⚠️ 不能直接复制文件运行，必须使用安装程序注册 DLL 等系统组件。6.0+ 版本仅支持 64 位 Windows。</p></div>
+<h4>二、创建项目与几何数据</h4>
+<ol class="step-list">
+<li>打开 HEC-RAS，选择 <strong>File → New Project</strong>，输入项目名称和保存路径（项目名自动作为文件名前缀）</li>
+<li>进入 <strong>Edit → Geometric Data</strong>，打开几何数据编辑器</li>
+<li>使用 <strong>Reach Tools</strong> 从上游到下游绘制河道中心线（River Reach）。每条河流可包含多条河段</li>
+<li>在每个断面位置输入河道横断面数据（Station-Elevation），可从外部文件批量导入</li>
+<li>设定 Manning 糙率系数（n 值），可分区域设定主槽和滩地（Main Channel n / Left/Right Overbank n）</li>
+<li>设定断面间距（Contraction/Expansion Coefficients），通常收缩 0.1、扩张 0.3</li>
+<li>如需添加水工建筑物，在对应断面位置插入 Bridge/Culvert/Inline Structure：
+  <ul>
+  <li>桥梁：输入桥台、桥墩、梁底高程等参数，选择水力计算方法（能量法/动量法/General 法）</li>
+  <li>涵洞：选择管型（圆管/箱涵/拱形等），输入尺寸和坡度</li>
+  <li>堰/闸门：设定堰顶高程、闸门尺寸和运行规则</li>
+  </ul>
+</li>
+</ol>
+<h4>三、恒定流计算</h4>
+<ol class="step-list">
+<li>选择 <strong>Edit → Steady Flow Data</strong>，打开流量数据编辑器</li>
+<li>设定计算工况数量（Number of Profiles），可对比不同流量下的水面线</li>
+<li>在每个河段上游输入流量值，流量沿河段保持不变，除非指定流量变化点</li>
+<li>设定边界条件：上游设流量（Known Flow），下游设水位（Known WS）或正常水深（Normal Depth）</li>
+<li>选择 <strong>Run → Steady Flow Analysis</strong>，点击 <strong>Compute</strong> 执行计算</li>
+<li>检查收敛情况：查看诊断信息中的 Error/Warning，重点关注断面间距和流量合理性</li>
+</ol>
+<div class="tip-box"><p>💡 使用 Compute → Multiple Profiles 可进行多工况计算，对比不同流量下的水面线变化。桥梁分析可选择 Multiple Bridge Openings 自动尝试不同桥孔方案。</p></div>
+<h4>四、非恒定流计算</h4>
+<ol class="step-list">
+<li>选择 <strong>Edit → Unsteady Flow Data</strong>，设定流量过程线（时间-流量对）和下游水位过程线</li>
+<li>设定初始条件：可从恒定流计算结果导入（推荐），或手动设定初始流量/水位</li>
+<li>选择计算参数：时间步长（建议满足 CFL 条件）、θ 加权因子（0.6~1.0）、迭代次数</li>
+<li>设定 Storage Area（蓄水区）和 Lateral Structure（侧向结构物）用于模拟水库和分洪</li>
+<li>如需溃坝分析，在 Dam Breach 编辑器中设定溃口形状（梯形/矩形）、溃决时间、溃决模式（瞬间/渐进）</li>
+<li>设定用户自定义规则（User-Defined Rules）控制闸门、泵站的自动运行</li>
+<li>执行计算：Run → Unsteady Flow Analysis</li>
+</ol>
+<h4>五、结果查看</h4>
+<ul>
+<li><strong>View → Water Surface Profiles</strong> — 水面线剖面图（对比不同工况）</li>
+<li><strong>View → Cross Section</strong> — 断面图（含水面线、能量线、流速分布）</li>
+<li><strong>View → Rating Curves</strong> — 水位-流量关系曲线</li>
+<li><strong>View → Table Output</strong> — 详细的数值输出表格（可自定义列）</li>
+<li><strong>View → Stage/Flow Hydrographs</strong> — 非恒定流过程线（水位/流量随时间变化）</li>
+<li><strong>RAS Mapper</strong> — 淹没范围空间可视化，支持动画回放洪水演进过程</li>
+<li>所有图形和表格可导出到打印机、剪贴板或通过 HEC-DSS 传递给其他软件</li>
+</ul>
+<h4>六、用户手册完整章节</h4>
+<ul>
+<li>Chapter 1-2：HEC-RAS 介绍与安装</li>
+<li>Chapter 3-4：项目管理、文件类型（Project/Plan/Geometry/Steady/Unsteady/Sediment/Water Quality）</li>
+<li>Chapter 5：几何数据输入与编辑（断面、河段、建筑物）</li>
+<li>Chapter 6-7：恒定流和非恒定流水力分析</li>
+<li>Chapter 8：图形和表格输出查看</li>
+<li>Chapter 9：洪泛区侵占分析（Floodway Encroachment）</li>
+<li>Chapter 10：故障排除（Trouble Shooting）— 最常见 Error/Warning 解读</li>
+<li>Chapter 11：桥梁冲刷计算（Bridge Scour）</li>
+<li>Chapter 12：河道整治（Channel Modifications）</li>
+<li>Chapter 13：水力设计函数（稳定河道设计、抛石粒径计算等）</li>
+<li>Chapter 14：非恒定流高级主题（混合流态、溃坝、堤防、泵站、船闸、自定义规则）</li>
+</ul>`
+      },
+      '2d-manual':{
+        title:'📗 二维用户手册 — 详细操作步骤',
+        link:BASE+'/rasdocs/r2dum/latest',
+        html:`<h4>二维建模核心概念</h4>
+<p>二维建模将计算区域划分为三角形/四边形网格（Mesh），在每个网格单元上求解二维浅水方程，得到水深和流速的空间分布。适用于洪水漫滩、溃坝、城市内涝等需要考虑水流横向扩散的场景。计算方程可选：
+<ul>
+<li><strong>Shallow Water Equations (SWE)</strong> — 完整浅水方程，精度高但计算量大</li>
+<li><strong>Diffusion Wave</strong> — 扩散波近似（忽略对流项），速度快但精度略低</li>
+</ul>
+</p>
+<h4>一、创建二维计算区域</h4>
+<ol class="step-list">
+<li>在 <strong>Geometric Data</strong> 编辑器中，选择 <strong>2D Flow Area</strong> 工具</li>
+<li>绘制二维区域边界多边形，边界应远离关注区域以避免边界效应</li>
+<li>在 <strong>RAS Mapper</strong> 中导入地形数据（DEM），作为二维计算的底床高程</li>
+<li>如需蓄水区（Storage Area），在 Geometric Data 中创建并与二维区域连接</li>
+</ol>
+<h4>二、网格生成与细化（核心步骤）</h4>
+<ol class="step-list">
+<li>设定基础网格尺寸（Base Cell Size），应不小于 DEM 分辨率的 2~3 倍</li>
+<li>沿河道中心线添加 <strong>Breaklines</strong>，自动加密网格以精确捕捉河道形态</li>
+<li>沿堤防线添加 Breaklines，确保堤防不被网格"淹没"（网格单元可能跨越堤顶）</li>
+<li>在桥梁/涵洞等关键位置添加 <strong>Breakpoints</strong>，控制局部网格密度</li>
+<li>在道路/建筑等地物处添加 Breaklines，提高模型对地物的分辨率</li>
+<li>生成网格后检查质量：避免出现过小（< Base Size / 4）或畸形（Aspect Ratio 过大）的网格单元</li>
+<li>6.7 版新增：网格质量可视化工具可高亮显示问题单元</li>
+</ol>
+<div class="tip-box"><p>💡 网格质量直接影响计算稳定性和精度。建议先用粗网格验证模型合理性，再逐步加密网格（从 Base Size 的 2 倍开始逐步缩小）。</p></div>
+<h4>三、边界条件与计算</h4>
+<ul>
+<li><strong>外部边界</strong>：上游设流量过程线（Flow Hydrograph），下游设水位过程线（Stage Hydrograph）或正常水深（Normal Depth / Rating Curve）</li>
+<li><strong>内边界</strong>：可设置侧向入流（Lateral Inflow）、源汇项（Source/Sink）等</li>
+<li><strong>SA/2D Connection</strong>：Storage Area 与 2D Flow Area 之间的连接，支持堰、闸门、泵站等结构物</li>
+<li><strong>Lateral Structure</strong>：连接主河道（1D）与二维漫滩区域，支持堰/涵洞/闸门</li>
+<li>设定计算时间步长，必须满足 CFL 稳定性条件（建议从较大步长开始，根据收敛情况调整）</li>
+<li>6.7 版新增：Numerical Reproducibility 选项（三级：默认/严格/最严格），平衡精度与并行计算效率</li>
+<li>6.7 版新增：Run Multiple Plans 功能，自动测试不同处理器数量的运行效率</li>
+</ul>
+<h4>四、一维/二维耦合建模</h4>
+<p>在 "河道用 1D、漫滩用 2D" 的耦合模式中，一维河道通过以下方式与二维漫滩区域连接：</p>
+<ul>
+<li><strong>Storage Area Connection</strong>：连接蓄水区与 2D 区域，支持堰/溢洪道</li>
+<li><strong>Lateral Structure</strong>：沿河道侧向连接二维区域，支持堰/涵洞/闸门</li>
+<li>6.7 版新增：涵洞出流可向 2D 区域引入动量（需手动开启 Use Momentum 选项），更准确模拟涵洞射流效应</li>
+</ul>
+<h4>五、结果可视化</h4>
+<ul>
+<li><strong>Water Surface</strong> — 水面高程渲染</li>
+<li><strong>Depth</strong> — 水深分布图</li>
+<li><strong>Velocity</strong> — 流速矢量/大小渲染</li>
+<li><strong>Inundation</strong> — 淹没范围图（可叠加航空影像底图）</li>
+<li><strong>Reference Lines</strong> — 设置参考线输出平均流速、最大流速、水力深度、流量、面积、水面宽、摩擦坡度等断面统计量</li>
+<li>支持动画回放，直观展示洪水演进过程</li>
+<li>结果可导出为 Shapefile、GeoTIFF 等格式</li>
+</ul>
+<div class="warn-box"><p>⚠️ 二维模型计算量大，建议：(1) 先用粗网格验证模型合理性；(2) 使用多核 CPU 加速；(3) 6.7 版自动使用 P-core（性能核）而非 E-core（效率核）。</p></div>`
+      },
+      'mapper':{
+        title:'🗺️ RAS Mapper — 详细操作说明',
+        link:BASE+'/rasdocs/rmum/latest',
+        html:`<h4>RAS Mapper 概述</h4>
+<p>RAS Mapper 是 HEC-RAS 内置的 GIS 系统，从 6.0 版本起成为管理所有地理空间数据的统一入口。它替代了旧版本中分散的 GIS 功能，提供了地形管理、网格编辑、结果可视化、地图输出等一体化功能。</p>
+<h4>一、地形数据管理</h4>
+<ol class="step-list">
+<li>在 RAS Mapper 中右键 <strong>Terrain</strong> → <strong>Add New Terrain</strong></li>
+<li>导入 DEM 栅格文件（支持 GeoTIFF、ASCII Grid 等格式）</li>
+<li>可叠加多层地形（如河道实测断面 + 区域 DEM），系统自动选择最精细数据</li>
+<li>使用 <strong>Terrain Modification</strong> 功能修筑堤防、修改桥台地形、进行填挖方</li>
+</ol>
+<h4>二、二维网格编辑</h4>
+<ul>
+<li>在地图上直接绘制二维区域边界</li>
+<li>使用 Breaklines 工具沿地物细化网格</li>
+<li>实时预览网格效果，调整参数后即时更新</li>
+</ul>
+<h4>三、结果可视化</h4>
+<ul>
+<li><strong>Water Surface</strong> — 水面高程渲染</li>
+<li><strong>Depth</strong> — 水深分布图</li>
+<li><strong>Velocity</strong> — 流速矢量/大小渲染</li>
+<li><strong>Inundation</strong> — 淹没范围图</li>
+<li><strong>Reference Lines</strong> — 设置参考线输出平均流速、水力深度等断面统计量</li>
+<li>支持动画回放，直观展示洪水演进过程</li>
+</ul>
+<h4>四、地图输出</h4>
+<p>可将结果导出为图片、Shapefile、GeoTIFF 等格式，用于报告制作和 GIS 分析。支持自定义图例、比例尺、指北针等地图元素。</p>`
+      },
+      'hydraulic-ref':{
+        title:'📐 水力学参考手册 — 理论公式详解',
+        link:BASE+'/rasdocs/ras1dtechref/latest',
+        html:`<h4>一维恒定流 — 能量方程</h4>
+<p>HEC-RAS 一维恒定流基于一维能量方程（步推法 Standard Step Method）：</p>
+<p style="text-align:center;font-family:monospace;color:var(--c-text-bright);padding:12px;background:rgba(0,0,0,0.2);border-radius:8px;margin:12px 0;">WS₂ + V₂²/2g = WS₁ + V₁²/2g + hₑ</p>
+<p>其中 WS 为水面高程，V 为平均流速，g 为重力加速度，hₑ 为两断面间的能量损失（摩擦损失 + 收缩/扩张损失）。</p>
+<p>摩擦损失由 Manning 方程评估：Sf = (nV)² / (Rh^(4/3))，其中 n 为 Manning 糙率系数，Rh 为水力半径。收缩/扩张损失由系数乘以速度头变化来评估。</p>
+<p>动量方程用于急变流场景：混合流态计算（水跃）、桥梁水力学、汇流口水面线。</p>
+<h4>一维非恒定流 — 圣维南方程组</h4>
+<ul>
+<li><strong>连续性方程</strong>：∂A/∂t + ∂Q/∂x = 0（A 为过水面积，Q 为流量）</li>
+<li><strong>动量方程</strong>：∂Q/∂t + ∂(Q²/A)/∂x + gA∂h/∂x = gA(S₀ - Sf)</li>
+<li>使用 Preissmann 窄缝法处理干湿交替问题</li>
+<li>隐式差分格式求解，无条件稳定（亚临界流）</li>
+<li>θ 加权因子控制隐式程度（0.5 = Crank-Nicolson，1.0 = 全隐式）</li>
+</ul>
+<h4>二维浅水方程</h4>
+<ul>
+<li>基于有限体积法（Finite Volume Method）离散计算域</li>
+<li>使用 Roe 近似黎曼解（Roe's Approximate Riemann Solver）计算单元界面通量</li>
+<li>支持干湿界面处理，自动识别淹没/暴露单元</li>
+<li>可选扩散波近似（Diffusion Wave）：忽略对流项和压力梯度中的时间导数项，计算速度更快</li>
+<li>6.7 版新增弯道二次流效应：平衡方法（快 40%）和非平衡方法（更精确）</li>
+</ul>
+<h4>桥梁/涵洞水力学</h4>
+<ul>
+<li><strong>能量法</strong>：在桥断面处建立能量平衡，考虑桥台收缩/扩张、桥墩阻水、梁底壅水等</li>
+<li><strong>动量法</strong>：适用于急流、混合流态，基于动量守恒方程求解</li>
+<li><strong>General 方法（6.7 推荐）</strong>：自动选择能量法或动量法，替代旧的 Prismatic (Legacy) 方法</li>
+<li>6.7 版新增：2D 桥梁压力流与越顶流方法，分别求解桥孔内和桥面上的二维方程</li>
+</ul>
+<h4>水工建筑物</h4>
+<ul>
+<li><strong>堰</strong>：宽顶堰/侧堰方程，可选能量坡度或水面坡度作为水头</li>
+<li><strong>闸门</strong>：支持 Radial Gate、Sluice Gate、Overflow Gate，可设 Rules/Time Series/Elevation 控制</li>
+<li><strong>溢洪道</strong>：标准溢洪道和非常溢洪道方程</li>
+<li><strong>泵站</strong>：定义泵的启动/停止水位和抽水流量</li>
+<li><strong>侧向结构物</strong>：连接主河道与蓄洪区/分洪道，综合使用堰/涵洞/闸门方程</li>
+</ul>`
+      },
+      'sed1d':{
+        title:'🏖️ 一维泥沙输移 — 详细建模步骤',
+        link:BASE+'/rasdocs/rassed1d',
+        html:`<h4>泥沙建模流程</h4>
+<ol class="step-list">
+<li><strong>定义泥沙级配</strong>：在 Sediment Data 编辑器中设定粒径分组（如 0.1mm, 0.5mm, 2mm, 8mm），每个分组设定权重百分比</li>
+<li><strong>初始化床沙</strong>：设定初始床沙组成，可分多层（Surface Layer + Substrate Layers）</li>
+<li><strong>选择输沙公式</strong>：根据河床组成选择合适的公式
+  <ul>
+  <li><strong>Engelund-Hansen</strong> — 适用于沙质河床，全沙输移</li>
+  <li><strong>Meyer-Peter Müller</strong> — 适用于卵石河床，推移质</li>
+  <li><strong>Yang</strong> — 基于流功率的公式，适用范围广</li>
+  <li><strong>Parker</strong> — 仅适用于卵石河床</li>
+  </ul>
+</li>
+<li><strong>设定计算参数</strong>：包括形态加速因子（MAF）、水流计算时间步长、泥沙计算时间步长</li>
+<li><strong>执行计算</strong>：Run → Sediment Transport Analysis</li>
+<li><strong>结果分析</strong>：查看河床高程变化、冲淤量、输沙率过程线等</li>
+</ol>
+<h4>BSTEM 岸坡稳定性</h4>
+<p>Bank Stability Toe Erosion Model 用于评估岸坡稳定性，考虑：</p>
+<ul>
+<li>趾部冲刷速率（基于流速和土体特性）</li>
+<li>岸坡崩塌机制（Planar Failure / Mass Failure）</li>
+<li>植被根系对岸坡的加固作用</li>
+</ul>`
+      },
+      'sed2d':{
+        title:'🌊 二维泥沙输移 — 详细说明',
+        link:BASE+'/rasdocs/h2sd',
+        html:`<h4>二维泥沙模型特点</h4>
+<p>二维泥沙输移模型在一维模型基础上增加了河道横向的冲淤分布模拟能力。</p>
+<h4>主要功能</h4>
+<ul>
+<li><strong>横向冲淤分布</strong>：模拟弯道凹岸冲刷、凸岸淤积的三维效应</li>
+<li><strong>弯道二次流</strong>（6.7 新增）：基于 Koch & Folkstra (1980) 方法，模拟弯道螺旋流对泥沙横向输移的影响</li>
+<li><strong>2D Bridge Scour</strong>（6.7 新增）：二维桥梁冲刷分析，可导出至 FHWA Hydraulic Toolbox</li>
+<li><strong>形态加速因子</strong>：自动/手动设定，加速长期演变模拟</li>
+</ul>
+<h4>建模要点</h4>
+<ul>
+<li>二维网格应足够精细以捕捉横向冲淤梯度</li>
+<li>弯道处需加密网格以准确模拟二次流效应</li>
+<li>建议先运行水动力计算验证流场合理性，再叠加泥沙计算</li>
+</ul>`
+      },
+      'mud':{
+        title:'🏔️ 泥石流建模 — 详细说明',
+        link:BASE+'/rasdocs/rasmuddebris',
+        html:`<h4>泥石流模型概述</h4>
+<p>HEC-RAS 的泥石流模块使用非牛顿流体模型模拟粘性泥石流的运动。</p>
+<h4>支持的流变模型</h4>
+<ul>
+<li><strong>Bingham 模型</strong>：最常用，需设定屈服应力（Yield Stress）和塑性粘度（Plastic Viscosity）</li>
+<li><strong>Herschel-Bulkley 模型</strong>：更通用，增加幂律指数参数</li>
+</ul>
+<h4>应用场景</h4>
+<ul>
+<li>山区沟道泥石流运动模拟</li>
+<li>大坝溃决后的泥石流演进</li>
+<li>变浓度泥石流：清水与泥石流交汇（6.7 Beta 1 新增指南）</li>
+<li>支流泥石流入汇干流清水的耦合场景</li>
+</ul>
+<h4>建模步骤</h4>
+<ol class="step-list">
+<li>建立二维计算区域，网格应沿沟道加密</li>
+<li>设定非牛顿流体参数（屈服应力、塑性粘度）</li>
+<li>上游边界设泥石流流量和浓度过程线</li>
+<li>执行计算，查看堆积范围、厚度和流速</li>
+</ol>`
+      },
+      'tutorial-terrain':{
+        title:'🛠️ 地形处理教程 — 详细步骤',
+        link:BASE+'/rasdocs/hgt/latest/tutorials/terrain',
+        html:`<h4>地形数据来源</h4>
+<ul>
+<li><strong>DEM 栅格</strong>：LiDAR、SRTM、ASTER 等来源的数字高程模型</li>
+<li><strong>实测断面</strong>：河道测量横断面数据</li>
+<li><strong>CAD 数据</strong>：工程设计地形图（通过 ArcGIS Pro 转换为 DEM）</li>
+</ul>
+<h4>操作步骤</h4>
+<ol class="step-list">
+<li>在 <strong>RAS Mapper</strong> 中导入 DEM 栅格文件</li>
+<li>检查地形数据质量：是否存在空值（NoData）、异常高程值</li>
+<li>如需叠加河道实测断面，创建多层地形（优先使用实测数据）</li>
+<li>使用 <strong>Terrain Modification</strong> 工具修筑堤防：沿堤防线绘制切割线，设定堤顶高程</li>
+<li>修改桥台区域地形，确保桥台与地形贴合</li>
+<li>进行填挖方模拟时，绘制修改区域并设定目标高程</li>
+</ol>
+<div class="tip-box"><p>💡 建议保留原始 DEM 作为底层，所有修改在上层进行，便于后期调整和版本对比。</p></div>`
+      },
+      'tutorial-1dsteady':{
+        title:'📘 一维恒定流教程 — 详细步骤',
+        link:BASE+'/rasdocs/hgt/latest/tutorials/1d-steady-flow',
+        html:`<h4>完整工作流程</h4>
+<ol class="step-list">
+<li><strong>导入几何数据</strong>：在 RAS Mapper 中导入地形，或手动编辑断面数据</li>
+<li><strong>绘制河段</strong>：使用 Reach 工具从上游到下游绘制河道中心线</li>
+<li><strong>编辑断面</strong>：在每个断面位置输入 Station-Elevation 数据，设定 Manning n 值</li>
+<li><strong>添加建筑物</strong>：在桥梁位置插入 Bridge/Culvert 断面，输入几何参数</li>
+<li><strong>输入流量</strong>：在 Steady Flow Data 编辑器中设定流量值</li>
+<li><strong>设定边界</strong>：上游流量 + 下游水位（或正常水深）</li>
+<li><strong>执行计算</strong>：Run → Steady Flow Analysis → Compute</li>
+<li><strong>查看结果</strong>：水面线图、断面图、流量-水位关系曲线</li>
+</ol>
+<h4>子教程列表</h4>
+<ul>
+<li>Developing 1D Geometric Data with RAS Mapper</li>
+<li>Steady Flow Modeling with HEC-RAS</li>
+<li>Bridge Development（桥梁几何数据建立）</li>
+<li>Bridge Analysis（桥梁水力分析）</li>
+<li>Culvert Analysis（涵洞水力分析）</li>
+<li>Calibration of a Steady Flow Hydraulics Model（模型率定）</li>
+<li>Troubleshooting with HEC-RAS（故障排除）</li>
+<li>Floodway Workshop（洪泛区分析）</li>
+</ul>`
+      },
+      'tutorial-1dunsteady':{
+        title:'📗 一维非恒定流教程 — 详细步骤',
+        link:BASE+'/rasdocs/hgt/latest/tutorials/1d-unsteady-flow',
+        html:`<h4>非恒定流 vs 恒定流</h4>
+<p>恒定流假设流量不随时间变化，非恒定流则模拟流量随时间变化的过程（如洪水过程线），求解完整的圣维南方程组。</p>
+<h4>关键步骤</h4>
+<ol class="step-list">
+<li><strong>准备几何数据</strong>：同一维恒定流，但需更仔细地处理断面间距和糙率</li>
+<li><strong>设定边界条件</strong>：上游输入流量过程线（时间-流量对），下游输入水位过程线或 Rating Curve</li>
+<li><strong>设定初始条件</strong>：可从恒定流计算结果导入，或手动设定初始流量/水位</li>
+<li><strong>选择计算参数</strong>：时间步长（建议满足 CFL 条件）、θ 加权因子（通常 0.6~1.0）</li>
+<li><strong>执行计算</strong>：Run → Unsteady Flow Analysis</li>
+<li><strong>结果分析</strong>：过程线（水位/流量随时间变化）、动画回放、最大淹没范围</li>
+</ol>
+<h4>进阶功能</h4>
+<ul>
+<li><strong>Storage Area</strong>：模拟水库、蓄水区的调蓄作用</li>
+<li><strong>Lateral Structure</strong>：连接主河道与蓄洪区/分洪道</li>
+<li><strong>Dam Breach</strong>：设定溃口形状、溃决时间、溃决模式</li>
+<li><strong>User-Defined Rules</strong>：自定义闸门、泵站的运行规则</li>
+</ul>`
+      },
+      'tutorial-2d':{
+        title:'📙 二维非恒定流教程 — 13 个子教程详解',
+        link:BASE+'/rasdocs/hgt/latest/tutorials/2d-unsteady-flow',
+        html:`<h4>子教程完整列表</h4>
+<ol class="step-list">
+<li><strong>Mesh Generation and Refinement</strong> — 网格生成与细化。学习如何创建二维网格，使用 Breaklines 和 Breakpoints 控制网格质量</li>
+<li><strong>Creating a Simple 2D Model</strong> — 创建简单二维模型。从导入地形到查看结果的完整流程</li>
+<li><strong>Land Cover and Manning's n Data</strong> — 土地覆盖与曼宁系数。从 GIS 土地利用数据自动生成空间分布糙率</li>
+<li><strong>2D Model Development and Refinement</strong> — 二维模型开发与优化。如何调整网格、修改参数、验证结果</li>
+<li><strong>Storage Area and 2D Connections</strong> — 蓄水区与二维连接。学习堰、溢洪道与二维区域的耦合方法</li>
+<li><strong>Combined 1D/2D Modeling</strong> — 一维与二维耦合建模。河道用 1D、漫滩用 2D 的典型工程应用</li>
+<li><strong>Dam Breach Analysis with 2D Areas</strong> — 二维溃坝分析。含简单几何、堤防细化、敏感性分析等子教程</li>
+<li><strong>Simplified 2D Bridge Modeling</strong> — 简化二维桥梁建模。使用 2D 区域模拟桥梁对水流的影响</li>
+<li><strong>2D Rules</strong> — 二维规则控制。闸门、泵站在二维模型中的自动运行</li>
+<li><strong>Flow Hydrograph Optimization</strong> — 流量过程线优化。自动率定上游边界流量</li>
+<li><strong>Floodway Encroachment Analysis (2D)</strong> — 二维洪泛区侵占分析</li>
+<li><strong>Floodway Encroachment using Zones</strong> — 使用分区进行洪泛区侵占分析</li>
+<li><strong>Troubleshooting a 2D Model</strong> — 二维模型故障排除。常见错误诊断与修复方法</li>
+</ol>
+<div class="tip-box"><p>💡 建议从 Tutorial 01 → 02 → 03 顺序学习，这是二维建模的核心三步。Tutorial 07 溃坝分析是工程中最常用的功能之一。</p></div>`
+      },
+      'tutorial-sediment':{
+        title:'🏖️ 泥沙输移教程 — 详细步骤',
+        link:BASE+'/rasdocs/hgt/latest/tutorials/1d-sediment-transport',
+        html:`<h4>一维泥沙教程</h4>
+<ol class="step-list">
+<li>准备一维水动力模型（恒定流或非恒定流）</li>
+<li>在 Sediment Data 中定义泥沙级配和床沙组成</li>
+<li>选择输沙能力公式并设定参数</li>
+<li>设定形态加速因子（MAF）以加速长期演变</li>
+<li>执行泥沙计算，查看河床高程变化</li>
+<li>使用 BSTEM 模块评估岸坡稳定性</li>
+</ol>
+<h4>二维泥沙教程</h4>
+<ol class="step-list">
+<li>在二维水动力模型基础上叠加泥沙计算</li>
+<li>配置二维泥沙参数（与一维类似但增加横向分布）</li>
+<li>利用形态加速因子加速计算</li>
+<li>6.7 新增：2D Bridge Scour 桥梁冲刷分析</li>
+</ol>`
+      },
+      'tutorial-pipe':{
+        title:'🔧 管道网络教程 — 详细说明',
+        link:BASE+'/rasdocs/hgt/latest/tutorials/pipe-networks',
+        html:`<h4>管道网络功能概述</h4>
+<p>HEC-RAS 的管道网络模块（Pipe Networks）用于模拟城市雨水管网、排水系统中的管道流。支持与二维地表模型耦合，模拟地表径流进入管道、管道溢流回到地表的过程。</p>
+<h4>支持的管道类型</h4>
+<ul>
+<li>圆形管道（Circular）</li>
+<li>矩形管道（Rectangular / Box）</li>
+<li>拱形管道（Arch）</li>
+<li>椭圆形管道（Elliptical）</li>
+<li>半圆形管道（Semi-Circular）</li>
+<li>ConSpan（大跨度拱形）</li>
+</ul>
+<h4>6.7 新增功能</h4>
+<ul>
+<li><strong>Side Inlet</strong> — 侧向进水口，模拟路缘进水口</li>
+<li><strong>Top Inlet</strong> — 顶部进水口（替代 Drop Inlets）</li>
+<li><strong>Surcharge Only</strong> — 模拟有盖检修孔（Manhole）</li>
+<li><strong>Sluice Gate</strong> — 管道闸门，支持 Rules/Time Series/Elevation 控制</li>
+<li><strong>Speed Draw</strong> — 快速绘制模式，自动在端点放置节点</li>
+<li><strong>管道剖面图</strong> — 显示流量、流速、临界深度沿管道的分布</li>
+</ul>`
+      },
+      'release':{
+        title:'📋 版本更新详细说明',
+        link:BASE+'/rasdocs/rasrn/latest',
+        html:`<h4>HEC-RAS 6.7 Beta 5（2025.10.31）</h4>
+<p>主要修复 Beta 4 中的 Bug，新增/改进功能：</p>
+<ul>
+<li><strong>🔧 管道网络增强</strong> — Side Inlets（侧向进水口，模拟路缘进水口/蓄水池溢流）、Top Inlets（替代 Drop Inlets，可定义一次附加到多个节点）、Surcharge Only（模拟有盖检修孔 Manhole）、管道闸门 Sluice Gate（支持 Rules/Time Series/Elevation 控制）、涵洞进水口改进（使用入口控制条件计算入流，改进埋管堰流计算）</li>
+<li><strong>🐧 Linux 支持 (WSL)</strong> — 通过 WSL 运行 Linux 计算引擎，用于云端蒙特卡洛模拟。WSL 进程启动开销使单次模拟比原生 Windows 更慢，但适合批量自动化运行</li>
+<li><strong>📊 数值可重现性</strong> — 三级选项：默认（最快，合理容差）、严格、最严格（运行成本递增）</li>
+<li><strong>⚡ 多方案运行</strong> — 自动测试不同处理器数量的运行效率，结果汇总为单表</li>
+<li><strong>🌊 堰方程能量坡度选项</strong> — SA/2D Connections 的堰方程可选 Energy Grade（能量坡度）或 Water Surface（水面）作为水头，之前仅 Lateral Structure 支持</li>
+<li><strong>🌉 2D 桥梁冲刷导出 (Beta)</strong> — 新增 FHWA Hydraulic Toolbox 所需的输出变量，自动导出工具，附详细使用文档</li>
+<li><strong>📈 绘图改进</strong> — 水位/流量过程线绘图器大幅改版，按节点类型分组显示，集成表格快速切换。支持 Boundary Conditions、Reference Lines、2D Faces 等</li>
+<li><strong>🌀 二次流效应</strong> — 2D 泥沙弯道二次流（经 Koch & Folkstra 1980 实验验证），模拟凹岸冲刷/凸岸淤积。悬浮泥沙扩散通量和推移质偏移效应</li>
+<li><strong>🔄 地理参考涵洞动量</strong> — SWE 中包含涵洞出流动量（需手动开启 Use Momentum 选项），更准确模拟涵洞射流和掺混效应</li>
+</ul>
+<h4>HEC-RAS 6.7 Beta 4</h4>
+<ul>
+<li><strong>CPU 亲和性</strong> — 自动区分 P-core（性能核）/ E-core（效率核），计算仅用 P-core，避免效率核拖慢速度</li>
+<li><strong>二次流 (Beta)</strong> — 弯道螺旋流模拟（平衡/非平衡方法，参考 Delft3D-FLOW），经 Steffler 1984 水槽实验验证</li>
+<li><strong>结构物剖面图</strong> — 剖面中显示水工建筑物（低弦高程 vs 水面线）</li>
+<li><strong>时间序列绘图</strong> — 过程线集成表格快速切换，2D Connections 可直接从列表选择</li>
+<li><strong>USGS 数据下载</strong> — 支持按数据集过滤，解决 USGS NED 服务器不稳定问题</li>
+</ul>
+<h4>HEC-RAS 6.7 Beta 2/3</h4>
+<ul>
+<li><strong>2D 桥梁</strong> — 压力流与越顶流新方法，分别求解桥孔内和桥面上的二维方程</li>
+<li><strong>1D 桥梁动量法</strong> — General 方法（推荐）替代 Prismatic (Legacy)，改善上下游断面差异大时的水力表精度</li>
+<li><strong>RAS Mapper</strong> — 菜单重组：右键 Plan → Plot Results Profile / Show Results Table；Results 和 Mapping Results 分离</li>
+<li><strong>参考线变量</strong> — 新增平均/最大流速、水力深度、流量、面积、水面宽、摩擦坡度（桥梁冲刷计算用）</li>
+</ul>
+<h4>HEC-RAS 6.7 Beta 1</h4>
+<ul>
+<li><strong>管道新管型</strong> — 拱形（Arch）、低矮拱形（Low Profile Arch）、高拱形（High Profile Arch）、椭圆形（水平/垂直）、半圆形（Semi-Circular）、ConSpan</li>
+<li><strong>管道剖面</strong> — 显示流量、流速、临界深度沿管道的分布</li>
+<li><strong>Speed Draw</strong> — 快速绘制模式，自动在端点放置节点</li>
+<li><strong>形态加速因子自动化</strong> — 自动压缩流量时间序列（反比于加速因子），替代手动压缩</li>
+<li><strong>BSTEM 更新</strong> — 修复多层算法 Bug，新增 BSTEM 教程</li>
+<li><strong>变浓度泥石流指南</strong> — 多种复杂度方法的详细指南（Concentration Only Routing、Hindered Settling 等）</li>
+</ul>`
+      },
+      'known':{
+        title:'⚠️ 已知问题与技术支持',
+        link:BASE+'/rasdocs/raski/latest',
+        html:`<h4>已知问题</h4>
+<p>HEC-RAS 维护了一个已知问题列表，记录当前版本中已发现但尚未修复的问题。遇到软件异常时请先查阅此列表。</p>
+<h4>如何报告问题</h4>
+<ol class="step-list">
+<li>访问 HEC-RAS Bug Report 页面或发送邮件至 <strong>ras@usace.army.mil</strong></li>
+<li>描述清楚：操作步骤、预期结果、实际结果</li>
+<li>注明 HEC-RAS 版本号</li>
+<li>如可能，附上复现问题所需的项目文件</li>
+</ol>
+<div class="warn-box"><p>⚠️ HEC 对非 USACE 用户不提供电话/邮件技术支持，但鼓励报告软件问题。回复通常包含问题确认和修复计划。</p></div>
+<h4>常用排错方法</h4>
+<ul>
+<li>查看计算日志中的 Error/Warning 信息</li>
+<li>检查断面数据是否有交叉或异常值</li>
+<li>检查边界条件是否完整（每个河段都需要上下游边界）</li>
+<li>非恒定流检查 CFL 条件，尝试减小时间步长</li>
+<li>二维模型检查网格质量，避免过小或畸形单元</li>
+</ul>`
+      }
+    };
+
+    // Doc section click handler
+    document.querySelectorAll('.doc-section[data-doc]').forEach(section=>{
+      section.addEventListener('click',e=>{
+        // Don't trigger on link clicks
+        if(e.target.tagName==='A')return;
+        const key=section.dataset.doc;
+        const data=docContent[key];
+        if(!data)return;
+        docModalTitle.textContent=data.title;
+        docModalBody.innerHTML=data.html;
+        docModalLink.href=data.link;
+        docModalEl.classList.add('active');
+        document.body.style.overflow='hidden';
+      });
+    });
+    function closeDocModal(){docModalEl.classList.remove('active');document.body.style.overflow=''}
+
+    // Doc Collapse Toggle
+    function toggleDocCollapse(){
+      const btn=document.getElementById('docToggleBtn');
+      const body=document.getElementById('docCollapseBody');
+      btn.classList.toggle('open');
+      body.classList.toggle('open');
+      if(body.classList.contains('open')){
+        btn.innerHTML='📚 点击收起操作手册与教程 <span class="arrow" style="transform:rotate(180deg);display:inline-block;transition:transform 0.3s;font-size:0.8em;">▼</span>';
+      }else{
+        btn.innerHTML='📚 点击展开全部操作手册与教程 <span class="arrow" style="display:inline-block;transition:transform 0.3s;font-size:0.8em;">▼</span>';
+      }
+    }
+    document.getElementById('docModalClose').addEventListener('click',closeDocModal);
+    docModalEl.addEventListener('click',e=>{if(e.target===docModalEl)closeDocModal()});
+  </script>
+</body>
+</html>
