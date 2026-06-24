@@ -609,37 +609,49 @@ async function fetchSSByTitle(title) {
   throw new Error('Semantic Scholar: 未找到匹配的论文');
 }
 
-// Fetch from both sources, merge results
-async function fetchBothSources(line) {
-  let oaWork = null, ssWork = null;
+// ─── CrossRef API ───
+async function fetchCRByDOI(doi) {
+  const clean = doi.replace(/^https?:\/\/doi.org\//, '').trim();
+  const url = `https://api.crossref.org/works/${encodeURIComponent(clean)}`;
+  const data = await apiGet(url, 2);
+  return data.message || null;
+}
+
+// Fetch from all 3 sources, merge results
+async function fetchAllSources(line) {
+  let oaWork = null, ssWork = null, crWork = null;
   const isDOI = line.match(/^10\.\d{4,}/);
 
-  // Query both APIs in parallel
-  const [oaResult, ssResult] = await Promise.allSettled([
+  // Query all 3 APIs in parallel
+  const [oaResult, ssResult, crResult] = await Promise.allSettled([
     isDOI ? fetchWorkByDOI(line) : fetchWorkByTitle(line),
-    isDOI ? fetchSSByDOI(line) : fetchSSByTitle(line)
+    isDOI ? fetchSSByDOI(line) : fetchSSByTitle(line),
+    isDOI ? fetchCRByDOI(line) : Promise.reject()
   ]);
 
   if (oaResult.status === 'fulfilled') oaWork = oaResult.value;
   if (ssResult.status === 'fulfilled') ssWork = ssResult.value;
+  if (crResult.status === 'fulfilled') crWork = crResult.value;
 
-  if (!oaWork && !ssWork) throw new Error('两个数据源均查询失败');
+  if (!oaWork && !ssWork && !crWork) throw new Error('三个数据源均查询失败');
 
-  // Use OpenAlex as primary, Semantic Scholar as supplement
+  // Use OpenAlex as primary, others as supplement
   const primary = oaWork || {};
-  const doi = (primary.doi || (ssWork && ssWork.externalIds?.DOI) || '').replace('https://doi.org/', '');
+  const doi = (primary.doi || (ssWork && ssWork.externalIds?.DOI) || (crWork && crWork.DOI) || '').replace('https://doi.org/', '');
   const oaCount = primary.cited_by_count || 0;
   const ssCount = ssWork ? (ssWork.citationCount || 0) : 0;
+  const crCount = crWork ? (crWork['is-referenced-by-count'] || 0) : 0;
 
   return {
     doi: doi,
-    title: primary.title || (ssWork ? ssWork.title : 'Untitled'),
-    year: primary.publication_year || (ssWork ? ssWork.year : '-'),
-    venue: (primary.primary_location?.source?.display_name) || (ssWork ? ssWork.venue : ''),
+    title: primary.title || (ssWork ? ssWork.title : (crWork ? (crWork.title?.[0] || 'Untitled') : 'Untitled')),
+    year: primary.publication_year || (ssWork ? ssWork.year : (crWork ? crWork.issued?.['date-parts']?.[0]?.[0] : '-')),
+    venue: (primary.primary_location?.source?.display_name) || (ssWork ? ssWork.venue : (crWork ? crWork['container-title']?.[0] || '' : '')),
     openalex_id: primary.id ? primary.id.replace('https://openalex.org/', '') : '',
-    cited_by_count: Math.max(oaCount, ssCount),
+    cited_by_count: Math.max(oaCount, ssCount, crCount),
     oa_cited_by: oaCount,
     ss_cited_by: ssCount,
+    cr_cited_by: crCount,
     citation_list: [],
     cite_page: 0,
     loaded: false
@@ -667,7 +679,7 @@ async function fetchAll() {
     }
 
     try {
-      const paperData = await fetchBothSources(line);
+      const paperData = await fetchAllSources(line);
       papers.push(paperData);
       newPapers++;
     } catch(e) {
@@ -764,7 +776,7 @@ function renderAll() {
           <div class="paper-title"><a href="${doiLink}" target="_blank" onclick="event.stopPropagation()">${escHtml(p.title)}</a></div>
           <div class="paper-meta">
             <span class="paper-badge badge-cite">📊 ${p.cited_by_count} 次引用${deltaBadge}</span>
-            ${(p.oa_cited_by !== undefined || p.ss_cited_by !== undefined) ? `<span style="font-size:.7rem;opacity:.5">OA:${p.oa_cited_by||0} · SS:${p.ss_cited_by||0}</span>` : ''}
+            ${(p.oa_cited_by !== undefined || p.ss_cited_by !== undefined || p.cr_cited_by !== undefined) ? `<span style="font-size:.7rem;opacity:.5">OA:${p.oa_cited_by||0} · SS:${p.ss_cited_by||0} · CR:${p.cr_cited_by||0}</span>` : ''}
             ${p.year ? `<span>${p.year}</span>` : ''}
             ${p.venue ? `<span class="sep">·</span><span>${escHtml(p.venue)}</span>` : ''}
             ${p.doi ? `<span class="badge-doi" style="font-size:.72rem;opacity:.6">${escHtml(p.doi.substring(0,30))}${p.doi.length>30?'...':''}</span>` : ''}
@@ -894,14 +906,15 @@ async function autoRefresh() {
     const p = papers[i];
     if (!p.doi && !p.openalex_id) continue;
     try {
-      // Fetch from both sources in parallel
-      const [oaResult, ssResult] = await Promise.allSettled([
+      // Fetch from all 3 sources in parallel
+      const [oaResult, ssResult, crResult] = await Promise.allSettled([
         p.openalex_id ? apiGet(`https://api.openalex.org/works/${p.openalex_id}?select=id,title,publication_year,primary_location,cited_by_count`, 2) : Promise.reject(),
-        p.doi ? fetchSSByDOI(p.doi) : Promise.reject()
+        p.doi ? fetchSSByDOI(p.doi) : Promise.reject(),
+        p.doi ? fetchCRByDOI(p.doi) : Promise.reject()
       ]);
 
       const oldCount = p.cited_by_count;
-      let oaCount = 0, ssCount = 0;
+      let oaCount = 0, ssCount = 0, crCount = 0;
 
       if (oaResult.status === 'fulfilled' && oaResult.value) {
         const w = oaResult.value;
@@ -913,10 +926,14 @@ async function autoRefresh() {
       if (ssResult.status === 'fulfilled' && ssResult.value) {
         ssCount = ssResult.value.citationCount || 0;
       }
+      if (crResult.status === 'fulfilled' && crResult.value) {
+        crCount = crResult.value['is-referenced-by-count'] || 0;
+      }
 
       p.oa_cited_by = oaCount;
       p.ss_cited_by = ssCount;
-      p.cited_by_count = Math.max(oaCount, ssCount);
+      p.cr_cited_by = crCount;
+      p.cited_by_count = Math.max(oaCount, ssCount, crCount);
 
       if (p.cited_by_count !== oldCount) {
         p.cite_delta = p.cited_by_count - oldCount;
