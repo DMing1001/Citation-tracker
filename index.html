@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="输入论文 DOI，一键查看被谁引用了。免费、无需注册。">
 <meta name="twitter:image" content="https://citeglow.com/og-cover.png">
 
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>📊</text></svg>">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
 <link rel="stylesheet" href="/journals/theme.css">
 <script>!function(){var t=localStorage.getItem('citeglow-theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='light'?'#f5f7fa':'#080e1a'}();</script>
 <style>
@@ -47,7 +47,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 
 /* Hero */
 .hero{text-align:center;padding:80px 0 40px}
-.hero-icon{font-size:3.5rem;margin-bottom:16px;animation:float 3s ease-in-out infinite;cursor:pointer;user-select:none;transition:transform .15s}
+.hero-icon{font-size:3.5rem;margin-bottom:16px;animation:float 3s ease-in-out infinite;cursor:pointer;user-select:none;transition:transform .15s;display:inline-block}
 .hero-icon:active{transform:scale(.9)}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
@@ -209,7 +209,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
 <div class="container">
   <!-- Top nav -->
   <nav class="topnav">
-    <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+    <a href="/" class="topnav-logo"><img src="/logo.svg" alt="CiteGlow" style="width:32px;height:32px;border-radius:8px"> <span>CiteGlow</span></a>
     <div class="topnav-links">
       <a href="/" class="active">引用追踪</a>
       <a href="/journals/">期刊投稿</a>
@@ -218,7 +218,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
 
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-icon" id="heroIcon" onclick="onHeroClick()">📊</div>
+    <div class="hero-icon" id="heroIcon" onclick="onHeroClick()"><img src="/logo.svg" alt="CiteGlow" style="width:80px;height:80px;border-radius:16px;filter:drop-shadow(0 4px 12px rgba(99,102,241,.3))"></div>
     <h1><span class="grad">CiteGlow</span> · 论文引用追踪器</h1>
     <p>输入论文 DOI，一键查看每篇文章被谁引用了。数据来自 OpenAlex 开放学术数据库。</p>
   </div>
