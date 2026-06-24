@@ -846,16 +846,18 @@ function updateStats() {
 // ─── Auto refresh on load ───
 async function autoRefresh() {
   const btn = document.getElementById('btnFetch');
+  const btnRefresh = document.getElementById('btnRefresh');
   btn.disabled = true;
+  if (btnRefresh) btnRefresh.disabled = true;
   btn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>正在刷新最新数据...';
 
-  let updated = 0;
+  let updated = 0, failed = 0;
   for (let i = 0; i < papers.length; i++) {
     const p = papers[i];
     if (!p.openalex_id) continue;
     try {
       const url = `https://api.openalex.org/works/${p.openalex_id}?select=id,title,publication_year,primary_location,cited_by_count`;
-      const work = await apiGet(url);
+      const work = await apiGet(url, 2);
       const oldCount = p.cited_by_count;
       p.cited_by_count = work.cited_by_count || 0;
       p.title = work.title || p.title;
@@ -867,14 +869,16 @@ async function autoRefresh() {
       }
     } catch(e) {
       console.error('Auto-refresh failed for:', p.title, e);
+      failed++;
     }
-    await sleep(350);
+    await sleep(500);
   }
 
   saveToStorage();
   renderAll();
 
   btn.disabled = false;
+  if (btnRefresh) btnRefresh.disabled = false;
   btn.innerHTML = '🔍 查询引用';
 
   if (updated > 0) {
@@ -894,7 +898,11 @@ async function autoRefresh() {
       if (anyIncrement) showIncrementEncouragement();
     }
 
-    toast(`🔄 已刷新！${updated} 篇论文引用数有更新`, 'success');
+    toast(`🔄 已刷新！${updated} 篇论文引用数有更新` + (failed > 0 ? `，${failed}篇获取失败` : ''), 'success');
+  } else if (failed > 0) {
+    toast(`⚠️ 刷新失败，${failed}篇数据获取失败，请检查网络后重试`, 'error');
+  } else {
+    toast('✅ 数据已是最新，引用数无变化', 'info');
   }
 
   // 更新快照
