@@ -589,6 +589,7 @@ async function fetchWorkByTitle(title) {
 }
 
 async function fetchCitations(openalexId, page = 1, perPage = 10) {
+  if (!openalexId) throw new Error('缺少 OpenAlex ID，无法查询引用');
   const url = `https://api.openalex.org/works?filter=cites:${openalexId}&sort=cited_by_count:desc&per-page=${perPage}&page=${page}&select=id,title,doi,publication_year,authorships,primary_location`;
   return await apiGet(url);
 }
@@ -719,12 +720,14 @@ async function loadCitations(index) {
     if (!paper.openalex_id && paper.doi) {
       try {
         const work = await fetchWorkByDOI(paper.doi);
-        paper.openalex_id = work.id.replace('https://openalex.org/', '');
-        saveToStorage();
-      } catch(e) { /* ignore */ }
+        if (work && work.id) {
+          paper.openalex_id = work.id.replace('https://openalex.org/', '');
+          saveToStorage();
+        }
+      } catch(e) { /* DOI not found in OpenAlex */ }
     }
     if (!paper.openalex_id) {
-      listEl.innerHTML = '<div class="cite-empty">❌ 无法获取引用列表（缺少 OpenAlex ID）</div>';
+      listEl.innerHTML = '<div class="cite-empty">📭 该论文暂未被 OpenAlex 收录，引用列表暂不可用<br><span style="font-size:.8rem;opacity:.6;margin-top:4px;display:inline-block">论文较新或 DOI 未被索引，可稍后再试</span></div>';
       return;
     }
 
