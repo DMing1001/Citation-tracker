@@ -549,28 +549,50 @@ function loadFromStorage() {
   } catch(e) {}
 }
 
-// ─── API (cache-busting + retry) ───
+// ─── API (cache-busting + retry + proxy fallback) ───
 async function apiGet(url, maxRetries) {
   maxRetries = maxRetries || 3;
   const sep = url.indexOf('?') === -1 ? '?' : '&';
   const bustUrl = url + sep + '_t=' + Date.now();
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
+
+  // Try direct first, then proxy fallback
+  async function doFetch(fetchUrl, useProxy) {
+    const actualUrl = useProxy ? `/api/proxy?url=${encodeURIComponent(fetchUrl)}` : fetchUrl;
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), useProxy ? 20000 : 12000);
     try {
-      const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 15000);
-      const r = await fetch(bustUrl, {
-        headers: {'User-Agent': 'CiteGlow/1.0 (https://citeglow.com)'},
+      const r = await fetch(actualUrl, {
         cache: 'no-store',
         signal: controller.signal
       });
       clearTimeout(tid);
-      if (!r.ok) {
-        if (r.status === 429) { await sleep(Math.pow(2, attempt) * 2000); continue; }
-        throw new Error(`HTTP ${r.status}`);
-      }
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return r.json();
     } catch(e) {
-      if (attempt < maxRetries - 1) { await sleep(Math.pow(2, attempt) * 1000); } else { throw e; }
+      clearTimeout(tid);
+      throw e;
+    }
+  }
+
+  // Try direct requests first
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await doFetch(bustUrl, false);
+    } catch(e) {
+      if (e.name === 'AbortError' || e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
+        // Likely blocked (GFW) — switch to proxy immediately
+        break;
+      }
+      if (attempt < maxRetries - 1) { await sleep(Math.pow(2, attempt) * 1000); }
+    }
+  }
+
+  // Fallback: try through proxy
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await doFetch(bustUrl, true);
+    } catch(e) {
+      if (attempt < 1) { await sleep(1000); } else { throw e; }
     }
   }
 }
