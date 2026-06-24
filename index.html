@@ -592,6 +592,60 @@ async function fetchCitations(openalexId, page = 1, perPage = 10) {
   return await apiGet(url);
 }
 
+// ─── Semantic Scholar API ───
+const SS_API = 'https://api.semanticscholar.org/graph/v1/paper';
+const SS_FIELDS = 'title,citationCount,year,externalIds,venue,authors';
+
+async function fetchSSByDOI(doi) {
+  const clean = doi.replace(/^https?:\/\/doi.org\//, '').trim();
+  const url = `${SS_API}/DOI:${encodeURIComponent(clean)}?fields=${SS_FIELDS}`;
+  return await apiGet(url, 2);
+}
+
+async function fetchSSByTitle(title) {
+  const url = `${SS_API}/search?query=${encodeURIComponent(title)}&limit=1&fields=${SS_FIELDS}`;
+  const data = await apiGet(url, 2);
+  if (data.data && data.data.length > 0) return data.data[0];
+  throw new Error('Semantic Scholar: 未找到匹配的论文');
+}
+
+// Fetch from both sources, merge results
+async function fetchBothSources(line) {
+  let oaWork = null, ssWork = null;
+  const isDOI = line.match(/^10\.\d{4,}/);
+
+  // Query both APIs in parallel
+  const [oaResult, ssResult] = await Promise.allSettled([
+    isDOI ? fetchWorkByDOI(line) : fetchWorkByTitle(line),
+    isDOI ? fetchSSByDOI(line) : fetchSSByTitle(line)
+  ]);
+
+  if (oaResult.status === 'fulfilled') oaWork = oaResult.value;
+  if (ssResult.status === 'fulfilled') ssWork = ssResult.value;
+
+  if (!oaWork && !ssWork) throw new Error('两个数据源均查询失败');
+
+  // Use OpenAlex as primary, Semantic Scholar as supplement
+  const primary = oaWork || {};
+  const doi = (primary.doi || (ssWork && ssWork.externalIds?.DOI) || '').replace('https://doi.org/', '');
+  const oaCount = primary.cited_by_count || 0;
+  const ssCount = ssWork ? (ssWork.citationCount || 0) : 0;
+
+  return {
+    doi: doi,
+    title: primary.title || (ssWork ? ssWork.title : 'Untitled'),
+    year: primary.publication_year || (ssWork ? ssWork.year : '-'),
+    venue: (primary.primary_location?.source?.display_name) || (ssWork ? ssWork.venue : ''),
+    openalex_id: primary.id ? primary.id.replace('https://openalex.org/', '') : '',
+    cited_by_count: Math.max(oaCount, ssCount),
+    oa_cited_by: oaCount,
+    ss_cited_by: ssCount,
+    citation_list: [],
+    cite_page: 0,
+    loaded: false
+  };
+}
+
 // ─── Main fetch ───
 async function fetchAll() {
   const input = document.getElementById('doiInput').value.trim();
@@ -613,25 +667,8 @@ async function fetchAll() {
     }
 
     try {
-      let work;
-      if (line.match(/^10\.\d{4,}/)) {
-        work = await fetchWorkByDOI(line);
-      } else {
-        work = await fetchWorkByTitle(line);
-      }
-
-      const doi = (work.doi || '').replace('https://doi.org/', '');
-      papers.push({
-        doi: doi,
-        title: work.title || 'Untitled',
-        year: work.publication_year || '-',
-        venue: work.primary_location?.source?.display_name || '',
-        openalex_id: work.id.replace('https://openalex.org/', ''),
-        cited_by_count: work.cited_by_count || 0,
-        citation_list: [],
-        cite_page: 0,
-        loaded: false
-      });
+      const paperData = await fetchBothSources(line);
+      papers.push(paperData);
       newPapers++;
     } catch(e) {
       console.error('Error fetching:', line, e);
@@ -727,6 +764,7 @@ function renderAll() {
           <div class="paper-title"><a href="${doiLink}" target="_blank" onclick="event.stopPropagation()">${escHtml(p.title)}</a></div>
           <div class="paper-meta">
             <span class="paper-badge badge-cite">📊 ${p.cited_by_count} 次引用${deltaBadge}</span>
+            ${(p.oa_cited_by !== undefined || p.ss_cited_by !== undefined) ? `<span style="font-size:.7rem;opacity:.5">OA:${p.oa_cited_by||0} · SS:${p.ss_cited_by||0}</span>` : ''}
             ${p.year ? `<span>${p.year}</span>` : ''}
             ${p.venue ? `<span class="sep">·</span><span>${escHtml(p.venue)}</span>` : ''}
             ${p.doi ? `<span class="badge-doi" style="font-size:.72rem;opacity:.6">${escHtml(p.doi.substring(0,30))}${p.doi.length>30?'...':''}</span>` : ''}
@@ -854,15 +892,32 @@ async function autoRefresh() {
   let updated = 0, failed = 0;
   for (let i = 0; i < papers.length; i++) {
     const p = papers[i];
-    if (!p.openalex_id) continue;
+    if (!p.doi && !p.openalex_id) continue;
     try {
-      const url = `https://api.openalex.org/works/${p.openalex_id}?select=id,title,publication_year,primary_location,cited_by_count`;
-      const work = await apiGet(url, 2);
+      // Fetch from both sources in parallel
+      const [oaResult, ssResult] = await Promise.allSettled([
+        p.openalex_id ? apiGet(`https://api.openalex.org/works/${p.openalex_id}?select=id,title,publication_year,primary_location,cited_by_count`, 2) : Promise.reject(),
+        p.doi ? fetchSSByDOI(p.doi) : Promise.reject()
+      ]);
+
       const oldCount = p.cited_by_count;
-      p.cited_by_count = work.cited_by_count || 0;
-      p.title = work.title || p.title;
-      p.year = work.publication_year || p.year;
-      p.venue = work.primary_location?.source?.display_name || p.venue;
+      let oaCount = 0, ssCount = 0;
+
+      if (oaResult.status === 'fulfilled' && oaResult.value) {
+        const w = oaResult.value;
+        oaCount = w.cited_by_count || 0;
+        p.title = w.title || p.title;
+        p.year = w.publication_year || p.year;
+        p.venue = w.primary_location?.source?.display_name || p.venue;
+      }
+      if (ssResult.status === 'fulfilled' && ssResult.value) {
+        ssCount = ssResult.value.citationCount || 0;
+      }
+
+      p.oa_cited_by = oaCount;
+      p.ss_cited_by = ssCount;
+      p.cited_by_count = Math.max(oaCount, ssCount);
+
       if (p.cited_by_count !== oldCount) {
         p.cite_delta = p.cited_by_count - oldCount;
         updated++;
