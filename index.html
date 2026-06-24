@@ -3,49 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CiteGlow — 查看你的论文被谁引用了。免费、无需注册、数据来自 OpenAlex。">
 <title>CiteGlow — 论文引用追踪器</title>
 
 <!-- SEO Meta -->
-<meta name="description" content="CiteGlow — 查看你的论文被谁引用了。免费、无需注册、数据来自 OpenAlex。输入 DOI 一键追踪引用，支持 H-Index 计算和引用趋势分析。">
 <meta name="keywords" content="论文引用,引用追踪,DOI,OpenAlex,学术,H-Index,科研,CiteGlow">
-<meta name="author" content="CiteGlow">
 <link rel="canonical" href="https://citeglow.com/">
-
-<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://citeglow.com/">
 <meta property="og:title" content="CiteGlow — 论文引用追踪器">
 <meta property="og:description" content="输入论文 DOI，一键查看被谁引用了。免费、无需注册、数据来自 OpenAlex 开放学术数据库。">
 <meta property="og:image" content="https://citeglow.com/og-cover.png">
 <meta property="og:locale" content="zh_CN">
-
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="CiteGlow — 论文引用追踪器">
 <meta name="twitter:description" content="输入论文 DOI，一键查看被谁引用了。免费、无需注册。">
 <meta name="twitter:image" content="https://citeglow.com/og-cover.png">
 
-<!-- Theme Color -->
-<meta name="theme-color" content="#080e1a">
-
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>📊</text></svg>">
-
-<script>
-// ★ Immediately apply theme (prevents flash)
-!function(){
-  var t=localStorage.getItem('citeglow-theme');
-  if(!t) t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';
-  document.documentElement.setAttribute('data-theme',t);
-  var m=document.querySelector('meta[name="theme-color"]');
-  if(m) m.content=t==='light'?'#f5f7fa':'#080e1a';
-}();
-</script>
-
+<link rel="stylesheet" href="/journals/theme.css">
+<script>!function(){var t=localStorage.getItem('citeglow-theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='light'?'#f5f7fa':'#080e1a'}();</script>
 <style>
-/* ═══════════════════════════════════════════
-   CiteGlow — 主站样式（含深色/浅色主题）
-   ═══════════════════════════════════════════ */
-
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
@@ -54,36 +32,6 @@
   --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
   --border:rgba(99,102,241,.15);--glow:rgba(99,102,241,.2)
 }
-
-/* ── 浅色主题变量 ── */
-:root[data-theme="light"]{
-  --bg:#f5f7fa;--bg2:#eef1f6;--card:#ffffff;--card2:#f0f3f8;
-  --txt:#1a1a2e;--dim:#6b7280;--bright:#0f0f1a;
-  --border:rgba(99,102,241,.12);--glow:rgba(99,102,241,.08)
-}
-:root[data-theme="light"] .bg-orbs{display:none}
-:root[data-theme="light"] body{box-shadow:inset 0 0 100px rgba(99,102,241,.03)}
-:root[data-theme="light"] .hero h1 .grad{
-  background:linear-gradient(135deg,var(--pri),#06b6d4);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
-}
-:root[data-theme="light"] .encourage{
-  background:linear-gradient(135deg,rgba(99,102,241,.05),rgba(6,182,212,.04));
-  border-color:var(--border)
-}
-:root[data-theme="light"] .input-card{background:var(--card);border-color:var(--border)}
-:root[data-theme="light"] .doi-input{background:var(--bg2);border-color:var(--border);color:var(--txt)}
-:root[data-theme="light"] .stat{background:var(--card);border-color:var(--border)}
-:root[data-theme="light"] .paper-card{background:var(--card);border-color:var(--border)}
-:root[data-theme="light"] .paper-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.06)}
-:root[data-theme="light"] .cite-item{border-color:rgba(0,0,0,.06)}
-:root[data-theme="light"] .sort-btn{background:var(--card);border-color:var(--border)}
-:root[data-theme="light"] .sort-btn.active{background:rgba(99,102,241,.08)}
-:root[data-theme="light"] .search-wrap input{background:var(--card);border-color:var(--border)}
-:root[data-theme="light"] .journal-card{background:var(--card);border-color:var(--border);box-shadow:0 1px 4px rgba(0,0,0,.04)}
-:root[data-theme="light"] .journal-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08)}
-:root[data-theme="light"] .topnav-links a.active{color:var(--pri);background:rgba(99,102,241,.08)}
-
 html{scroll-behavior:smooth}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
 
@@ -97,50 +45,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 
 .container{max-width:960px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
 
-/* Offline banner */
-.offline-banner{
-  display:none;position:fixed;top:0;left:0;right:0;z-index:200;
-  padding:10px 20px;text-align:center;font-size:.88rem;font-weight:600;
-  background:linear-gradient(135deg,rgba(248,113,113,.9),rgba(239,68,68,.9));
-  color:#fff;backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,.3)
-}
-.offline-banner.show{display:block}
-.offline-banner .online-msg{display:none}
-.offline-banner.online .offline-msg{display:none}
-.offline-banner.online .online-msg{display:inline}
-.offline-banner.online{background:linear-gradient(135deg,rgba(52,211,153,.9),rgba(16,185,129,.9))}
-
-/* Top nav */
-.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 0 0;margin-bottom:8px;gap:20px;flex-wrap:wrap}
-.topnav-logo{display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:800;color:var(--bright);text-decoration:none;flex-shrink:0}
-.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.topnav-links{display:flex;gap:6px;align-items:center}
-.topnav-links a{padding:8px 16px;border-radius:8px;font-size:1.05rem;font-weight:600;text-decoration:none;color:var(--dim);transition:.2s;border-bottom:2px solid transparent}
-.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05);border-bottom:2px solid rgba(99,102,241,.3)}
-.topnav-links a.active{color:var(--pri2);background:rgba(99,102,241,.15);border-bottom:2px solid var(--pri2);box-shadow:0 0 12px rgba(99,102,241,.15)}
-
-/* Theme toggle */
-.theme-toggle-wrap{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
-.theme-toggle{
-  position:relative;width:48px;height:26px;border-radius:999px;
-  border:1px solid var(--border);background:var(--card);cursor:pointer;
-  transition:.3s;display:inline-flex;align-items:center;padding:0 3px;flex-shrink:0
-}
-.theme-toggle:hover{border-color:var(--pri)}
-.theme-toggle .thumb{
-  width:20px;height:20px;border-radius:50%;background:var(--pri);
-  display:flex;align-items:center;justify-content:center;font-size:11px;
-  transition:.3s ease;box-shadow:0 1px 3px rgba(0,0,0,.2)
-}
-:root[data-theme="light"] .theme-toggle .thumb{transform:translateX(22px)}
-
 /* Hero */
 .hero{text-align:center;padding:80px 0 40px}
 .hero-icon{font-size:3.5rem;margin-bottom:16px;animation:float 3s ease-in-out infinite;cursor:pointer;user-select:none;transition:transform .15s}
 .hero-icon:active{transform:scale(.9)}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
-/* Confetti */
+/* Confetti (彩蛋触发) */
 .confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
 .confetti{position:absolute;top:-10px;width:10px;height:10px;border-radius:2px;animation:confettiFall linear forwards;opacity:0}
 @keyframes confettiFall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(105vh) rotate(720deg) scale(.5);opacity:0}}
@@ -205,15 +116,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .expand-icon{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--dim);transition:.3s}
 .paper-card.open .expand-icon{transform:rotate(180deg)}
 
-/* Refresh indicator on paper */
-.paper-refreshing{position:relative}
-.paper-refreshing::after{
-  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(90deg,transparent,rgba(99,102,241,.04),transparent);
-  animation:refreshSweep 1.2s ease-in-out infinite;pointer-events:none;border-radius:16px
-}
-@keyframes refreshSweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-
 /* Citing papers list */
 .cite-list{border-top:1px solid var(--border);display:none}
 .paper-card.open .cite-list{display:block}
@@ -273,11 +175,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .spark-years{display:flex;gap:2px;margin-top:2px;height:12px}
 .spark-year{width:6px;font-size:.55rem;color:var(--dim);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* Refresh progress bar */
-.refresh-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:150;background:transparent;pointer-events:none}
-.refresh-progress .bar{height:100%;background:linear-gradient(90deg,var(--pri),var(--acc));width:0;transition:width .3s ease;border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(99,102,241,.5)}
-.refresh-progress.active .bar{animation:progressPulse 1.5s ease-in-out infinite}
-@keyframes progressPulse{0%,100%{opacity:1}50%{opacity:.6}}
+/* Top nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 0 0;margin-bottom:8px;gap:20px}
+.topnav-logo{display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:800;color:var(--bright);text-decoration:none;flex-shrink:0}
+.topnav-logo span{background:linear-gradient(135deg,var(--pri2),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topnav-links{display:flex;gap:6px;margin-left:auto}
+.topnav-links a{padding:8px 16px;border-radius:8px;font-size:1.05rem;font-weight:600;text-decoration:none;color:var(--dim);transition:.2s;border-bottom:2px solid transparent}
+.topnav-links a:hover{color:var(--txt);background:rgba(255,255,255,.05);border-bottom:2px solid rgba(99,102,241,.3)}
+.topnav-links a.active{color:var(--pri2);background:rgba(99,102,241,.15);border-bottom:2px solid var(--pri2);box-shadow:0 0 12px rgba(99,102,241,.15)}
 
 /* Responsive */
 @media(max-width:600px){
@@ -287,20 +192,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   .paper-right{flex-direction:row;align-items:center;gap:12px}
   .stats-bar{grid-template-columns:repeat(2,1fr)}
   .topnav{flex-direction:column;gap:8px}
-  .topnav-links{width:100%;justify-content:center}
 }
 </style>
 </head>
 <body>
-
 <!-- Offline banner -->
-<div class="offline-banner" id="offlineBanner">
-  <span class="offline-msg">📡 网络已断开，数据可能不是最新</span>
-  <span class="online-msg">✅ 网络已恢复</span>
-</div>
-
-<!-- Refresh progress -->
-<div class="refresh-progress" id="refreshProgress"><div class="bar"></div></div>
+<div id="offlineBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:200;padding:10px 20px;text-align:center;font-size:.88rem;font-weight:600;color:#fff;backdrop-filter:blur(8px)">📡 网络已断开，数据可能不是最新</div>
+<script>
+window.addEventListener('offline',function(){var b=document.getElementById('offlineBanner');b.style.display='block';b.style.background='linear-gradient(135deg,rgba(248,113,113,.9),rgba(239,68,68,.9))';});
+window.addEventListener('online',function(){var b=document.getElementById('offlineBanner');b.style.background='linear-gradient(135deg,rgba(52,211,153,.9),rgba(16,185,129,.9))';b.textContent='✅ 网络已恢复';setTimeout(function(){b.style.display='none';},3000);});
+if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.display='block';b.style.background='linear-gradient(135deg,rgba(248,113,113,.9),rgba(239,68,68,.9))';}
+</script>
 
 <div class="bg-orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
 
@@ -311,11 +213,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
     <div class="topnav-links">
       <a href="/" class="active">引用追踪</a>
       <a href="/journals/">期刊投稿</a>
-      <div class="theme-toggle-wrap">
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换深色/浅色模式" aria-label="切换主题">
-          <span class="thumb">🌙</span>
-        </button>
-      </div>
     </div>
   </nav>
 
@@ -341,7 +238,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
       <div class="input-actions">
         <button class="btn btn-pri" id="btnFetch" onclick="fetchAll()">🔍 查询引用</button>
         <button class="btn btn-ghost" onclick="loadSample()">📋 加载示例</button>
-        <button class="btn btn-ghost" id="btnRefresh" onclick="manualRefresh()">🔄 刷新数据</button>
+        <button class="btn btn-ghost" id="btnRefresh" onclick="autoRefresh()">🔄 刷新数据</button>
         <button class="btn btn-ghost" onclick="clearAll()">🗑️ 清空</button>
       </div>
     </div>
@@ -383,609 +280,662 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 
 <script>
 // ═══════════════════════════════════════════
-// Theme Toggle (self-contained)
+// 🥚 彩蛋 1：切走 tab 标题变文案，切回来恢复
 // ═══════════════════════════════════════════
-function toggleTheme(){
-  var current=document.documentElement.getAttribute('data-theme')||'dark';
-  var next=current==='dark'?'light':'dark';
-  localStorage.setItem('citeglow-theme',next);
-  document.documentElement.setAttribute('data-theme',next);
-  var thumb=document.querySelector('.theme-toggle .thumb');
-  if(thumb) thumb.textContent=next==='light'?'☀️':'🌙';
-  var meta=document.querySelector('meta[name="theme-color"]');
-  if(meta) meta.content=next==='light'?'#f5f7fa':'#080e1a';
-}
-// Init toggle icon
-!function(){var t=document.documentElement.getAttribute('data-theme')||'dark';var thumb=document.querySelector('.theme-toggle .thumb');if(thumb) thumb.textContent=t==='light'?'☀️':'🌙'}();
-
-// ═══════════════════════════════════════════
-// Offline Detection
-// ═══════════════════════════════════════════
-var offlineBanner=document.getElementById('offlineBanner');
-window.addEventListener('offline',function(){
-  offlineBanner.className='offline-banner show';
-});
-window.addEventListener('online',function(){
-  offlineBanner.className='offline-banner show online';
-  setTimeout(function(){offlineBanner.className='offline-banner';},3000);
-});
-if(!navigator.onLine){offlineBanner.className='offline-banner show';}
-
-// ═══════════════════════════════════════════
-// 🥚 彩蛋 1：切走 tab 标题变文案
-// ═══════════════════════════════════════════
-var origTitle=document.title;
-var awayTitles=[
-  '嘿，你的引用又涨了吧？','偷偷告诉你：你被引用了 ✨',
-  '快回来！有人在引用你的论文','别走——你的 H-Index 在等你',
-  '科研不易，但引用在涨 📈','远处的实验室里，有人正在读你的论文'
+const origTitle = document.title;
+const awayTitles = [
+  '嘿，你的引用又涨了吧？',
+  '偷偷告诉你：你被引用了 ✨',
+  '快回来！有人在引用你的论文',
+  '别走——你的 H-Index 在等你',
+  '科研不易，但引用在涨 📈',
+  '远处的实验室里，有人正在读你的论文',
 ];
-document.addEventListener('visibilitychange',function(){
-  document.title=document.hidden?awayTitles[Math.floor(Math.random()*awayTitles.length)]:origTitle;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    document.title = awayTitles[Math.floor(Math.random() * awayTitles.length)];
+  } else {
+    document.title = origTitle;
+  }
 });
 
 // ═══════════════════════════════════════════
 // 🥚 彩蛋 2：连续点击 hero icon 5 次 → 彩纸
 // ═══════════════════════════════════════════
-var heroClicks=0,heroTimer=null;
-function onHeroClick(){
-  heroClicks++;clearTimeout(heroTimer);
-  heroTimer=setTimeout(function(){heroClicks=0;},2000);
-  if(heroClicks>=5){heroClicks=0;launchConfetti();}
+let heroClicks = 0;
+let heroTimer = null;
+function onHeroClick() {
+  heroClicks++;
+  clearTimeout(heroTimer);
+  heroTimer = setTimeout(() => { heroClicks = 0; }, 2000); // 2 秒内连点才算
+  if (heroClicks >= 5) {
+    heroClicks = 0;
+    launchConfetti();
+  }
 }
-function launchConfetti(){
-  var wrap=document.createElement('div');wrap.className='confetti-wrap';document.body.appendChild(wrap);
-  var colors=['#6366f1','#22d3ee','#fbbf24','#34d399','#f87171','#a78bfa','#ec4899','#fb923c'];
-  for(var i=0;i<80;i++){
-    var c=document.createElement('div');c.className='confetti';
-    c.style.left=Math.random()*100+'%';
-    c.style.background=colors[Math.floor(Math.random()*colors.length)];
-    c.style.width=(Math.random()*8+5)+'px';c.style.height=(Math.random()*8+5)+'px';
-    c.style.borderRadius=Math.random()>0.5?'50%':'2px';
-    c.style.animationDuration=(Math.random()*2+2)+'s';
-    c.style.animationDelay=(Math.random()*1.5)+'s';
+
+function launchConfetti() {
+  const wrap = document.createElement('div');
+  wrap.className = 'confetti-wrap';
+  document.body.appendChild(wrap);
+  const colors = ['#6366f1','#22d3ee','#fbbf24','#34d399','#f87171','#a78bfa','#ec4899','#fb923c'];
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.width = (Math.random() * 8 + 5) + 'px';
+    c.style.height = (Math.random() * 8 + 5) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    c.style.animationDelay = (Math.random() * 1.5) + 's';
     wrap.appendChild(c);
   }
-  setTimeout(function(){wrap.remove();},5000);
+  setTimeout(() => wrap.remove(), 5000);
 }
 
-// ─── Encouragement messages ───
-var encouragements=[
-  {text:'每一个引用，都是你对这个领域的一次推动。<br>被引用的不只是数字，是你的思想在别人的论文里继续生长。',author:'致每一位默默耕耘的研究者'},
-  {text:'<span class="emoji">🌟</span> 科研的孤独，只有同行才懂。<br>但每一个引用，都在告诉你：<span style="color:var(--acc)">有人在听。</span>',author:''},
-  {text:'发表论文是开始，被引用才是回响。<br>你的工作正在影响着这个世界，只是你还不知道而已。',author:'— 写给深夜还在改论文的你'},
-  {text:'<span class="emoji">💡</span> 引用数不是衡量科研价值的唯一标准，<br>但它证明了：<span style="color:var(--gold)">你的思考被需要。</span>',author:''},
-  {text:'从第一个引用到第一百个，<br>每一步都是你在这个领域留下的脚印。<br><span class="emoji">👣</span> 继续走，路会越来越宽。',author:''},
-  {text:'科研最浪漫的事：<br>你在 A 大学写下的公式，在 B 国家的实验室里被验证。<br>这就是学术的<span style="color:var(--acc2)">蝴蝶效应</span>。 <span class="emoji">🦋</span>',author:''},
-  {text:'<span class="emoji">🏆</span> 能发出来已经很厉害了，<br>能被引用更是对你的认可。<br>别忘了给自己点个赞。',author:''},
-  {text:'论文里的每一个数据，都凝结着无数个实验失败后的重来。<br>被引用，是对你坚持的最好回报。<span class="emoji">💪</span>',author:''},
-  {text:'有人说科研是一场马拉松。<br>但其实更像是<span style="color:var(--acc)">在雾中点灯</span>——<br>你不知道谁会借你的光，但灯一直在那里。<span class="emoji">🏮</span>',author:''},
-  {text:'<span class="emoji">📚</span> 一篇好论文的价值，不在于发表那一刻的喜悦，<br>而在于五年后还有人在参考文献里找到它。',author:''},
-  {text:'审稿人让你改了三轮，你觉得自己的工作一文不值。<br>但引用会告诉你：<span style="color:var(--gold)">那些痛苦是有意义的。</span><span class="emoji">✨</span>',author:''},
-  {text:'<span class="emoji">🔬</span> 科研圈有一条隐藏的规则：<br>你引用别人的时候觉得理所当然，<br>被引用的时候才明白——那是一种认可。',author:''},
-  {text:'引用不是 KPI，是<span style="color:var(--pri2)">思想的接力</span>。<br>你跑完了你的那一棒，<br>现在有人接上了。<span class="emoji">🏃</span>',author:''},
-  {text:'<span class="emoji">🌍</span> 你的论文可能被地球另一端的人读到。<br>在某个实验室的深夜，你的方法帮 ta 跨过了一个坎。<br>这就是科研的浪漫。',author:''},
-  {text:'学术界最温暖的一句话：<br><span style="color:var(--acc)">"As demonstrated by [你的名字]..."</span><br>你的名字，正在被世界引用。<span class="emoji">📝</span>',author:''},
-  {text:'<span class="emoji">🧪</span> 一组数据，一个结论，一篇文章。<br>看似微小，却可能改变某个人的研究方向。<br>永远低估论文的力量，是你对自己最大的不公平。',author:''},
-  {text:'你有没有想过：你的某个实验参数，<br>可能在别人的方案里被复制了一遍又一遍？<br><span style="color:var(--gold)">学术的种子就是这样传播的。</span><span class="emoji">🌱</span>',author:''},
-  {text:'<span class="emoji">🎯</span> 引用数 0 的时候你焦虑，引用数涨了你又怀疑数据。<br>这就是科研人的自我修养。<br>放松——你的工作值得被看到。',author:''},
-  {text:'比影响因子更重要的事情：<br>在某个你不知道的地方，<br>有人因为读了你的论文，<span style="color:var(--acc)">少走了弯路</span>。<span class="emoji">🛤️</span>',author:''},
-  {text:'<span class="emoji">⚓</span> 科研像航海——<br>你的论文就是你投下的锚。<br>后来的船，会以你为参照继续前行。',author:''},
-  {text:'今天不想写论文？正常。<br>但别忘了，你之前写出来的那些，<br>正在<span style="color:var(--acc2)">安静地替你影响世界</span>。<span class="emoji">🌊</span>',author:''},
-  {text:'<span class="emoji">🔄</span> 科研是一个循环：<br>你引用前人 → 你的工作被后人引用 → 循环往复。<br>你不是在写论文，你是在<span style="color:var(--pri2)">编织一张知识的网</span>。',author:''}
+// ─── Encouragement messages (22 条通用) ───
+const encouragements = [
+  {text:'每一个引用，都是你对这个领域的一次推动。<br>被引用的不只是数字，是你的思想在别人的论文里继续生长。', author:'致每一位默默耕耘的研究者'},
+  {text:'<span class="emoji">🌟</span> 科研的孤独，只有同行才懂。<br>但每一个引用，都在告诉你：<span style="color:var(--acc)">有人在听。</span>', author:''},
+  {text:'发表论文是开始，被引用才是回响。<br>你的工作正在影响着这个世界，只是你还不知道而已。', author:'— 写给深夜还在改论文的你'},
+  {text:'<span class="emoji">💡</span> 引用数不是衡量科研价值的唯一标准，<br>但它证明了：<span style="color:var(--gold)">你的思考被需要。</span>', author:''},
+  {text:'从第一个引用到第一百个，<br>每一步都是你在这个领域留下的脚印。<br><span class="emoji">👣</span> 继续走，路会越来越宽。', author:''},
+  {text:'科研最浪漫的事：<br>你在 A 大学写下的公式，在 B 国家的实验室里被验证。<br>这就是学术的<span style="color:var(--acc2)">蝴蝶效应</span>。 <span class="emoji">🦋</span>', author:''},
+  {text:'<span class="emoji">🏆</span> 能发出来已经很厉害了，<br>能被引用更是对你的认可。<br>别忘了给自己点个赞。', author:''},
+  {text:'论文里的每一个数据，都凝结着无数个实验失败后的重来。<br>被引用，是对你坚持的最好回报。<span class="emoji">💪</span>', author:''},
+  {text:'有人说科研是一场马拉松。<br>但其实更像是<span style="color:var(--acc)">在雾中点灯</span>——<br>你不知道谁会借你的光，但灯一直在那里。<span class="emoji">🏮</span>', author:''},
+  {text:'<span class="emoji">📚</span> 一篇好论文的价值，不在于发表那一刻的喜悦，<br>而在于五年后还有人在参考文献里找到它。', author:''},
+  {text:'审稿人让你改了三轮，你觉得自己的工作一文不值。<br>但引用会告诉你：<span style="color:var(--gold)">那些痛苦是有意义的。</span><span class="emoji">✨</span>', author:''},
+  {text:'<span class="emoji">🔬</span> 科研圈有一条隐藏的规则：<br>你引用别人的时候觉得理所当然，<br>被引用的时候才明白——那是一种认可。', author:''},
+  {text:'引用不是 KPI，是<span style="color:var(--pri2)">思想的接力</span>。<br>你跑完了你的那一棒，<br>现在有人接上了。<span class="emoji">🏃</span>', author:''},
+  {text:'<span class="emoji">🌍</span> 你的论文可能被地球另一端的人读到。<br>在某个实验室的深夜，你的方法帮 ta 跨过了一个坎。<br>这就是科研的浪漫。', author:''},
+  {text:'学术界最温暖的一句话：<br><span style="color:var(--acc)">"As demonstrated by [你的名字]..."</span><br>你的名字，正在被世界引用。<span class="emoji">📝</span>', author:''},
+  {text:'<span class="emoji">🧪</span> 一组数据，一个结论，一篇文章。<br>看似微小，却可能改变某个人的研究方向。<br>永远低估论文的力量，是你对自己最大的不公平。', author:''},
+  {text:'你有没有想过：你的某个实验参数，<br>可能在别人的方案里被复制了一遍又一遍？<br><span style="color:var(--gold)">学术的种子就是这样传播的。</span><span class="emoji">🌱</span>', author:''},
+  {text:'<span class="emoji">🎯</span> 引用数 0 的时候你焦虑，引用数涨了你又怀疑数据。<br>这就是科研人的自我修养。<br>放松——你的工作值得被看到。', author:''},
+  {text:'比影响因子更重要的事情：<br>在某个你不知道的地方，<br>有人因为读了你的论文，<span style="color:var(--acc)">少走了弯路</span>。<span class="emoji">🛤️</span>', author:''},
+  {text:'<span class="emoji">⚓</span> 科研像航海——<br>你的论文就是你投下的锚。<br>后来的船，会以你为参照继续前行。', author:''},
+  {text:'今天不想写论文？正常。<br>但别忘了，你之前写出来的那些，<br>正在<span style="color:var(--acc2)">安静地替你影响世界</span>。<span class="emoji">🌊</span>', author:''},
+  {text:'<span class="emoji">🔄</span> 科研是一个循环：<br>你引用前人 → 你的工作被后人引用 → 循环往复。<br>你不是在写论文，你是在<span style="color:var(--pri2)">编织一张知识的网</span>。', author:''},
 ];
 
-var milestoneMessages={
-  10:[
-    {text:'<span class="emoji">🔟</span> <strong>突破 10 次引用！</strong><br>这不是运气——是你的研究被至少 10 个独立团队认可。<br>在学术界，<span style="color:var(--gold)">10 次引用意味着你的工作已经进入同行的「必读清单」</span>。',author:'里程碑：你不再是新手了'},
-    {text:'<span class="emoji">🏅</span> 10 次引用，听起来不多？<br>但想想：全世界只有约 15% 的论文能达到这个数字。<br><span style="color:var(--acc)">你已经超过了大多数人。</span>',author:'数据不会说谎'}
+// ─── 里程碑鼓励（10+、20+ 专属） ───
+const milestoneMessages = {
+  10: [
+    {text:'<span class="emoji">🔟</span> <strong>突破 10 次引用！</strong><br>这不是运气——是你的研究被至少 10 个独立团队认可。<br>在学术界，<span style="color:var(--gold)">10 次引用意味着你的工作已经进入同行的「必读清单」</span>。', author:'里程碑：你不再是新手了'},
+    {text:'<span class="emoji">🏅</span> 10 次引用，听起来不多？<br>但想想：全世界只有约 15% 的论文能达到这个数字。<br><span style="color:var(--acc)">你已经超过了大多数人。</span>', author:'数据不会说谎'},
+    {text:'10 篇论文引用了你。<br>10 个研究组，在不同的时间、不同的国家，<br>不约而同地认为：<span style="color:var(--gold)">「这篇论文值得参考」</span>。<br>这就是被认可的感觉。<span class="emoji">🌟</span>', author:''},
   ],
-  20:[
-    {text:'<span class="emoji">🚀</span> <strong>20 次引用！</strong><br>从「发了一篇论文」到「做出了被广泛引用的工作」，<br>这是一个质变。<span style="color:var(--acc)">你的研究正在成为这个领域的基础设施之一。</span>',author:'你已经在学术地图上留下标记'},
-    {text:'<span class="emoji">💎</span> 20+ 引用意味着：<br>你的方法被采纳了，你的结论被验证了，<br>你的思想被传承了。<br>这不是数字，是<span style="color:var(--gold)">学术遗产</span>。',author:''}
-  ]
+  20: [
+    {text:'<span class="emoji">🚀</span> <strong>20 次引用！</strong><br>从「发了一篇论文」到「做出了被广泛引用的工作」，<br>这是一个质变。<span style="color:var(--acc)">你的研究正在成为这个领域的基础设施之一。</span>', author:'你已经在学术地图上留下标记'},
+    {text:'<span class="emoji">💎</span> 20+ 引用意味着：<br>你的方法被采纳了，你的结论被验证了，<br>你的思想被传承了。<br>这不是数字，是<span style="color:var(--gold)">学术遗产</span>。', author:''},
+    {text:'还记得第一篇论文被接收时的激动吗？<br>现在你的工作被引用了 20 次。<br><span style="color:var(--acc2)">从「我能发表吗」到「我正在改变这个领域」——<br>你已经走了很远。</span><span class="emoji">🏔️</span>', author:'回望来时路'},
+  ],
 };
 
-var incrementMessages=[
-  {text:'<span class="emoji">📈</span> 引用又涨了！有人正在用你的方法做研究。<br>你可能永远不会知道 ta 是谁，但 ta 一定在某个实验室里，<br>看着你的论文说：<span style="color:var(--acc)">"这个方法可以试试。"</span>',author:''},
-  {text:'新的引用，意味着新的故事。<br>某个人读了你的论文，决定在自己的工作中引用它。<br><span class="emoji">🤝</span> 这是学术世界里最含蓄的致敬。',author:''},
-  {text:'<span class="emoji">🔔</span> 引用+1。<br>每一次增长都不是偶然——<br>是有人认真读了你的工作，<span style="color:var(--gold)">认为它足够重要，值得写进自己的论文里。</span>',author:''},
-  {text:'引用又多了！<br>这说明你的论文不只是「发表即遗忘」的那一批。<br><span class="emoji">💪</span> 它在持续发挥作用。',author:''},
-  {text:'<span class="emoji">🎯</span> 每一个新的引用，都是一次「投票」。<br>这个领域的研究者用脚投票，告诉你：<br><span style="color:var(--acc2)">「你的工作是有价值的。」</span>',author:''},
-  {text:'你可能正在改 bug / 开组会 / 刷手机。<br>但在世界的某个角落，有人刚刚引用了你的论文。<br><span class="emoji">🌏</span> 科研就是这样——<span style="color:var(--acc)">影响力在你看不见的地方生长。</span>',author:''},
-  {text:'<span class="emoji">✨</span> 每多一个引用，你的论文的「半衰期」就更长一点。<br>有些论文发表五年就没人提了。<br>而你的，还在被引用。<span style="color:var(--gold)">这就是生命力。</span>',author:''}
+// ─── 增量引用鼓励（刷新后引用数增长时） ───
+const incrementMessages = [
+  {text:'<span class="emoji">📈</span> 引用又涨了！有人正在用你的方法做研究。<br>你可能永远不会知道 ta 是谁，但 ta 一定在某个实验室里，<br>看着你的论文说：<span style="color:var(--acc)">"这个方法可以试试。"</span>', author:''},
+  {text:'新的引用，意味着新的故事。<br>某个人读了你的论文，决定在自己的工作中引用它。<br><span class="emoji">🤝</span> 这是学术世界里最含蓄的致敬。', author:''},
+  {text:'<span class="emoji">🔔</span> 引用+1。<br>每一次增长都不是偶然——<br>是有人认真读了你的工作，<span style="color:var(--gold)">认为它足够重要，值得写进自己的论文里。</span>', author:''},
+  {text:'引用又多了！<br>这说明你的论文不只是「发表即遗忘」的那一批。<br><span class="emoji">💪</span> 它在持续发挥作用。', author:''},
+  {text:'<span class="emoji">🎯</span> 每一个新的引用，都是一次「投票」。<br>这个领域的研究者用脚投票，告诉你：<br><span style="color:var(--acc2)">「你的工作是有价值的。」</span>', author:''},
+  {text:'你可能正在改 bug / 开组会 / 刷手机。<br>但在世界的某个角落，有人刚刚引用了你的论文。<br><span class="emoji">🌏</span> 科研就是这样——<span style="color:var(--acc)">影响力在你看不见的地方生长。</span>', author:''},
+  {text:'<span class="emoji">✨</span> 每多一个引用，你的论文的「半衰期」就更长一点。<br>有些论文发表五年就没人提了。<br>而你的，还在被引用。<span style="color:var(--gold)">这就是生命力。</span>', author:''},
+  {text:'新的引用来了！想想看：<br>从你写完这篇论文到现在，世界上发生了多少事。<br>但你的那篇论文，<span style="color:var(--acc)">依然有人在读</span>。<span class="emoji">📖</span>', author:''},
 ];
 
-function getTimeEncouragement(){
-  var h=new Date().getHours();
-  if(h>=0&&h<6) return {text:'<span class="emoji">🌙</span> 凌晨还在看引用数据？<br>科研人的生物钟果然和别人不一样。<br>不过放心——<span style="color:var(--acc2)">你的论文可不会熬夜，它 24 小时在线替你工作。</span>',author:'夜猫子研究者，请注意休息'};
-  if(h>=6&&h<9) return {text:'<span class="emoji">🌅</span> 早安，研究者。<br>在你喝咖啡的时候，你的论文正在大洋彼岸被阅读。<br><span style="color:var(--acc)">学术没有时区。</span>',author:''};
-  if(h>=12&&h<14) return {text:'<span class="emoji">🍱</span> 午休时间查引用？<br>说明你真的很在乎自己的研究。<br>别忘了吃饭——<span style="color:var(--gold)">身体才是最大的学术资本。</span>',author:''};
-  if(h>=22||h<0) return {text:'<span class="emoji">🌃</span> 深夜了。<br>论文改完了吗？引用查完了吗？<br>不管怎样，<span style="color:var(--acc)">今晚先放过自己。</span> 明天论文还在，引用也会继续涨。',author:''};
+// ─── 时间相关鼓励 ───
+function getTimeEncouragement() {
+  const h = new Date().getHours();
+  if (h >= 0 && h < 6) {
+    return {text:'<span class="emoji">🌙</span> 凌晨还在看引用数据？<br>科研人的生物钟果然和别人不一样。<br>不过放心——<span style="color:var(--acc2)">你的论文可不会熬夜，它 24 小时在线替你工作。</span>', author:'夜猫子研究者，请注意休息'};
+  } else if (h >= 6 && h < 9) {
+    return {text:'<span class="emoji">🌅</span> 早安，研究者。<br>在你喝咖啡的时候，你的论文正在大洋彼岸被阅读。<br><span style="color:var(--acc)">学术没有时区。</span>', author:''};
+  } else if (h >= 12 && h < 14) {
+    return {text:'<span class="emoji">🍱</span> 午休时间查引用？<br>说明你真的很在乎自己的研究。<br>别忘了吃饭——<span style="color:var(--gold)">身体才是最大的学术资本。</span>', author:''};
+  } else if (h >= 22 || h < 0) {
+    return {text:'<span class="emoji">🌃</span> 深夜了。<br>论文改完了吗？引用查完了吗？<br>不管怎样，<span style="color:var(--acc)">今晚先放过自己。</span> 明天论文还在，引用也会继续涨。', author:''};
+  }
   return null;
 }
 
+// ─── 状态跟踪 ───
+let encourageIndex = -1;
+let lastCiteSnapshot = {}; // {openalex_id: cited_by_count} 上次快照
+
 // ─── State ───
-var encourageIndex=-1;
-var lastCiteSnapshot={};
-var papers=[];
-var sortMode='cites';
-var STORAGE_KEY='citeglow-papers';
-var isRefreshing=false;
+let papers = []; // {doi, title, year, venue, openalex_id, cited_by_count, citation_list:[], loaded:false, cite_delta:0}
+let sortMode = 'cites'; // 'cites' | 'year' | 'added'
+const STORAGE_KEY = 'citation_tracker_papers';
 
 // ─── Init ───
-window.addEventListener('DOMContentLoaded',function(){
+window.addEventListener('DOMContentLoaded', () => {
   showRandomEncouragement();
   loadFromStorage();
-  if(papers.length>0){
-    renderAll();
+  if (papers.length > 0) {
+    renderAll();        // 先用本地缓存渲染，用户立刻看到内容
     takeSnapshot();
-    autoRefresh();
+    autoRefresh();      // 后台静默刷新
   }
 });
 
-function showRandomEncouragement(){
-  if(Math.random()<0.33){
-    var timeMsg=getTimeEncouragement();
-    if(timeMsg){renderEncouragement(timeMsg);return;}
+function showRandomEncouragement() {
+  // 1/3 概率显示时间相关鼓励（如果有的话）
+  if (Math.random() < 0.33) {
+    const timeMsg = getTimeEncouragement();
+    if (timeMsg) {
+      renderEncouragement(timeMsg);
+      return;
+    }
   }
-  encourageIndex=Math.floor(Math.random()*encouragements.length);
+  encourageIndex = Math.floor(Math.random() * encouragements.length);
   renderEncouragement(encouragements[encourageIndex]);
 }
-function nextEncouragement(){
-  encourageIndex=(encourageIndex+1)%encouragements.length;
+
+function nextEncouragement() {
+  encourageIndex = (encourageIndex + 1) % encouragements.length;
   renderEncouragement(encouragements[encourageIndex]);
 }
-function renderEncouragement(e){
-  var textEl=document.getElementById('encourageText');
-  var authorEl=document.getElementById('encourageAuthor');
-  textEl.style.opacity='0';authorEl.style.opacity='0';
-  setTimeout(function(){
-    textEl.innerHTML=e.text;authorEl.textContent=e.author||'';
-    textEl.style.opacity='1';authorEl.style.opacity='1';
-  },200);
+
+function renderEncouragement(e) {
+  const textEl = document.getElementById('encourageText');
+  const authorEl = document.getElementById('encourageAuthor');
+  // 淡出再淡入
+  textEl.style.opacity = '0';
+  authorEl.style.opacity = '0';
+  setTimeout(() => {
+    textEl.innerHTML = e.text;
+    authorEl.textContent = e.author || '';
+    textEl.style.opacity = '1';
+    authorEl.style.opacity = '1';
+  }, 200);
 }
-function showMilestone(totalCites){
-  var milestone=null;
-  if(totalCites>=20) milestone=20;
-  else if(totalCites>=10) milestone=10;
-  if(!milestone||!milestoneMessages[milestone]) return false;
-  var msgs=milestoneMessages[milestone];
-  renderEncouragement(msgs[Math.floor(Math.random()*msgs.length)]);
+
+// 显示里程碑鼓励
+function showMilestone(totalCites) {
+  let milestone = null;
+  if (totalCites >= 20) milestone = 20;
+  else if (totalCites >= 10) milestone = 10;
+  if (!milestone || !milestoneMessages[milestone]) return false;
+
+  const msgs = milestoneMessages[milestone];
+  renderEncouragement(msgs[Math.floor(Math.random() * msgs.length)]);
   return true;
 }
-function showIncrementEncouragement(){
-  var msg=incrementMessages[Math.floor(Math.random()*incrementMessages.length)];
+
+// 显示增量鼓励
+function showIncrementEncouragement() {
+  const msg = incrementMessages[Math.floor(Math.random() * incrementMessages.length)];
   renderEncouragement(msg);
 }
-function takeSnapshot(){
-  lastCiteSnapshot={};
-  papers.forEach(function(p){
-    if(p.openalex_id) lastCiteSnapshot[p.openalex_id]=p.cited_by_count;
+
+// 快照当前引用数
+function takeSnapshot() {
+  lastCiteSnapshot = {};
+  papers.forEach(p => {
+    if (p.openalex_id) lastCiteSnapshot[p.openalex_id] = p.cited_by_count;
   });
 }
 
 // ─── Sort ───
-function setSort(mode){
-  sortMode=mode;
-  document.querySelectorAll('.sort-btn').forEach(function(b){
-    b.classList.toggle('active',b.dataset.sort===mode);
+function setSort(mode) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.sort === mode);
   });
   renderAll();
 }
-function getSortedPapers(){
-  if(sortMode==='cites') return papers.slice().sort(function(a,b){return(b.cited_by_count||0)-(a.cited_by_count||0);});
-  if(sortMode==='year') return papers.slice().sort(function(a,b){return(b.year||0)-(a.year||0);});
-  return papers.slice();
+
+function getSortedPapers() {
+  if (sortMode === 'cites') {
+    return [...papers].sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
+  } else if (sortMode === 'year') {
+    return [...papers].sort((a, b) => (b.year || 0) - (a.year || 0));
+  }
+  return [...papers]; // 'added' = original order
 }
 
-// ─── Sparkline ───
-function getSparklineData(paper){
-  if(!paper.citation_list||paper.citation_list.length===0) return null;
-  var yearCounts={};
-  paper.citation_list.forEach(function(c){
-    if(c.year&&c.year!=='-') yearCounts[c.year]=(yearCounts[c.year]||0)+1;
+// ─── Sparkline data ───
+function getSparklineData(paper) {
+  if (!paper.citation_list || paper.citation_list.length === 0) return null;
+  const yearCounts = {};
+  paper.citation_list.forEach(c => {
+    if (c.year && c.year !== '-') {
+      yearCounts[c.year] = (yearCounts[c.year] || 0) + 1;
+    }
   });
-  var years=Object.keys(yearCounts).sort();
-  if(years.length<2) return null;
-  var maxCount=Math.max.apply(null,Object.values(yearCounts));
-  return {years:years,yearCounts:yearCounts,maxCount:maxCount};
+  const years = Object.keys(yearCounts).sort();
+  if (years.length < 2) return null; // 少于 2 年没意义画图
+  const maxCount = Math.max(...Object.values(yearCounts));
+  return { years, yearCounts, maxCount };
 }
-function renderSparkline(paper){
-  var data=getSparklineData(paper);
-  if(!data) return '';
-  var years=data.years,yearCounts=data.yearCounts,maxCount=data.maxCount;
-  var minY=parseInt(years[0]),maxY=parseInt(years[years.length-1]);
-  var allYears=[];
-  for(var y=minY;y<=maxY;y++) allYears.push(String(y));
-  var bars='',labels='';
-  allYears.forEach(function(y){
-    var count=yearCounts[y]||0;
-    var pct=maxCount>0?Math.max((count/maxCount)*100,count>0?15:0):0;
-    bars+='<div class="spark-bar" style="height:'+pct+'%" data-tip="'+y+': '+count+' 次引用"></div>';
-    var showLabel=allYears.length<=6||parseInt(y)%2===0||y===allYears[0]||y===allYears[allYears.length-1];
-    labels+='<div class="spark-year">'+(showLabel?y.slice(2):'')+'</div>';
+
+function renderSparkline(paper) {
+  const data = getSparklineData(paper);
+  if (!data) return '';
+  const { years, yearCounts, maxCount } = data;
+  // 补齐中间缺失年份
+  const minY = parseInt(years[0]), maxY = parseInt(years[years.length - 1]);
+  const allYears = [];
+  for (let y = minY; y <= maxY; y++) allYears.push(String(y));
+
+  let bars = '', labels = '';
+  allYears.forEach(y => {
+    const count = yearCounts[y] || 0;
+    const pct = maxCount > 0 ? Math.max((count / maxCount) * 100, count > 0 ? 15 : 0) : 0;
+    bars += `<div class="spark-bar" style="height:${pct}%" data-tip="${y}: ${count} 次引用"></div>`;
+    // 每隔几年显示一个标签，避免拥挤
+    const showLabel = allYears.length <= 6 || parseInt(y) % 2 === 0 || y === allYears[0] || y === allYears[allYears.length-1];
+    labels += `<div class="spark-year">${showLabel ? y.slice(2) : ''}</div>`;
   });
-  return '<div class="sparkline">'+bars+'</div><div class="spark-years">'+labels+'</div>';
+  return `<div class="sparkline">${bars}</div><div class="spark-years">${labels}</div>`;
 }
 
 // ─── Storage ───
-function saveToStorage(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(papers));}catch(e){}
-}
-function loadFromStorage(){
-  try{
-    var saved=localStorage.getItem(STORAGE_KEY);
-    if(saved) papers=JSON.parse(saved);
-  }catch(e){}
+function saveToStorage() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(papers)); } catch(e) {}
 }
 
-// ═══════════════════════════════════════════
-// API — 带重试 + cache-busting
-// ═══════════════════════════════════════════
-function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function loadFromStorage() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      papers = JSON.parse(saved);
+      renderAll();
+    }
+  } catch(e) {}
+}
 
-async function apiGetWithRetry(url,maxRetries){
-  maxRetries=maxRetries||3;
-  // 加 cache-busting 参数
-  var separator=url.indexOf('?')===-1?'?':'&';
-  var bustUrl=url+separator+'_t='+Date.now();
-  
-  for(var attempt=0;attempt<maxRetries;attempt++){
-    try{
-      var controller=new AbortController();
-      var timeoutId=setTimeout(function(){controller.abort();},15000);
-      var r=await fetch(bustUrl,{
-        headers:{'User-Agent':'CiteGlow/1.0 (https://citeglow.com)'},
-        cache:'no-store',
-        signal:controller.signal
+// ─── API (cache-busting + retry) ───
+async function apiGet(url, maxRetries) {
+  maxRetries = maxRetries || 3;
+  const sep = url.indexOf('?') === -1 ? '?' : '&';
+  const bustUrl = url + sep + '_t=' + Date.now();
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 15000);
+      const r = await fetch(bustUrl, {
+        headers: {'User-Agent': 'CiteGlow/1.0 (https://citeglow.com)'},
+        cache: 'no-store',
+        signal: controller.signal
       });
-      clearTimeout(timeoutId);
-      if(!r.ok){
-        if(r.status===429){
-          // Rate limited — wait and retry
-          var waitMs=Math.pow(2,attempt)*2000;
-          console.warn('Rate limited, waiting '+waitMs+'ms before retry...');
-          await sleep(waitMs);
-          continue;
-        }
-        throw new Error('HTTP '+r.status);
+      clearTimeout(tid);
+      if (!r.ok) {
+        if (r.status === 429) { await sleep(Math.pow(2, attempt) * 2000); continue; }
+        throw new Error(`HTTP ${r.status}`);
       }
-      return await r.json();
-    }catch(e){
-      if(e.name==='AbortError'){
-        console.warn('Request timeout, attempt '+(attempt+1)+'/'+maxRetries);
-      }else{
-        console.warn('Request failed, attempt '+(attempt+1)+'/'+maxRetries+':',e.message);
-      }
-      if(attempt<maxRetries-1){
-        await sleep(Math.pow(2,attempt)*1000);
-      }else{
-        throw e;
-      }
+      return r.json();
+    } catch(e) {
+      if (attempt < maxRetries - 1) { await sleep(Math.pow(2, attempt) * 1000); } else { throw e; }
     }
   }
 }
 
-async function fetchWorkByDOI(doi){
-  var clean=doi.replace(/^https?:\/\/doi.org\//,'').trim();
-  return await apiGetWithRetry('https://api.openalex.org/works/doi:'+encodeURIComponent(clean));
-}
-async function fetchWorkByTitle(title){
-  var data=await apiGetWithRetry('https://api.openalex.org/works?search='+encodeURIComponent(title)+'&per_page=1');
-  if(data.results&&data.results.length>0) return data.results[0];
-  throw new Error('未找到匹配的论文');
-}
-async function fetchCitations(openalexId,page,perPage){
-  page=page||1;perPage=perPage||10;
-  return await apiGetWithRetry('https://api.openalex.org/works?filter=cites:'+openalexId+'&sort=cited_by_count:desc&per-page='+perPage+'&page='+page+'&select=id,title,doi,publication_year,authorships,primary_location');
+async function fetchWorkByDOI(doi) {
+  const clean = doi.replace(/^https?:\/\/doi.org\//, '').trim();
+  const url = `https://api.openalex.org/works/doi:${encodeURIComponent(clean)}`;
+  return await apiGet(url);
 }
 
-// ─── Refresh progress bar ───
-function showRefreshProgress(pct){
-  var el=document.getElementById('refreshProgress');
-  el.classList.add('active');
-  el.querySelector('.bar').style.width=pct+'%';
+async function fetchWorkByTitle(title) {
+  const url = `https://api.openalex.org/works?search=${encodeURIComponent(title)}&per_page=1`;
+  const data = await apiGet(url);
+  if (data.results && data.results.length > 0) return data.results[0];
+  throw new Error('未找到匹配的论文');
 }
-function hideRefreshProgress(){
-  var el=document.getElementById('refreshProgress');
-  el.classList.remove('active');
-  el.querySelector('.bar').style.width='0';
+
+async function fetchCitations(openalexId, page = 1, perPage = 10) {
+  const url = `https://api.openalex.org/works?filter=cites:${openalexId}&sort=cited_by_count:desc&per-page=${perPage}&page=${page}&select=id,title,doi,publication_year,authorships,primary_location`;
+  return await apiGet(url);
 }
 
 // ─── Main fetch ───
-async function fetchAll(){
-  var input=document.getElementById('doiInput').value.trim();
-  if(!input) return toast('请输入至少一个 DOI 或论文标题','error');
-  if(!navigator.onLine) return toast('当前无网络连接，请检查网络后重试','error');
+async function fetchAll() {
+  const input = document.getElementById('doiInput').value.trim();
+  if (!input) return toast('请输入至少一个 DOI 或论文标题', 'error');
 
-  var lines=input.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
-  var btn=document.getElementById('btnFetch');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>查询中...';
+  const lines = input.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const btn = document.getElementById('btnFetch');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>查询中...';
 
-  var newPapers=0,errors=0;
+  let newPapers = 0;
+  let errors = 0;
 
-  for(var idx=0;idx<lines.length;idx++){
-    var line=lines[idx];
-    var existingDOI=line.replace(/^https?:\/\/doi.org\//,'').trim();
-    if(papers.some(function(p){return p.doi===existingDOI||p.doi==='doi:'+existingDOI;})) continue;
+  for (const line of lines) {
+    // Skip if already in list
+    const existingDOI = line.replace(/^https?:\/\/doi.org\//, '').trim();
+    if (papers.some(p => p.doi === existingDOI || p.doi === 'doi:' + existingDOI)) {
+      continue;
+    }
 
-    try{
-      var work;
-      if(line.match(/^10\.\d{4,}/)){
-        work=await fetchWorkByDOI(line);
-      }else{
-        work=await fetchWorkByTitle(line);
+    try {
+      let work;
+      if (line.match(/^10\.\d{4,}/)) {
+        work = await fetchWorkByDOI(line);
+      } else {
+        work = await fetchWorkByTitle(line);
       }
-      var doi=(work.doi||'').replace('https://doi.org/','');
+
+      const doi = (work.doi || '').replace('https://doi.org/', '');
       papers.push({
-        doi:doi,title:work.title||'Untitled',year:work.publication_year||'-',
-        venue:(work.primary_location&&work.primary_location.source)?work.primary_location.source.display_name:'',
-        openalex_id:work.id.replace('https://openalex.org/ ''),
-        cited_by_count:work.cited_by_count||0,citation_list:[],cite_page:0,loaded:false
+        doi: doi,
+        title: work.title || 'Untitled',
+        year: work.publication_year || '-',
+        venue: work.primary_location?.source?.display_name || '',
+        openalex_id: work.id.replace('https://openalex.org/', ''),
+        cited_by_count: work.cited_by_count || 0,
+        citation_list: [],
+        cite_page: 0,
+        loaded: false
       });
       newPapers++;
-    }catch(e){
-      console.error('Error fetching:',line,e);
+    } catch(e) {
+      console.error('Error fetching:', line, e);
       errors++;
     }
-    await sleep(400);
+
+    // Rate limit: small delay between requests
+    await sleep(300);
   }
 
-  btn.disabled=false;btn.innerHTML='🔍 查询引用';
-  if(newPapers>0){saveToStorage();renderAll();toast('✅ 已添加 '+newPapers+' 篇论文','success');}
-  else if(errors>0){toast('❌ '+errors+' 篇查询失败，请检查 DOI 是否正确','error');}
-  else{toast('ℹ️ 这些论文已经在列表中了','info');}
+  btn.disabled = false;
+  btn.innerHTML = '🔍 查询引用';
+
+  if (newPapers > 0) {
+    saveToStorage();
+    renderAll();
+    toast(`✅ 已添加 ${newPapers} 篇论文`, 'success');
+  } else if (errors > 0) {
+    toast(`❌ ${errors} 篇查询失败，请检查 DOI 是否正确`, 'error');
+  } else {
+    toast('ℹ️ 这些论文已经在列表中了', 'info');
+  }
 }
 
 // ─── Load citations for a paper ───
-async function loadCitations(index){
-  var paper=papers[index];
-  if(!paper) return;
-  var listEl=document.getElementById('cite-list-'+index);
-  listEl.innerHTML='<div class="cite-loading"><span class="spinner"></span>正在加载引用列表...</div>';
-  try{
-    var page=(paper.cite_page||0)+1;
-    var data=await fetchCitations(paper.openalex_id,page,10);
-    var results=data.results||[];
-    var citingPapers=results.map(function(w){
-      return{
-        title:w.title||'Untitled',
-        doi:(w.doi||'').replace('https://doi.org/ ',''),
-        year:w.publication_year||'-',
-        authors:(w.authorships||[]).slice(0,3).map(function(a){return a.author?a.author.display_name:'';}).filter(Boolean).join(', ')+((w.authorships&&w.authorships.length>3)?' et al.':''),
-        venue:(w.primary_location&&w.primary_location.source)?w.primary_location.source.display_name:'',
-        cited_by:w.cited_by_count||0
-      };
-    });
-    paper.citation_list=(paper.citation_list||[]).concat(citingPapers);
-    paper.cite_page=page;
-    paper.loaded=true;
-    paper.has_more=results.length>=10;
+async function loadCitations(index) {
+  const paper = papers[index];
+  if (!paper) return;
+
+  const listEl = document.getElementById(`cite-list-${index}`);
+  listEl.innerHTML = '<div class="cite-loading"><span class="spinner"></span>正在加载引用列表...</div>';
+
+  try {
+    const page = (paper.cite_page || 0) + 1;
+    const data = await fetchCitations(paper.openalex_id, page, 10);
+    const results = data.results || [];
+
+    const citingPapers = results.map(w => ({
+      title: w.title || 'Untitled',
+      doi: (w.doi || '').replace('https://doi.org/', ''),
+      year: w.publication_year || '-',
+      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + (w.authorships?.length > 3 ? ' et al.' : ''),
+      venue: w.primary_location?.source?.display_name || '',
+      cited_by: w.cited_by_count || 0
+    }));
+
+    paper.citation_list = [...(paper.citation_list || []), ...citingPapers];
+    paper.cite_page = page;
+    paper.loaded = true;
+    paper.has_more = results.length >= 10;
+
     saveToStorage();
     renderCitations(index);
     updateStats();
-  }catch(e){
-    listEl.innerHTML='<div class="cite-empty">❌ 加载失败: '+escHtml(e.message)+'<br><button onclick="loadCitations('+index+')" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>';
+  } catch(e) {
+    listEl.innerHTML = `<div class="cite-empty">❌ 加载失败: ${e.message}</div>`;
   }
 }
 
 // ─── Render ───
-function renderAll(){
-  var list=document.getElementById('papersList');
-  var empty=document.getElementById('emptyState');
-  var stats=document.getElementById('statsBar');
-  var sortBar=document.getElementById('sortBar');
+function renderAll() {
+  const list = document.getElementById('papersList');
+  const empty = document.getElementById('emptyState');
+  const stats = document.getElementById('statsBar');
+  const sortBar = document.getElementById('sortBar');
 
-  if(papers.length===0){
-    list.innerHTML='';empty.style.display='';
-    stats.style.display='none';sortBar.style.display='none';
+  if (papers.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = '';
+    stats.style.display = 'none';
+    sortBar.style.display = 'none';
     return;
   }
-  empty.style.display='none';stats.style.display='';sortBar.style.display='';
 
-  var sorted=getSortedPapers();
-  var html='';
-  sorted.forEach(function(p){
-    var i=papers.indexOf(p);
-    var doiLink=p.doi?'https://doi.org/'+p.doi:'#';
-    var delta=p.cite_delta||0;
-    var deltaBadge=delta>0?'<span class="cite-delta" id="delta-'+i+'">↑ +'+delta+'</span>':'';
-    var sparkline=renderSparkline(p);
+  empty.style.display = 'none';
+  stats.style.display = '';
+  sortBar.style.display = '';
 
-    html+='<div class="paper-card" id="paper-'+i+'">'
-      +'<div class="paper-header" onclick="togglePaper('+i+')">'
-      +'<div class="paper-num">'+(i+1)+'</div>'
-      +'<div class="paper-info">'
-      +'<div class="paper-title"><a href="'+doiLink+'" target="_blank" onclick="event.stopPropagation()">'+escHtml(p.title)+'</a></div>'
-      +'<div class="paper-meta">'
-      +'<span class="paper-badge badge-cite">📊 '+p.cited_by_count+' 次引用'+deltaBadge+'</span>'
-      +(p.year?'<span>'+p.year+'</span>':'')
-      +(p.venue?'<span class="sep">·</span><span>'+escHtml(p.venue)+'</span>':'')
-      +(p.doi?'<span class="badge-doi" style="font-size:.72rem;opacity:.6">'+escHtml(p.doi.substring(0,30))+(p.doi.length>30?'...':'')+'</span>':'')
-      +'</div>'+sparkline+'</div>'
-      +'<div class="paper-right">'
-      +'<div class="cite-count"><div class="cite-num">'+p.cited_by_count+'</div><div class="cite-label">引用</div></div>'
-      +'<div class="expand-icon">▼</div>'
-      +'<button class="paper-del" onclick="event.stopPropagation();removePaper('+i+')" title="删除">×</button>'
-      +'</div></div>'
-      +'<div class="cite-list"><div class="cite-list-inner" id="cite-list-'+i+'">'
-      +(p.loaded?renderCiteItems(p,i):'<div class="cite-empty" style="cursor:pointer" onclick="loadCitations('+i+')">👆 点击展开查看引用列表</div>')
-      +'</div></div></div>';
+  const sorted = getSortedPapers();
+  let html = '';
+  sorted.forEach((p) => {
+    const i = papers.indexOf(p); // keep original index for onclick handlers
+    const doiLink = p.doi ? `https://doi.org/${p.doi}` : '#';
+    const delta = p.cite_delta || 0;
+    const deltaBadge = delta > 0 ? `<span class="cite-delta" id="delta-${i}">↑ +${delta}</span>` : '';
+    const sparkline = renderSparkline(p);
+
+    html += `
+    <div class="paper-card" id="paper-${i}">
+      <div class="paper-header" onclick="togglePaper(${i})">
+        <div class="paper-num">${i + 1}</div>
+        <div class="paper-info">
+          <div class="paper-title"><a href="${doiLink}" target="_blank" onclick="event.stopPropagation()">${escHtml(p.title)}</a></div>
+          <div class="paper-meta">
+            <span class="paper-badge badge-cite">📊 ${p.cited_by_count} 次引用${deltaBadge}</span>
+            ${p.year ? `<span>${p.year}</span>` : ''}
+            ${p.venue ? `<span class="sep">·</span><span>${escHtml(p.venue)}</span>` : ''}
+            ${p.doi ? `<span class="badge-doi" style="font-size:.72rem;opacity:.6">${escHtml(p.doi.substring(0,30))}${p.doi.length>30?'...':''}</span>` : ''}
+          </div>
+          ${sparkline}
+        </div>
+        <div class="paper-right">
+          <div class="cite-count">
+            <div class="cite-num">${p.cited_by_count}</div>
+            <div class="cite-label">引用</div>
+          </div>
+          <div class="expand-icon">▼</div>
+          <button class="paper-del" onclick="event.stopPropagation();removePaper(${i})" title="删除">×</button>
+        </div>
+      </div>
+      <div class="cite-list">
+        <div class="cite-list-inner" id="cite-list-${i}">
+          ${p.loaded ? renderCiteItems(p, i) : '<div class="cite-empty" style="cursor:pointer" onclick="loadCitations(' + i + ')">👆 点击展开查看引用列表</div>'}
+        </div>
+      </div>
+    </div>`;
   });
 
-  list.innerHTML=html;
+  list.innerHTML = html;
   updateStats();
 
   // Fade out delta badges after 4 seconds
-  setTimeout(function(){
-    document.querySelectorAll('.cite-delta').forEach(function(el){
-      el.style.opacity='0';
-      setTimeout(function(){el.remove();},600);
+  setTimeout(() => {
+    document.querySelectorAll('.cite-delta').forEach(el => {
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 600);
     });
-    papers.forEach(function(p){p.cite_delta=0;});
+    // Clear delta data
+    papers.forEach(p => { p.cite_delta = 0; });
     saveToStorage();
-  },4000);
+  }, 4000);
 }
 
-function renderCiteItems(paper,index){
-  if(!paper.citation_list||paper.citation_list.length===0)
+function renderCiteItems(paper, index) {
+  if (!paper.citation_list || paper.citation_list.length === 0) {
     return '<div class="cite-empty">暂无引用数据（或尚未加载）</div>';
-  var html='';
-  paper.citation_list.forEach(function(c,j){
-    var link=c.doi?'https://doi.org/'+c.doi:'https://scholar.google.com/scholar?q='+encodeURIComponent(c.title);
-    html+='<div class="cite-item">'
-      +'<div class="cite-item-title"><a href="'+link+'" target="_blank">'+(j+1)+'. '+escHtml(c.title)+'</a></div>'
-      +'<div class="cite-item-meta">'
-      +(c.authors?'<span>'+escHtml(c.authors)+'</span><div class="dot"></div>':'')
-      +(c.year?'<span>'+c.year+'</span><div class="dot"></div>':'')
-      +(c.venue?'<span>'+escHtml(c.venue)+'</span><div class="dot"></div>':'')
-      +'<span style="color:var(--gold)">📊 '+c.cited_by+'</span>'
-      +'</div></div>';
-  });
-  if(paper.has_more){
-    html+='<div class="cite-more"><button onclick="loadCitations('+index+')">加载更多引用</button></div>';
   }
+
+  let html = '';
+  paper.citation_list.forEach((c, j) => {
+    const link = c.doi ? `https://doi.org/${c.doi}` : `https://scholar.google.com/scholar?q=${encodeURIComponent(c.title)}`;
+    html += `
+    <div class="cite-item">
+      <div class="cite-item-title"><a href="${link}" target="_blank">${j+1}. ${escHtml(c.title)}</a></div>
+      <div class="cite-item-meta">
+        ${c.authors ? `<span>${escHtml(c.authors)}</span><div class="dot"></div>` : ''}
+        ${c.year ? `<span>${c.year}</span><div class="dot"></div>` : ''}
+        ${c.venue ? `<span>${escHtml(c.venue)}</span><div class="dot"></div>` : ''}
+        <span style="color:var(--gold)">📊 ${c.cited_by}</span>
+      </div>
+    </div>`;
+  });
+
+  if (paper.has_more) {
+    html += `<div class="cite-more"><button onclick="loadCitations(${index})">加载更多引用</button></div>`;
+  }
+
   return html;
 }
 
-function renderCitations(index){
-  var el=document.getElementById('cite-list-'+index);
-  if(el&&papers[index]) el.innerHTML=renderCiteItems(papers[index],index);
+function renderCitations(index) {
+  const el = document.getElementById(`cite-list-${index}`);
+  if (el && papers[index]) {
+    el.innerHTML = renderCiteItems(papers[index], index);
+  }
 }
 
-function togglePaper(index){
-  var card=document.getElementById('paper-'+index);
-  var paper=papers[index];
-  if(card.classList.contains('open')){card.classList.remove('open');}
-  else{card.classList.add('open');if(!paper.loaded) loadCitations(index);}
-}
+function togglePaper(index) {
+  const card = document.getElementById(`paper-${index}`);
+  const paper = papers[index];
 
-function removePaper(index){
-  papers.splice(index,1);saveToStorage();renderAll();toast('已删除','info');
-}
-
-function updateStats(){
-  var totalCites=papers.reduce(function(sum,p){return sum+(p.cited_by_count||0);},0);
-  var citeCounts=papers.map(function(p){return p.cited_by_count||0;}).sort(function(a,b){return b-a;});
-  var hIndex=0;
-  for(var i=0;i<citeCounts.length;i++){if(citeCounts[i]>=i+1) hIndex=i+1;else break;}
-  var allCiteYears=[];
-  papers.forEach(function(p){
-    (p.citation_list||[]).forEach(function(c){
-      if(c.year&&c.year!=='-') allCiteYears.push(c.year);
-    });
-  });
-  var latestYear=allCiteYears.length>0?Math.max.apply(null,allCiteYears):'-';
-  document.getElementById('statPapers').textContent=papers.length;
-  document.getElementById('statCites').textContent=totalCites;
-  document.getElementById('statH').textContent=hIndex;
-  document.getElementById('statYear').textContent=latestYear;
-}
-
-// ═══════════════════════════════════════════
-// Auto Refresh — 带进度条 + 错误重试 + 增量检测
-// ═══════════════════════════════════════════
-async function autoRefresh(){
-  if(isRefreshing||papers.length===0) return;
-  isRefreshing=true;
-  
-  var btn=document.getElementById('btnFetch');
-  var refreshBtn=document.getElementById('btnRefresh');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>正在刷新...';
-  refreshBtn.disabled=true;
-
-  var updated=0,failed=0,total=papers.length;
-
-  for(var i=0;i<papers.length;i++){
-    var p=papers[i];
-    if(!p.openalex_id) continue;
-    
-    showRefreshProgress(Math.round(((i+1)/total)*100));
-
-    try{
-      var work=await apiGetWithRetry('https://api.openalex.org/works/'+p.openalex_id+'?select=id,title,publication_year,primary_location,cited_by_count',2);
-      var oldCount=p.cited_by_count;
-      p.cited_by_count=work.cited_by_count||0;
-      p.title=work.title||p.title;
-      p.year=work.publication_year||p.year;
-      p.venue=(work.primary_location&&work.primary_location.source)?work.primary_location.source.display_name:p.venue;
-      if(p.cited_by_count!==oldCount){
-        p.cite_delta=p.cited_by_count-oldCount;
-        updated++;
-      }
-    }catch(e){
-      console.error('Auto-refresh failed for:',p.title,e);
-      failed++;
+  if (card.classList.contains('open')) {
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    if (!paper.loaded) {
+      loadCitations(index);
     }
-    await sleep(500);
+  }
+}
+
+function removePaper(index) {
+  papers.splice(index, 1);
+  saveToStorage();
+  renderAll();
+  toast('已删除', 'info');
+}
+
+function updateStats() {
+  const totalCites = papers.reduce((sum, p) => sum + (p.cited_by_count || 0), 0);
+  const citeCounts = papers.map(p => p.cited_by_count || 0).sort((a, b) => b - a);
+  let hIndex = 0;
+  for (let i = 0; i < citeCounts.length; i++) {
+    if (citeCounts[i] >= i + 1) hIndex = i + 1;
+    else break;
   }
 
-  hideRefreshProgress();
+  const allCiteYears = [];
+  papers.forEach(p => {
+    (p.citation_list || []).forEach(c => {
+      if (c.year && c.year !== '-') allCiteYears.push(c.year);
+    });
+  });
+  const latestYear = allCiteYears.length > 0 ? Math.max(...allCiteYears) : '-';
+
+  document.getElementById('statPapers').textContent = papers.length;
+  document.getElementById('statCites').textContent = totalCites;
+  document.getElementById('statH').textContent = hIndex;
+  document.getElementById('statYear').textContent = latestYear;
+}
+
+// ─── Auto refresh on load ───
+async function autoRefresh() {
+  const btn = document.getElementById('btnFetch');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>正在刷新最新数据...';
+
+  let updated = 0;
+  for (let i = 0; i < papers.length; i++) {
+    const p = papers[i];
+    if (!p.openalex_id) continue;
+    try {
+      const url = `https://api.openalex.org/works/${p.openalex_id}?select=id,title,publication_year,primary_location,cited_by_count`;
+      const work = await apiGet(url);
+      const oldCount = p.cited_by_count;
+      p.cited_by_count = work.cited_by_count || 0;
+      p.title = work.title || p.title;
+      p.year = work.publication_year || p.year;
+      p.venue = work.primary_location?.source?.display_name || p.venue;
+      if (p.cited_by_count !== oldCount) {
+        p.cite_delta = p.cited_by_count - oldCount;
+        updated++;
+      }
+    } catch(e) {
+      console.error('Auto-refresh failed for:', p.title, e);
+    }
+    await sleep(350);
+  }
+
   saveToStorage();
   renderAll();
 
-  btn.disabled=false;btn.innerHTML='🔍 查询引用';
-  refreshBtn.disabled=false;
-  isRefreshing=false;
+  btn.disabled = false;
+  btn.innerHTML = '🔍 查询引用';
 
-  // 增量检测
-  var anyIncrement=false;
-  papers.forEach(function(p){
-    if(p.openalex_id&&lastCiteSnapshot[p.openalex_id]!==undefined){
-      if(p.cited_by_count>lastCiteSnapshot[p.openalex_id]) anyIncrement=true;
+  if (updated > 0) {
+    // 增量检测
+    let anyIncrement = false;
+    papers.forEach(p => {
+      if (p.openalex_id && lastCiteSnapshot[p.openalex_id] !== undefined) {
+        if (p.cited_by_count > lastCiteSnapshot[p.openalex_id]) anyIncrement = true;
+      }
+    });
+
+    const totalCites = papers.reduce((sum, p) => sum + (p.cited_by_count || 0), 0);
+
+    // 优先：里程碑（10+/20+）
+    if (anyIncrement && !showMilestone(totalCites)) {
+      // 非里程碑但有增量 → 增量鼓励
+      if (anyIncrement) showIncrementEncouragement();
     }
-  });
 
-  var totalCites=papers.reduce(function(sum,p){return sum+(p.cited_by_count||0);},0);
-
-  if(anyIncrement&&!showMilestone(totalCites)){
-    showIncrementEncouragement();
+    toast(`🔄 已刷新！${updated} 篇论文引用数有更新`, 'success');
   }
 
-  if(updated>0){
-    toast('🔄 刷新完成！'+updated+' 篇论文引用数有更新'+(failed>0?'，'+failed+'篇获取失败':''),'success');
-  }else if(failed>0){
-    toast('⚠️ 刷新完成，但'+failed+'篇数据获取失败，已保留上次数据','error');
-  }else{
-    toast('✅ 数据已是最新','info');
-  }
-
+  // 更新快照
   takeSnapshot();
 }
 
-async function manualRefresh(){
-  if(!navigator.onLine) return toast('当前无网络连接','error');
-  if(isRefreshing) return toast('正在刷新中，请稍候...','info');
-  await autoRefresh();
-}
-
 // ─── Helpers ───
-function escHtml(s){
-  var d=document.createElement('div');
-  d.textContent=s||'';
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
   return d.innerHTML;
 }
-function toast(msg,type){
-  type=type||'info';
-  var t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast '+type+' show';
+
+function toast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
   clearTimeout(t._t);
-  t._t=setTimeout(function(){t.classList.remove('show');},3500);
+  t._t = setTimeout(() => t.classList.remove('show'), 3500);
 }
-function clearAll(){
-  if(!confirm('确定清空所有论文数据？')) return;
-  papers=[];saveToStorage();renderAll();
-  document.getElementById('doiInput').value='';
-  toast('已清空','info');
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function clearAll() {
+  if (!confirm('确定清空所有论文数据？')) return;
+  papers = [];
+  saveToStorage();
+  renderAll();
+  document.getElementById('doiInput').value = '';
+  toast('已清空', 'info');
 }
-function loadSample(){
-  document.getElementById('doiInput').value=['10.1016/j.jhydrol.2023.129887','10.1029/2022WR034123','10.1016/j.advwatres.2022.104336'].join('\n');
-  toast('已加载示例 DOI，点击查询即可','info');
+
+function loadSample() {
+  document.getElementById('doiInput').value = [
+    '10.1016/j.jhydrol.2023.129887',
+    '10.1029/2022WR034123',
+    '10.1016/j.advwatres.2022.104336'
+  ].join('\n');
+  toast('已加载示例 DOI，点击查询即可', 'info');
 }
 </script>
+<script src="/journals/theme-toggle.js"></script>
 </body>
 </html>
