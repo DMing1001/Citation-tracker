@@ -240,6 +240,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
         <button class="btn btn-ghost" onclick="loadSample()">📋 加载示例</button>
         <button class="btn btn-ghost" id="btnRefresh" onclick="autoRefresh()">🔄 刷新数据</button>
         <button class="btn btn-ghost" onclick="clearAll()">🗑️ 清空</button>
+        <button class="btn btn-ghost" onclick="shareResult()" id="btnShare" style="display:none">📤 分享结果</button>
       </div>
     </div>
   </div>
@@ -714,6 +715,19 @@ async function loadCitations(index) {
   listEl.innerHTML = '<div class="cite-loading"><span class="spinner"></span>正在加载引用列表...</div>';
 
   try {
+    // If openalex_id is missing, try to look it up by DOI
+    if (!paper.openalex_id && paper.doi) {
+      try {
+        const work = await fetchWorkByDOI(paper.doi);
+        paper.openalex_id = work.id.replace('https://openalex.org/', '');
+        saveToStorage();
+      } catch(e) { /* ignore */ }
+    }
+    if (!paper.openalex_id) {
+      listEl.innerHTML = '<div class="cite-empty">❌ 无法获取引用列表（缺少 OpenAlex ID）</div>';
+      return;
+    }
+
     const page = (paper.cite_page || 0) + 1;
     const data = await fetchCitations(paper.openalex_id, page, 10);
     const results = data.results || [];
@@ -736,7 +750,7 @@ async function loadCitations(index) {
     renderCitations(index);
     updateStats();
   } catch(e) {
-    listEl.innerHTML = `<div class="cite-empty">❌ 加载失败: ${e.message}</div>`;
+    listEl.innerHTML = `<div class="cite-empty">❌ 加载失败: ${escHtml(e.message)}<br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>`;
   }
 }
 
@@ -802,6 +816,7 @@ function renderAll() {
 
   list.innerHTML = html;
   updateStats();
+  updateShareButton();
 
   // Fade out delta badges after 4 seconds
   setTimeout(() => {
@@ -1014,6 +1029,45 @@ function loadSample() {
     '10.1016/j.advwatres.2022.104336'
   ].join('\n');
   toast('已加载示例 DOI，点击查询即可', 'info');
+}
+
+// ─── Share ───
+function shareResult() {
+  if (papers.length === 0) return toast('暂无数据可分享', 'error');
+  const totalCites = papers.reduce((s, p) => s + (p.cited_by_count || 0), 0);
+  const citeCounts = papers.map(p => p.cited_by_count || 0).sort((a, b) => b - a);
+  let hIndex = 0;
+  for (let i = 0; i < citeCounts.length; i++) { if (citeCounts[i] >= i + 1) hIndex = i + 1; else break; }
+
+  const lines = papers.map((p, i) => `${i + 1}. ${p.title} — ${p.cited_by_count} 次引用`).join('\n');
+  const text = `📊 我的 CiteGlow 引用报告\n\n📄 论文: ${papers.length} 篇\n📊 总引用: ${totalCites} 次\n📈 H-Index: ${hIndex}\n\n${lines}\n\n🔍 数据来源: OpenAlex + Semantic Scholar + CrossRef\n✨ citeglow.com`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'CiteGlow 引用报告', text: text }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      toast('📋 已复制到剪贴板，可以粘贴分享', 'success');
+    }).catch(() => {
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast('📋 已复制到剪贴板', 'success'); }
+  catch(e) { toast('分享失败，请手动复制', 'error'); }
+  document.body.removeChild(ta);
+}
+
+// Show share button when papers exist
+function updateShareButton() {
+  const btn = document.getElementById('btnShare');
+  if (btn) btn.style.display = papers.length > 0 ? '' : 'none';
 }
 </script>
 <script src="/journals/theme-toggle.js"></script>
