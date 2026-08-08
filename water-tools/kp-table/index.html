@@ -1091,7 +1091,7 @@ const RATIOS = Object.keys(KP_DATA).map(Number).sort((a,b)=>a-b);
 function lerp(a, b, t) { return a + (b - a) * t; }
 
 function lookupKp(ratio, cv, p) {
-  const table = KP_DATA[ratio];
+  const table = KP_DATA[String(ratio)];
   if (!table) return null;
   const rows = table.rows;
   const pIdx = table.p.indexOf(p);
@@ -1153,7 +1153,7 @@ function calc() {
   
   if (isNaN(cv) || cv <= 0) { alert('请输入有效的 Cv 值'); return; }
   const pList = parseP(rawP);
-  const table = KP_DATA[ratio];
+  const table = KP_DATA[String(ratio)];
   if (!table) { alert('该 Cs/Cv 倍比暂无数据'); return; }
   const cvMin = table.rows[0][0], cvMax = table.rows[table.rows.length - 1][0];
   if (cv < cvMin || cv > cvMax) { alert('Cv 超出该倍比的表范围 (' + cvMin + '~' + cvMax + ')'); return; }
@@ -1195,7 +1195,7 @@ function calc() {
 
 function buildFullTable() {
   const ratio = parseFloat(document.getElementById('tableRatio').value);
-  const table = KP_DATA[ratio];
+  const table = KP_DATA[String(ratio)];
   if (!table) return;
   
   let html = '<table class="full-table"><tr><th>Cv</th>';
