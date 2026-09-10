@@ -555,11 +555,13 @@ async function apiGet(url, maxRetries) {
   const sep = url.indexOf('?') === -1 ? '?' : '&';
   const bustUrl = url + sep + '_t=' + Date.now();
 
-  // Try direct first, then proxy fallback
-  async function doFetch(fetchUrl, useProxy) {
-    const actualUrl = useProxy ? `/api/proxy?url=${encodeURIComponent(fetchUrl)}` : fetchUrl;
+  // Try direct first, then proxy fallback (relative + absolute)
+  async function doFetch(fetchUrl, proxyMode) {
+    let actualUrl = fetchUrl;
+    if (proxyMode === 'rel') actualUrl = `/api/proxy?url=${encodeURIComponent(fetchUrl)}`;
+    if (proxyMode === 'abs') actualUrl = `https://citeglow.com/api/proxy?url=${encodeURIComponent(fetchUrl)}`;
     const controller = new AbortController();
-    const tid = setTimeout(() => controller.abort(), useProxy ? 20000 : 12000);
+    const tid = setTimeout(() => controller.abort(), proxyMode ? 20000 : 12000);
     try {
       const r = await fetch(actualUrl, {
         cache: 'no-store',
@@ -577,7 +579,7 @@ async function apiGet(url, maxRetries) {
   // Try direct requests first
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-      return await doFetch(bustUrl, false);
+      return await doFetch(bustUrl, null);
     } catch(e) {
       if (e.name === 'AbortError' || e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
         // Likely blocked (GFW) — switch to proxy immediately
@@ -587,14 +589,17 @@ async function apiGet(url, maxRetries) {
     }
   }
 
-  // Fallback: try through proxy
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      return await doFetch(bustUrl, true);
-    } catch(e) {
-      if (attempt < 1) { await sleep(1000); } else { throw e; }
+  // Fallback: relative proxy, then absolute citeglow proxy
+  for (const mode of ['rel', 'abs']) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        return await doFetch(bustUrl, mode);
+      } catch(e) {
+        if (attempt < 1) { await sleep(800); }
+      }
     }
   }
+  throw new Error('网络请求失败（直连与代理均不可用）');
 }
 
 async function fetchWorkByDOI(doi) {
@@ -612,8 +617,39 @@ async function fetchWorkByTitle(title) {
 
 async function fetchCitations(openalexId, page = 1, perPage = 10) {
   if (!openalexId) throw new Error('缺少 OpenAlex ID，无法查询引用');
-  const url = `https://api.openalex.org/works?filter=cites:${openalexId}&sort=cited_by_count:desc&per-page=${perPage}&page=${page}&select=id,title,doi,publication_year,authorships,primary_location`;
+  // Accept both W123 and https://openalex.org/W123
+  const shortId = String(openalexId).replace(/^https?:\/\/openalex\.org\//, '');
+  const url = `https://api.openalex.org/works?filter=cites:${encodeURIComponent(shortId)}&sort=cited_by_count:desc&per-page=${perPage}&page=${page}&select=id,title,doi,publication_year,authorships,primary_location,cited_by_count`;
   return await apiGet(url);
+}
+
+// Semantic Scholar citing-works fallback (often reachable when OpenAlex is blocked)
+async function fetchCitationsSS(paper, offset = 0, limit = 20) {
+  let key = '';
+  if (paper.doi) key = `DOI:${paper.doi.replace(/^https?:\/\/doi.org\//i, '')}`;
+  else if (paper.openalex_id) key = paper.openalex_id.replace(/^https?:\/\/openalex\.org\//, '');
+  else throw new Error('缺少 DOI / OpenAlex ID，无法查询引用');
+  const fields = 'title,year,externalIds,authors,venue,citationCount';
+  const url = `https://api.semanticscholar.org/graph/v1/paper/${encodeURIComponent(key)}/citations?fields=${fields}&limit=${limit}&offset=${offset}`;
+  const data = await apiGet(url, 2);
+  const rows = (data && data.data) || [];
+  return {
+    results: rows.map(row => {
+      const c = row.citingPaper || {};
+      const authors = (c.authors || []).map(a => a.name).filter(Boolean);
+      return {
+        title: c.title || 'Untitled',
+        doi: (c.externalIds && c.externalIds.DOI) ? String(c.externalIds.DOI).replace(/^https?:\/\/doi.org\//i, '') : '',
+        publication_year: c.year || '-',
+        authorships: authors.map(n => ({ author: { display_name: n } })),
+        primary_location: { source: { display_name: c.venue || '' } },
+        cited_by_count: c.citationCount || 0
+      };
+    }),
+    meta: { count: paper.cited_by_count || rows.length },
+    next_offset: data && data.next != null ? offset + limit : null,
+    source: 'semantic-scholar'
+  };
 }
 
 // ─── Semantic Scholar API ───
@@ -735,13 +771,17 @@ async function loadCitations(index) {
   if (!paper) return;
 
   const listEl = document.getElementById(`cite-list-${index}`);
-  listEl.innerHTML = '<div class="cite-loading"><span class="spinner"></span>正在加载引用列表...</div>';
+  if (listEl) {
+    listEl.innerHTML = '<div class="cite-loading"><span class="spinner"></span>正在加载引用列表...</div>';
+  }
 
-  // Helper: ensure we have a valid openalex_id
+  // Helper: ensure we have a valid openalex_id (short form W...)
   async function ensureOpenAlexId() {
-    if (paper.openalex_id) return true;
+    if (paper.openalex_id) {
+      paper.openalex_id = String(paper.openalex_id).replace(/^https?:\/\/openalex\.org\//, '');
+      return true;
+    }
     if (!paper.doi) return false;
-    // Try to look up by DOI
     try {
       const work = await fetchWorkByDOI(paper.doi);
       if (work && work.id) {
@@ -754,45 +794,77 @@ async function loadCitations(index) {
   }
 
   try {
-    if (!await ensureOpenAlexId()) {
-      listEl.innerHTML = '<div class="cite-empty">📭 该论文暂未被 OpenAlex 收录，引用列表暂不可用<br><span style="font-size:.8rem;opacity:.6;margin-top:4px;display:inline-block">论文较新或 DOI 未被索引，可稍后再试</span></div>';
-      return;
-    }
+    const page = (paper.cite_page || 0) + 1;
+    let data = null;
+    let lastErr = null;
 
-    let page = (paper.cite_page || 0) + 1;
-    let data;
+    // 1) OpenAlex (has who-cites-whom graph)
     try {
-      data = await fetchCitations(paper.openalex_id, page, 10);
-    } catch(e) {
-      // If the cached openalex_id is stale, try re-looking it up
-      paper.openalex_id = '';
       if (await ensureOpenAlexId()) {
         data = await fetchCitations(paper.openalex_id, page, 10);
-      } else {
-        throw e;
+      }
+    } catch (e1) {
+      lastErr = e1;
+      // stale id → re-resolve once
+      try {
+        paper.openalex_id = '';
+        if (await ensureOpenAlexId()) {
+          data = await fetchCitations(paper.openalex_id, page, 10);
+        }
+      } catch (e2) { lastErr = e2; }
+    }
+
+    // 2) Semantic Scholar fallback (citing papers by DOI)
+    if (!data || !data.results) {
+      try {
+        const offset = (page - 1) * 20;
+        data = await fetchCitationsSS(paper, offset, 20);
+        data._fromSS = true;
+      } catch (e3) {
+        lastErr = e3 || lastErr;
       }
     }
-    const results = data.results || [];
 
+    if (!data) {
+      throw lastErr || new Error('引用列表接口均不可用');
+    }
+
+    const results = data.results || [];
     const citingPapers = results.map(w => ({
       title: w.title || 'Untitled',
       doi: (w.doi || '').replace('https://doi.org/', ''),
       year: w.publication_year || '-',
-      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + (w.authorships?.length > 3 ? ' et al.' : ''),
+      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + ((w.authorships || []).length > 3 ? ' et al.' : ''),
       venue: w.primary_location?.source?.display_name || '',
       cited_by: w.cited_by_count || 0
     }));
 
+    if (citingPapers.length === 0 && page === 1 && (paper.cited_by_count || 0) > 0) {
+      // Count exists but list empty — do NOT mark as permanently loaded
+      if (listEl) {
+        listEl.innerHTML = `<div class="cite-empty">⚠️ 引用数为 ${paper.cited_by_count}，但暂未取到文献列表（网络或数据源限制）<br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>`;
+      }
+      return;
+    }
+
     paper.citation_list = [...(paper.citation_list || []), ...citingPapers];
     paper.cite_page = page;
     paper.loaded = true;
-    paper.has_more = results.length >= 10;
+    if (data._fromSS) {
+      paper.has_more = !!data.next_offset;
+      paper.cite_ss_offset = data.next_offset;
+    } else {
+      paper.has_more = results.length >= 10;
+    }
+    paper.cite_source = data._fromSS ? 'ss' : 'oa';
 
     saveToStorage();
     renderCitations(index);
     updateStats();
   } catch(e) {
-    listEl.innerHTML = `<div class="cite-empty">❌ 加载失败: ${escHtml(e.message)}<br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>`;
+    if (listEl) {
+      listEl.innerHTML = `<div class="cite-empty">❌ 加载失败: ${escHtml(e.message || '未知错误')}<br><span style="font-size:.78rem;opacity:.65;display:inline-block;margin-top:4px">可尝试刷新页面，或检查网络后重试</span><br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>`;
+    }
   }
 }
 
@@ -874,7 +946,7 @@ function renderAll() {
 
 function renderCiteItems(paper, index) {
   if (!paper.citation_list || paper.citation_list.length === 0) {
-    return '<div class="cite-empty">暂无引用数据（或尚未加载）</div>';
+    return `<div class="cite-empty">暂无引用列表数据${(paper.cited_by_count||0)>0?`（引用数 ${paper.cited_by_count}）`:''}<br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重新加载</button></div>`;
   }
 
   let html = '';
@@ -914,7 +986,10 @@ function togglePaper(index) {
     card.classList.remove('open');
   } else {
     card.classList.add('open');
-    if (!paper.loaded) {
+    // Auto-load if never loaded, or loaded but list is empty while citation count > 0
+    const emptyLoaded = paper.loaded && (!paper.citation_list || paper.citation_list.length === 0);
+    if (!paper.loaded || emptyLoaded) {
+      if (emptyLoaded) { paper.loaded = false; paper.cite_page = 0; }
       loadCitations(index);
     }
   }
