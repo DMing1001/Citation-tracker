@@ -241,7 +241,8 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
         <button class="btn btn-ghost" onclick="loadSample()">📋 加载示例</button>
         <button class="btn btn-ghost" id="btnRefresh" onclick="autoRefresh()">🔄 刷新数据</button>
         <button class="btn btn-ghost" onclick="clearAll()">🗑️ 清空</button>
-        <button class="btn btn-ghost" onclick="shareResult()" id="btnShare" style="display:none">📤 分享结果</button>
+        <button class="btn btn-ghost" id="btnShare" style="display:none">📤 分享结果</button>
+        <button class="btn btn-ghost" onclick="openExportModal()">⬇️ 导出论文</button>
       </div>
     </div>
   </div>
@@ -279,6 +280,39 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Export modal -->
+<div id="exportModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px">
+  <div style="width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.35)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="margin:0;font-size:1.05rem;color:var(--text)">⬇️ 导出已发表论文</h3>
+      <button type="button" onclick="closeExportModal()" style="background:none;border:none;color:var(--text2);font-size:1.3rem;cursor:pointer;line-height:1">×</button>
+    </div>
+    <p style="margin:0 0 14px;font-size:.85rem;color:var(--text2)">从当前列表导出。可勾选字段；本地缺少的作者等信息可在导出前联网补全。</p>
+
+    <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">格式</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--text);cursor:pointer"><input type="radio" name="expFmt" value="csv" checked> CSV / Excel</label>
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--text);cursor:pointer"><input type="radio" name="expFmt" value="bibtex"> BibTeX</label>
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--text);cursor:pointer"><input type="radio" name="expFmt" value="json"> JSON</label>
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--text);cursor:pointer"><input type="radio" name="expFmt" value="md"> Markdown</label>
+    </div>
+
+    <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">导出字段</div>
+    <div id="exportFields" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:14px;font-size:.88rem;color:var(--text)"></div>
+
+    <label style="display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--text2);margin-bottom:16px;cursor:pointer">
+      <input type="checkbox" id="expEnrich" checked style="margin-top:3px">
+      <span>导出前联网补充完整信息（作者、期刊卷期等；网络慢或失败时自动跳过）</span>
+    </label>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button type="button" class="btn btn-ghost" onclick="closeExportModal()">取消</button>
+      <button type="button" class="btn btn-pri" id="btnDoExport" onclick="runExport()">下载导出文件</button>
+    </div>
+    <div id="exportStatus" style="margin-top:10px;font-size:.8rem;color:var(--text2);min-height:1.2em"></div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
 <script>
@@ -834,6 +868,74 @@ async function fetchCRByDOI(doi) {
 }
 
 // Fetch from all 3 sources, merge results
+function abstractFromInverted(inv) {
+  if (!inv || typeof inv !== 'object') return '';
+  const pairs = [];
+  Object.keys(inv).forEach(w => {
+    (inv[w] || []).forEach(pos => { pairs.push([pos, w]); });
+  });
+  pairs.sort((a, b) => a[0] - b[0]);
+  return pairs.map(p => p[1]).join(' ');
+}
+
+function authorNamesFromSources(primary, ssWork, crWork) {
+  const names = [];
+  if (primary && primary.authorships) {
+    primary.authorships.forEach(a => {
+      const n = a.author && a.author.display_name;
+      if (n) names.push(n);
+    });
+  }
+  if (!names.length && ssWork && ssWork.authors) {
+    ssWork.authors.forEach(a => { if (a && a.name) names.push(a.name); });
+  }
+  if (!names.length && crWork && crWork.author) {
+    crWork.author.forEach(a => {
+      const n = [a.given, a.family].filter(Boolean).join(' ');
+      if (n) names.push(n);
+    });
+  }
+  return names;
+}
+
+function enrichPaperFromOA(oaWork, paper) {
+  if (!oaWork) return paper;
+  const authors = authorNamesFromSources(oaWork, null, null);
+  if (authors.length) paper.authors = authors;
+  paper.type = paper.type || oaWork.type || '';
+  paper.language = paper.language || oaWork.language || '';
+  if (oaWork.publication_date) paper.publication_date = oaWork.publication_date;
+  if (oaWork.open_access) {
+    paper.is_oa = !!oaWork.open_access.is_oa;
+    paper.oa_url = oaWork.open_access.oa_url || '';
+  }
+  const src = oaWork.primary_location && oaWork.primary_location.source;
+  if (src) {
+    paper.venue = paper.venue || src.display_name || '';
+    paper.publisher = paper.publisher || src.host_organization_name || '';
+    if (src.issn && src.issn.length) paper.issn = src.issn.join(';');
+  }
+  const b = oaWork.biblio || {};
+  paper.volume = paper.volume || b.volume || '';
+  paper.issue = paper.issue || b.issue || '';
+  const fp = b.first_page || '', lp = b.last_page || '';
+  paper.pages = paper.pages || (fp && lp ? fp + '-' + lp : (fp || lp || ''));
+  if (oaWork.referenced_works_count != null) paper.ref_count = oaWork.referenced_works_count;
+  if (oaWork.primary_topic && oaWork.primary_topic.display_name) {
+    paper.primary_topic = oaWork.primary_topic.display_name;
+  }
+  if (Array.isArray(oaWork.concepts) && oaWork.concepts.length) {
+    paper.concepts = oaWork.concepts.slice(0, 5).map(c => c.display_name).filter(Boolean);
+  }
+  const abs = abstractFromInverted(oaWork.abstract_inverted_index);
+  if (abs) paper.abstract = abs.length > 800 ? abs.slice(0, 800) + '…' : abs;
+  if (!paper.authors || !paper.authors.length) {
+    const n2 = authorNamesFromSources(oaWork, null, null);
+    if (n2.length) paper.authors = n2;
+  }
+  return paper;
+}
+
 async function fetchAllSources(line) {
   let oaWork = null, ssWork = null, crWork = null;
   const isDOI = line.match(/^10\.\d{4,}/);
@@ -857,8 +959,9 @@ async function fetchAllSources(line) {
   const oaCount = primary.cited_by_count || 0;
   const ssCount = ssWork ? (ssWork.citationCount || 0) : 0;
   const crCount = crWork ? (crWork['is-referenced-by-count'] || 0) : 0;
+  const authors = authorNamesFromSources(primary, ssWork, crWork);
 
-  return {
+  const paper = {
     doi: doi,
     title: primary.title || (ssWork ? ssWork.title : (crWork ? (crWork.title?.[0] || 'Untitled') : 'Untitled')),
     year: primary.publication_year || (ssWork ? ssWork.year : (crWork ? crWork.issued?.['date-parts']?.[0]?.[0] : '-')),
@@ -868,10 +971,19 @@ async function fetchAllSources(line) {
     oa_cited_by: oaCount,
     ss_cited_by: ssCount,
     cr_cited_by: crCount,
+    authors: authors,
+    type: primary.type || '',
+    language: primary.language || '',
+    publication_date: primary.publication_date || '',
     citation_list: [],
     cite_page: 0,
     loaded: false
   };
+  enrichPaperFromOA(primary, paper);
+  if ((!paper.authors || !paper.authors.length) && crWork && crWork.author) {
+    paper.authors = authorNamesFromSources(null, null, crWork);
+  }
+  return paper;
 }
 
 // ─── Main fetch ───
@@ -1342,6 +1454,212 @@ function fallbackCopy(text) {
   try { document.execCommand('copy'); toast('📋 已复制到剪贴板', 'success'); }
   catch(e) { toast('分享失败，请手动复制', 'error'); }
   document.body.removeChild(ta);
+}
+
+// ─── Export papers ───
+const EXPORT_FIELD_DEFS = [
+  { key: 'title', label: '标题', def: true },
+  { key: 'doi', label: 'DOI', def: true },
+  { key: 'year', label: '年份', def: true },
+  { key: 'venue', label: '期刊/会议', def: true },
+  { key: 'cited_by_count', label: '引用数', def: true },
+  { key: 'authors', label: '作者', def: true },
+  { key: 'type', label: '文献类型', def: false },
+  { key: 'publication_date', label: '发表日期', def: false },
+  { key: 'volume', label: '卷', def: false },
+  { key: 'issue', label: '期', def: false },
+  { key: 'pages', label: '页码', def: false },
+  { key: 'publisher', label: '出版方', def: false },
+  { key: 'issn', label: 'ISSN', def: false },
+  { key: 'language', label: '语言', def: false },
+  { key: 'is_oa', label: '是否开放获取', def: false },
+  { key: 'oa_url', label: 'OA 链接', def: false },
+  { key: 'primary_topic', label: '主题', def: false },
+  { key: 'concepts', label: '概念标签', def: false },
+  { key: 'ref_count', label: '参考文献数', def: false },
+  { key: 'openalex_id', label: 'OpenAlex ID', def: false },
+  { key: 'abstract', label: '摘要', def: false },
+  { key: 'oa_cited_by', label: '引用数(OA)', def: false },
+  { key: 'ss_cited_by', label: '引用数(SS)', def: false },
+  { key: 'cr_cited_by', label: '引用数(CR)', def: false }
+];
+
+function openExportModal() {
+  if (!papers.length) return toast('列表为空，先查询或导入论文', 'error');
+  const box = document.getElementById('exportFields');
+  box.innerHTML = EXPORT_FIELD_DEFS.map(f =>
+    `<label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" data-exp-field="${f.key}" ${f.def ? 'checked' : ''}> ${f.label}</label>`
+  ).join('');
+  document.getElementById('exportStatus').textContent = `当前共 ${papers.length} 篇论文`;
+  const m = document.getElementById('exportModal');
+  m.style.display = 'flex';
+}
+
+function closeExportModal() {
+  document.getElementById('exportModal').style.display = 'none';
+}
+
+function getSelectedExportFields() {
+  return Array.from(document.querySelectorAll('#exportFields input[data-exp-field]:checked'))
+    .map(el => el.getAttribute('data-exp-field'));
+}
+
+function getExportFormat() {
+  const el = document.querySelector('input[name="expFmt"]:checked');
+  return el ? el.value : 'csv';
+}
+
+function csvEscape(v) {
+  const s = v == null ? '' : String(v);
+  if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+function fieldValue(p, key) {
+  if (key === 'authors') return (p.authors || []).join('; ');
+  if (key === 'concepts') return (p.concepts || []).join('; ');
+  if (key === 'is_oa') return p.is_oa == null ? '' : (p.is_oa ? '是' : '否');
+  if (key === 'cited_by_count' || key === 'oa_cited_by' || key === 'ss_cited_by' || key === 'cr_cited_by' || key === 'ref_count') {
+    return p[key] == null || p[key] === '' ? '' : p[key];
+  }
+  const v = p[key];
+  return v == null ? '' : v;
+}
+
+function fieldLabel(key) {
+  const f = EXPORT_FIELD_DEFS.find(x => x.key === key);
+  return f ? f.label : key;
+}
+
+function bibKey(p, used) {
+  const author = (p.authors && p.authors[0]) ? p.authors[0].split(/\s+/).pop().toLowerCase().replace(/[^a-z0-9]/g, '') : 'anon';
+  const year = p.year || 'nd';
+  let base = author + year;
+  let k = base, i = 97;
+  while (used[k]) { k = base + String.fromCharCode(i++); }
+  used[k] = 1;
+  return k;
+}
+
+function bibEscape(s) {
+  return String(s == null ? '' : s).replace(/([{}\\&%$#_])/g, '\\$1');
+}
+
+function buildBibTex(list, fields) {
+  const used = {};
+  const wantAuthors = fields.includes('authors');
+  return list.map(p => {
+    const key = bibKey(p, used);
+    const lines = [];
+    const t = p.type || 'article';
+    const entry = (t === 'article' || !t) ? 'article' : (t === 'proceedings-article' ? 'inproceedings' : 'misc');
+    lines.push(`@${entry}{${key},`);
+    lines.push(`  title = {${bibEscape(p.title || '')}},`);
+    if (wantAuthors && p.authors && p.authors.length) {
+      lines.push(`  author = {${p.authors.map(bibEscape).join(' and ')}},`);
+    }
+    if (fields.includes('year') && p.year) lines.push(`  year = {${bibEscape(p.year)}},`);
+    if (fields.includes('venue') && p.venue) {
+      const jf = entry === 'inproceedings' ? 'booktitle' : 'journal';
+      lines.push(`  ${jf} = {${bibEscape(p.venue)}},`);
+    }
+    if (fields.includes('volume') && p.volume) lines.push(`  volume = {${bibEscape(p.volume)}},`);
+    if (fields.includes('issue') && p.issue) lines.push(`  number = {${bibEscape(p.issue)}},`);
+    if (fields.includes('pages') && p.pages) lines.push(`  pages = {${bibEscape(p.pages)}},`);
+    if (fields.includes('publisher') && p.publisher) lines.push(`  publisher = {${bibEscape(p.publisher)}},`);
+    if (fields.includes('doi') && p.doi) lines.push(`  doi = {${bibEscape(p.doi)}},`);
+    if (fields.includes('issn') && p.issn) lines.push(`  issn = {${bibEscape(p.issn)}},`);
+    lines.push('}');
+    return lines.join('\n');
+  }).join('\n\n');
+}
+
+function buildCsv(list, fields) {
+  const head = fields.map(fieldLabel).join(',');
+  const rows = list.map(p => fields.map(f => csvEscape(fieldValue(p, f))).join(','));
+  // BOM for Excel
+  return '\uFEFF' + [head].concat(rows).join('\r\n');
+}
+
+function buildJson(list, fields) {
+  const out = list.map(p => {
+    const o = {};
+    fields.forEach(f => { o[f] = f === 'authors' || f === 'concepts' ? (p[f] || []) : fieldValue(p, f); });
+    return o;
+  });
+  return JSON.stringify({ exported_at: new Date().toISOString(), count: out.length, papers: out }, null, 2);
+}
+
+function buildMarkdown(list, fields) {
+  const head = '| ' + fields.map(fieldLabel).join(' | ') + ' |';
+  const sep = '| ' + fields.map(() => '---').join(' | ') + ' |';
+  const rows = list.map(p => '| ' + fields.map(f => String(fieldValue(p, f)).replace(/\|/g, '\\|')).join(' | ') + ' |');
+  return ['# CiteGlow 论文导出', '', `导出时间：${new Date().toISOString().slice(0, 19).replace('T', ' ')}`, '', head, sep].concat(rows).join('\n');
+}
+
+async function enrichPapersForExport(list) {
+  const status = document.getElementById('exportStatus');
+  let enriched = 0, skipped = 0;
+  for (let i = 0; i < list.length; i++) {
+    const p = list[i];
+    const needAuthors = !p.authors || !p.authors.length;
+    const needBiblio = !p.volume && !p.pages && !p.publication_date;
+    if (!needAuthors && !needBiblio) continue;
+    if (!p.openalex_id && !p.doi) { skipped++; continue; }
+    status.textContent = `正在补充元数据 ${i + 1}/${list.length}…`;
+    try {
+      let work = null;
+      if (p.openalex_id) {
+        work = await apiGet(`https://api.openalex.org/works/${p.openalex_id}?select=id,title,doi,publication_year,publication_date,type,language,authorships,primary_location,biblio,open_access,referenced_works_count,primary_topic,concepts,abstract_inverted_index,cited_by_count`, 1);
+      } else if (p.doi) {
+        work = await fetchWorkByDOI(p.doi);
+      }
+      if (work) { enrichPaperFromOA(work, p); enriched++; }
+    } catch (e) { skipped++; }
+  }
+  saveToStorage();
+  status.textContent = `已补充 ${enriched} 篇${skipped ? '，跳过 ' + skipped + ' 篇' : ''}`;
+  return list;
+}
+
+function downloadTextFile(filename, text, mime) {
+  const blob = new Blob([text], { type: (mime || 'text/plain') + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+}
+
+async function runExport() {
+  if (!papers.length) return toast('列表为空', 'error');
+  const fields = getSelectedExportFields();
+  if (!fields.length) return toast('请至少勾选一个字段', 'error');
+  const fmt = getExportFormat();
+  const btn = document.getElementById('btnDoExport');
+  btn.disabled = true;
+  const status = document.getElementById('exportStatus');
+  try {
+    let list = papers.slice();
+    if (document.getElementById('expEnrich').checked) {
+      status.textContent = '准备补充完整信息…';
+      list = await enrichPapersForExport(list);
+    }
+    status.textContent = '正在生成文件…';
+    const day = new Date().toISOString().slice(0, 10);
+    const base = 'citeglow-papers-' + day;
+    if (fmt === 'csv') downloadTextFile(base + '.csv', buildCsv(list, fields), 'text/csv');
+    else if (fmt === 'bibtex') downloadTextFile(base + '.bib', buildBibTex(list, fields), 'application/x-bibtex');
+    else if (fmt === 'json') downloadTextFile(base + '.json', buildJson(list, fields), 'application/json');
+    else downloadTextFile(base + '.md', buildMarkdown(list, fields), 'text/markdown');
+    status.textContent = `已导出 ${list.length} 篇（${fields.length} 个字段）`;
+    toast('✅ 导出完成', 'success');
+  } catch (e) {
+    status.textContent = '';
+    toast('导出失败: ' + (e.message || e), 'error');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 // Show share button when papers exist
