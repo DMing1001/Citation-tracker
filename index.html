@@ -314,6 +314,33 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
   </div>
 </div>
 
+<!-- Share image modal -->
+<div id="shareImgModal" style="display:none;position:fixed;inset:0;z-index:310;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px">
+  <div style="width:min(640px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;box-shadow:0 16px 48px rgba(0,0,0,.35)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="margin:0;font-size:1.05rem;color:var(--text)">🖼️ 生成分享图片</h3>
+      <button type="button" onclick="closeShareImgModal()" style="background:none;border:none;color:var(--text2);font-size:1.3rem;cursor:pointer;line-height:1">×</button>
+    </div>
+    <p style="margin:0 0 12px;font-size:.85rem;color:var(--text2)">勾选要写进图片的论文（建议不超过 15 条，图更清晰）。</p>
+    <div style="display:flex;gap:10px;margin-bottom:10px;font-size:.85rem">
+      <button type="button" class="btn btn-ghost" style="padding:6px 12px;font-size:.8rem" onclick="toggleAllSharePapers(true)">全选</button>
+      <button type="button" class="btn btn-ghost" style="padding:6px 12px;font-size:.8rem" onclick="toggleAllSharePapers(false)">全不选</button>
+      <span id="sharePickCount" style="color:var(--text2);align-self:center"></span>
+    </div>
+    <div id="sharePaperList" style="max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:14px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-bottom:12px">
+      <button type="button" class="btn btn-ghost" onclick="closeShareImgModal()">取消</button>
+      <button type="button" class="btn btn-pri" id="btnBuildShareImg" onclick="buildShareImage()">生成预览</button>
+      <button type="button" class="btn btn-pri" id="btnDownloadShareImg" onclick="downloadShareImage()" style="display:none">下载 PNG</button>
+    </div>
+    <div id="shareImgPreviewWrap" style="display:none;text-align:center">
+      <div style="font-size:.8rem;color:var(--text2);margin-bottom:8px">预览（可右键另存为；或点「下载 PNG」）</div>
+      <img id="shareImgPreview" alt="引用报告预览" style="max-width:100%;border-radius:10px;border:1px solid var(--border);display:block;margin:0 auto"/>
+      <div id="shareImgStatus" style="margin-top:8px;font-size:.8rem;color:var(--text2);min-height:1.2em"></div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
 <script>
 // ═══════════════════════════════════════════
@@ -1452,18 +1479,70 @@ function loadSample() {
 }
 
 // ─── Share as image ───
+let shareImgDataUrl = '';
+let shareImgFileName = '';
+
 function shareResult() {
-  if (papers.length === 0) return toast('暂无数据可分享', 'error');
-  const totalCites = papers.reduce((s, p) => s + (p.cited_by_count || 0), 0);
-  const citeCounts = papers.map(p => p.cited_by_count || 0).sort((a, b) => b - a);
+  if (!papers.length) return toast('列表为空，无法生成分享图', 'error');
+  const box = document.getElementById('sharePaperList');
+  const sorted = papers.slice().sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
+  box.innerHTML = sorted.map((p, i) => {
+    const title = p.title || 'Untitled';
+    const short = title.length > 48 ? title.slice(0, 46) + '…' : title;
+    return `<label style="display:flex;gap:8px;align-items:flex-start;padding:6px 4px;cursor:pointer;font-size:.85rem;color:var(--text)">
+      <input type="checkbox" data-share-idx="${i}" checked style="margin-top:3px">
+      <span style="flex:1"><span style="opacity:.55;margin-right:6px">${i + 1}.</span>${escapeHtmlLite(short)}<span style="color:var(--gold);margin-left:8px">${p.cited_by_count || 0}</span></span>
+    </label>`;
+  }).join('');
+  box.onchange = updateSharePickCount;
+  shareImgDataUrl = '';
+  document.getElementById('shareImgPreviewWrap').style.display = 'none';
+  document.getElementById('btnDownloadShareImg').style.display = 'none';
+  document.getElementById('btnBuildShareImg').style.display = '';
+  updateSharePickCount();
+  const m = document.getElementById('shareImgModal');
+  m.style.display = 'flex';
+}
+
+function escapeHtmlLite(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function updateSharePickCount() {
+  const n = document.querySelectorAll('#sharePaperList input[data-share-idx]:checked').length;
+  const el = document.getElementById('sharePickCount');
+  if (el) el.textContent = '已选 ' + n + ' 篇';
+}
+
+function toggleAllSharePapers(on) {
+  document.querySelectorAll('#sharePaperList input[data-share-idx]').forEach(cb => { cb.checked = on; });
+  updateSharePickCount();
+}
+
+function getSelectedSharePapers() {
+  const sorted = papers.slice().sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
+  const picked = [];
+  document.querySelectorAll('#sharePaperList input[data-share-idx]:checked').forEach(cb => {
+    const p = sorted[Number(cb.getAttribute('data-share-idx'))];
+    if (p) picked.push(p);
+  });
+  return picked;
+}
+
+function closeShareImgModal() {
+  document.getElementById('shareImgModal').style.display = 'none';
+}
+
+function drawShareReport(list) {
+  const totalCites = list.reduce((s, p) => s + (p.cited_by_count || 0), 0);
+  const citeCounts = list.map(p => p.cited_by_count || 0).sort((a, b) => b - a);
   let hIndex = 0;
   for (let i = 0; i < citeCounts.length; i++) { if (citeCounts[i] >= i + 1) hIndex = i + 1; else break; }
 
-  const sorted = papers.slice().sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
-  const maxList = Math.min(sorted.length, 12);
+  const maxList = list.length;
   const W = 900;
-  const rowH = 56;
-  const H = 340 + maxList * rowH + 40;
+  const rowH = 52;
+  const H = 320 + maxList * rowH + 36;
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
@@ -1472,109 +1551,108 @@ function shareResult() {
   const fontSm = '12px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
   const fontLg = '28px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
 
-  // background
   const grad = ctx.createLinearGradient(0, 0, W, H);
   grad.addColorStop(0, '#080e1a');
   grad.addColorStop(1, '#0c1425');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // soft accent bar
   const acc = ctx.createLinearGradient(0, 0, W, 0);
   acc.addColorStop(0, '#6366f1');
   acc.addColorStop(1, '#22d3ee');
   ctx.fillStyle = acc;
   ctx.fillRect(0, 0, W, 6);
 
-  // header
   ctx.fillStyle = '#ffffff';
   ctx.font = fontLg;
-  ctx.fillText('CiteGlow · 引用报告', 40, 56);
+  ctx.fillText('CiteGlow · 引用报告', 40, 54);
   ctx.fillStyle = '#818cf8';
   ctx.font = fontSm;
-  ctx.fillText(new Date().toLocaleString('zh-CN') + '  ·  citeglow.com', 40, 82);
+  ctx.fillText(new Date().toLocaleString('zh-CN') + '  ·  citeglow.com', 40, 78);
 
-  // stats cards
   const stats = [
-    ['论文', String(papers.length)],
+    ['论文', String(list.length)],
     ['总引用', String(totalCites)],
     ['H-Index', String(hIndex)],
   ];
   stats.forEach((s, i) => {
     const x = 40 + i * 200;
-    const y = 110;
+    const y = 100;
     ctx.fillStyle = 'rgba(99,102,241,.12)';
-    roundRect(ctx, x, y, 180, 88, 12);
+    roundRect(ctx, x, y, 180, 84, 12);
     ctx.fill();
     ctx.strokeStyle = 'rgba(99,102,241,.35)';
     ctx.lineWidth = 1;
-    roundRect(ctx, x, y, 180, 88, 12);
+    roundRect(ctx, x, y, 180, 84, 12);
     ctx.stroke();
     ctx.fillStyle = '#94a3b8';
     ctx.font = fontSm;
-    ctx.fillText(s[0], x + 18, y + 32);
+    ctx.fillText(s[0], x + 18, y + 30);
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 26px "Segoe UI", "PingFang SC", sans-serif';
-    ctx.fillText(s[1], x + 18, y + 68);
+    ctx.fillText(s[1], x + 18, y + 64);
   });
 
-  // list title
   ctx.fillStyle = '#e2e8f0';
   ctx.font = 'bold 15px "Segoe UI", "PingFang SC", sans-serif';
-  ctx.fillText(sorted.length > maxList ? `引用最高 ${maxList} 篇` : '全部论文', 40, 230);
+  ctx.fillText('已选论文', 40, 214);
 
-  // rows
-  let y = 258;
+  let y = 246;
   for (let i = 0; i < maxList; i++) {
-    const p = sorted[i];
-    const title = (p.title || 'Untitled');
-    const short = title.length > 52 ? title.slice(0, 50) + '…' : title;
-    ctx.fillStyle = i % 2 ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.04)';
-    roundRect(ctx, 32, y - 22, W - 64, 46, 8);
+    const p = list[i];
+    const title = p.title || 'Untitled';
+    const short = title.length > 54 ? title.slice(0, 52) + '…' : title;
+    ctx.fillStyle = i % 2 ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.045)';
+    roundRect(ctx, 32, y - 20, W - 64, 44, 8);
     ctx.fill();
     ctx.fillStyle = '#64748b';
     ctx.font = fontSm;
-    ctx.fillText(String(i + 1).padStart(2, '0'), 48, y + 4);
+    ctx.fillText(String(i + 1).padStart(2, '0'), 48, y + 2);
     ctx.fillStyle = '#e2e8f0';
     ctx.font = font;
-    ctx.fillText(short, 88, y + 4);
+    ctx.fillText(short, 88, y + 2);
     ctx.fillStyle = '#fbbf24';
     ctx.font = 'bold 14px "Segoe UI", sans-serif';
     const citeTxt = String(p.cited_by_count || 0) + ' 引用';
-    ctx.fillText(citeTxt, W - 48 - ctx.measureText(citeTxt).width, y + 4);
+    ctx.fillText(citeTxt, W - 48 - ctx.measureText(citeTxt).width, y + 2);
     y += rowH;
   }
 
-  // footer
   ctx.fillStyle = '#64748b';
   ctx.font = fontSm;
-  ctx.fillText('数据来源 OpenAlex · Semantic Scholar · CrossRef', 40, H - 28);
+  ctx.fillText('数据来源 OpenAlex · Semantic Scholar · CrossRef', 40, H - 22);
 
-  canvas.toBlob(async (blob) => {
-    if (!blob) {
-      toast('图片生成失败', 'error');
-      return;
-    }
-    const day = new Date().toISOString().slice(0, 10);
-    const file = new File([blob], `citeglow-report-${day}.png`, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: 'CiteGlow 引用报告' });
-        toast('🖼️ 已打开系统分享', 'success');
-        return;
-      } catch (e) {
-        if (e && e.name === 'AbortError') return;
-      }
-    }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = file.name;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
-    toast('🖼️ 报告图片已下载', 'success');
-  }, 'image/png');
+  // dataURL 比 toBlob 下载更稳，便于直接打开
+  return canvas.toDataURL('image/png');
+}
+
+function buildShareImage() {
+  const list = getSelectedSharePapers();
+  if (!list.length) return toast('请至少勾选一篇论文', 'error');
+  try {
+    shareImgDataUrl = drawShareReport(list);
+    shareImgFileName = 'citeglow-report-' + new Date().toISOString().slice(0, 10) + '.png';
+    const img = document.getElementById('shareImgPreview');
+    img.src = shareImgDataUrl;
+    document.getElementById('shareImgPreviewWrap').style.display = '';
+    document.getElementById('btnDownloadShareImg').style.display = '';
+    document.getElementById('btnBuildShareImg').style.display = 'none';
+    document.getElementById('shareImgStatus').textContent = '已生成 ' + list.length + ' 篇 · PNG';
+    toast('🖼️ 预览已生成，可下载', 'success');
+  } catch (e) {
+    toast('生成图片失败: ' + (e.message || e), 'error');
+  }
+}
+
+function downloadShareImage() {
+  if (!shareImgDataUrl) return toast('请先生成预览', 'error');
+  const a = document.createElement('a');
+  a.href = shareImgDataUrl;
+  a.download = shareImgFileName || 'citeglow-report.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('🖼️ PNG 已下载', 'success');
 }
 
 function roundRect(ctx, x, y, w, h, r) {
