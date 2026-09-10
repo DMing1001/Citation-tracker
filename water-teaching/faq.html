@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>常见错误 | 水利数值模拟教学</title>
+  <meta name="description" content="HEC-RAS 计算不收敛、CFL、断面间距、二维网格等高频问题排查。">
+  <meta name="referrer" content="no-referrer">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="水利数值模拟教学">
+  <meta property="og:image" content="assets/og-cover.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="assets/og-cover.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/logo.svg">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <div class="bg-water"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
+  <div class="particles" id="particles"></div>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><defs><linearGradient id="b-g" x1="12" y1="22" x2="52" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b9eff"/><stop offset="100%" stop-color="#00d4aa"/></linearGradient><linearGradient id="b-w" x1="10" y1="42" x2="54" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b9eff"/><stop offset="100%" stop-color="#00d4aa"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="#0a1628"/><circle cx="32" cy="32" r="29" fill="none" stroke="url(#b-g)" stroke-width="1.4" opacity="0.9"/><rect x="11" y="24.5" width="42" height="3.2" rx="1.6" fill="#e8f4ff"/><path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="url(#b-g)" stroke-width="3.2" stroke-linecap="round"/><path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="#7dffc8" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/><rect x="13.2" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/><rect x="48" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/><path d="M12 43.5 C17 40.8 20 46.2 26 43.2 C32 40.2 35 45.5 41 42.8 C45 41 48 42.5 52 44" fill="none" stroke="url(#b-w)" stroke-width="2.2" stroke-linecap="round"/><path d="M14 49 C19 47 22 51 28 48.6 C34 46.2 37 50.5 43 48.2 C46 47 48.5 48 50 49" fill="none" stroke="url(#b-w)" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/></svg>
+        水利数值模拟
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="">首页</a></li><li><a href="courses.html" class="">课程</a></li><li><a href="docs.html" class="">文档</a></li><li><a href="experience.html" class="">经验</a></li><li><a href="faq.html" class="active">纠错</a></li><li><a href="changelog.html" class="">更新</a></li>
+        <li><a href="index.html#contact">联系</a></li>
+      </ul>
+      <button class="nav-mobile-btn" id="navBtn" aria-label="菜单">☰</button>
+    </div>
+  </nav>
+
+
+  <section class="page-hero">
+    <div class="container reveal">
+      <div class="crumb">常见错误</div>
+      <h1>计算不收敛？先查这几项</h1>
+      <p class="lead">整理自建模与教学中的高频问题。遇到 Error / Warning 时，可按顺序对照排查。更细的操作步骤见文档中心。</p>
+    </div>
+  </section>
+  <section id="faq" style="padding-top:24px;">
+    <div class="container">
+      <div class="faq-list reveal">
+
+        <article class="faq-item" id="faq-cfl">
+          <h2>1. 非恒定流不收敛 / 结果震荡</h2>
+          <p><strong>常见表现：</strong>Compute 后大量 Error，水位过程线锯齿状，或中途崩溃。</p>
+          <ul>
+            <li>检查 <strong>时间步长</strong> 是否满足 CFL：二维尤其敏感，先用较大网格 + 较大步长试通，再加密。</li>
+            <li>θ 加权因子建议 0.6–1.0；发散时可先调到 1.0 再逐步回退。</li>
+            <li>确认初始条件合理：推荐从恒定流结果导入，避免“干河床突然来大流量”。</li>
+            <li>边界过程线时间范围是否覆盖整个计算时段；插值是否异常。</li>
+          </ul>
+          <p class="faq-link">相关：<a href="docs.html#doc-tutorial-1dunsteady">一维非恒定流教程</a> · <a href="docs.html#doc-tutorial-2d">二维教程</a></p>
+        </article>
+
+        <article class="faq-item" id="faq-section">
+          <h2>2. 断面间距与收缩/扩张系数</h2>
+          <p><strong>常见表现：</strong>恒定流也有 Error/Warning，或水面线局部跳变。</p>
+          <ul>
+            <li>断面间距过密或过疏都可能不稳；桥、堰、汇口附近应加密，顺直段可放宽。</li>
+            <li>收缩 / 扩张系数常见起点：收缩约 0.1、扩张约 0.3，再按河段特性调整。</li>
+            <li>检查断面是否交叉、高程是否倒挂、滩槽糙率是否设反。</li>
+            <li>无效区域（Ineffective Flow Areas）在漫滩和死水区要设，否则过流能力虚高。</li>
+          </ul>
+          <p class="faq-link">相关：<a href="docs.html#doc-user-manual">一维用户手册</a></p>
+        </article>
+
+        <article class="faq-item" id="faq-mesh">
+          <h2>3. 二维网格质量差导致算不动</h2>
+          <ul>
+            <li>基础网格尺寸建议不小于 DEM 分辨率的约 2–3 倍，再用 Breaklines 沿河槽加密。</li>
+            <li>堤防、道路必须用 Breaklines，避免网格单元“跨过”堤顶。</li>
+            <li>避免过小或细长畸形单元；先粗网格验证模型，再逐步加密。</li>
+          </ul>
+          <p class="faq-link">相关：<a href="docs.html#doc-tutorial-2d">二维网格教程</a></p>
+        </article>
+
+        <article class="faq-item" id="faq-units">
+          <h2>4. 单位与数据源对不上</h2>
+          <ul>
+            <li>流量、水位、糙率、粒径的单位在输入表与解析逻辑中必须一致（本站工具页尤其注意）。</li>
+            <li>从 CAD / Excel 导入断面时，先核对坐标系与高程基准（北京54 / 西安80 / WGS84 等）。</li>
+            <li>DEM 与断面高程基准不一致时，会出现“算得动但淹没范围不合理”。</li>
+          </ul>
+          <p class="faq-link">相关：<a href="experience.html">实战经验：坐标系与投影</a></p>
+        </article>
+
+        <article class="faq-item" id="faq-bridge">
+          <h2>5. 桥梁 / 壅水结果不合理</h2>
+          <ul>
+            <li>核对桥墩阻水面积、梁底高程、冲刷系数 P 的定义是否与规范一致。</li>
+            <li>能量法 / 动量法 / General 法适用场景不同；急变流、桥渡附近优先关注动量类方法。</li>
+            <li>壅水高度异常偏大时，先检查过水面积与行近流速是否被低估。</li>
+          </ul>
+          <p class="faq-link">相关：站内 <a href="https://citeglow.com/water-tools/bridge-scour/backwater.html">桥梁壅水计算工具</a></p>
+        </article>
+
+        <article class="faq-item" id="faq-pdf">
+          <h2>6. 公式以 PDF 为准却算不对</h2>
+          <ul>
+            <li>规范 PDF 排版会丢失上下标、分式与括号层级，必须与 Excel 计算表或原始文献交叉验证。</li>
+            <li>重点核对：指数数值（如 5/3 不是 3/5）、指数作用的底数项、分子分母结构。</li>
+            <li>个别规范条文可能存在笔误，以工程界通行算法与计算表为准并在说明中注明。</li>
+          </ul>
+          <p class="faq-link">相关：<a href="docs.html">文档中心</a> · <a href="https://citeglow.com/water-tools/">水利计算工具集</a></p>
+        </article>
+
+      </div>
+      <div class="reveal" style="margin-top:36px;text-align:center;color:var(--c-text-dim);font-size:0.92rem;">
+        还有坑没写进来？欢迎到
+        <a href="index.html#contact" style="color:var(--c-accent);">联系页</a>
+        或公众号「题序羊」留言。
+      </div>
+    </div>
+  </section>
+
+  <footer><p>© 2026 水利数值模拟教学 · 用数据驱动水利智慧</p></footer>
+  <div class="modal-overlay" id="videoModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-video-wrap" id="modalVideoWrap"></div>
+      <div class="modal-title" id="modalTitle"></div>
+    </div>
+  </div>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>

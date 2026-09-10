@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>更新日志 | 水利数值模拟教学</title>
+  <meta name="description" content="水利数值模拟教学站的版本与内容更新记录。">
+  <meta name="referrer" content="no-referrer">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="水利数值模拟教学">
+  <meta property="og:image" content="assets/og-cover.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="assets/og-cover.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/logo.svg">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <div class="bg-water"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
+  <div class="particles" id="particles"></div>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><defs><linearGradient id="b-g" x1="12" y1="22" x2="52" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b9eff"/><stop offset="100%" stop-color="#00d4aa"/></linearGradient><linearGradient id="b-w" x1="10" y1="42" x2="54" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b9eff"/><stop offset="100%" stop-color="#00d4aa"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="#0a1628"/><circle cx="32" cy="32" r="29" fill="none" stroke="url(#b-g)" stroke-width="1.4" opacity="0.9"/><rect x="11" y="24.5" width="42" height="3.2" rx="1.6" fill="#e8f4ff"/><path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="url(#b-g)" stroke-width="3.2" stroke-linecap="round"/><path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="#7dffc8" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/><rect x="13.2" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/><rect x="48" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/><path d="M12 43.5 C17 40.8 20 46.2 26 43.2 C32 40.2 35 45.5 41 42.8 C45 41 48 42.5 52 44" fill="none" stroke="url(#b-w)" stroke-width="2.2" stroke-linecap="round"/><path d="M14 49 C19 47 22 51 28 48.6 C34 46.2 37 50.5 43 48.2 C46 47 48.5 48 50 49" fill="none" stroke="url(#b-w)" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/></svg>
+        水利数值模拟
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="">首页</a></li><li><a href="courses.html" class="">课程</a></li><li><a href="docs.html" class="">文档</a></li><li><a href="experience.html" class="">经验</a></li><li><a href="faq.html" class="">纠错</a></li><li><a href="changelog.html" class="active">更新</a></li>
+        <li><a href="index.html#contact">联系</a></li>
+      </ul>
+      <button class="nav-mobile-btn" id="navBtn" aria-label="菜单">☰</button>
+    </div>
+  </nav>
+
+
+  <section class="page-hero">
+    <div class="container reveal">
+      <div class="crumb">更新日志</div>
+      <h1>站点最近改了什么</h1>
+      <p class="lead">面向公众的教学站持续维护中。课程内容以 B 站为准，本站负责结构、文档与纠错入口。</p>
+    </div>
+  </section>
+  <section id="changelog" style="padding-top:24px;">
+    <div class="container">
+      <div class="changelog-list reveal">
+
+        <article class="changelog-item">
+          <div class="changelog-date">2026-09-10</div>
+          <h2>多页重构 + 常见错误 + 社交分享图</h2>
+          <ul>
+            <li>拆分为首页 / 课程 / 文档 / 经验，导航统一</li>
+            <li>新增「常见错误」页（CFL、断面间距、网格、单位等）</li>
+            <li>文档目录对泥沙、管道等条目明确「整理中」状态</li>
+            <li>课程页增加 B 站主页与更新日志入口</li>
+            <li>首页增加「最近更新」条</li>
+            <li>补充 og:image 社交分享图；Logo 定稿为桥拱水波圆标</li>
+          </ul>
+        </article>
+
+        <article class="changelog-item">
+          <div class="changelog-date">2026-08</div>
+          <h2>课程与手册镜像持续扩充</h2>
+          <ul>
+            <li>HEC-RAS / ArcGIS Pro 课程卡片与筛选</li>
+            <li>官方手册镜像与 PDF 下载入口</li>
+            <li>公众号「题序羊」提供实例数据说明</li>
+          </ul>
+        </article>
+
+        <article class="changelog-item">
+          <div class="changelog-date">更早</div>
+          <h2>教学主页上线</h2>
+          <ul>
+            <li>B 站视频聚合、经验专栏、服务与联系</li>
+          </ul>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <footer><p>© 2026 水利数值模拟教学 · 用数据驱动水利智慧</p></footer>
+  <div class="modal-overlay" id="videoModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-video-wrap" id="modalVideoWrap"></div>
+      <div class="modal-title" id="modalTitle"></div>
+    </div>
+  </div>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>

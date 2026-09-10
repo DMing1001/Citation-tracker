@@ -307,7 +307,7 @@
     #courses, #experience, #resources { padding-top: 48px; }
     .course-card { cursor: pointer; }
     .course-card:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
-    .home-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
     .home-card { display: block; padding: 28px 24px; border-radius: var(--radius); background: var(--c-bg-card); border: 1px solid var(--c-border); text-decoration: none; transition: var(--transition); }
     .home-card:hover { transform: translateY(-4px); border-color: rgba(59,158,255,0.4); box-shadow: var(--shadow-glow); }
     .home-card .num { font-size: 0.75rem; font-weight: 700; color: var(--c-accent); letter-spacing: 1px; margin-bottom: 8px; }
@@ -328,3 +328,32 @@
     @media (max-width: 560px) {
       .courses-grid { grid-template-columns: 1fr; }
     }
+
+    /* FAQ */
+    .faq-list { display: flex; flex-direction: column; gap: 18px; max-width: 860px; }
+    .faq-item { padding: 24px 26px; border-radius: var(--radius); background: var(--c-bg-card); border: 1px solid var(--c-border); }
+    .faq-item h2 { color: var(--c-text-bright); font-size: 1.15rem; margin-bottom: 12px; }
+    .faq-item p, .faq-item li { color: var(--c-text-dim); font-size: 0.95rem; line-height: 1.7; }
+    .faq-item ul { margin: 8px 0 12px 1.1em; }
+    .faq-item li { margin-bottom: 6px; }
+    .faq-link { margin-top: 10px; font-size: 0.88rem; }
+    .faq-link a { color: var(--c-accent); text-decoration: none; }
+    .faq-link a:hover { text-decoration: underline; }
+
+    /* Changelog */
+    .changelog-list { display: flex; flex-direction: column; gap: 22px; max-width: 800px; }
+    .changelog-item { padding: 24px 26px; border-radius: var(--radius); background: var(--c-bg-card); border: 1px solid var(--c-border); border-left: 3px solid var(--c-accent); }
+    .changelog-date { font-size: 0.8rem; font-weight: 700; color: var(--c-accent); letter-spacing: 1px; margin-bottom: 8px; }
+    .changelog-item h2 { color: var(--c-text-bright); font-size: 1.1rem; margin-bottom: 10px; }
+    .changelog-item ul { margin: 0 0 0 1.1em; color: var(--c-text-dim); font-size: 0.93rem; line-height: 1.7; }
+
+    /* Recent update strip */
+    .update-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 14px 18px; border-radius: 12px; background: rgba(59,158,255,0.08); border: 1px solid var(--c-border); margin: 0 0 8px; }
+    .update-strip .tag { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: rgba(0,212,170,0.15); color: var(--c-accent); }
+    .update-strip .txt { color: var(--c-text-dim); font-size: 0.9rem; flex: 1; min-width: 200px; }
+    .update-strip a { color: var(--c-primary); font-size: 0.88rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .update-strip a:hover { text-decoration: underline; }
+
+    /* status badge in TOC */
+    .toc-status { display: inline-block; margin-left: 6px; font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 4px; vertical-align: middle; }
+    .toc-status.wip { background: rgba(240,180,40,0.15); color: #f0b429; }
