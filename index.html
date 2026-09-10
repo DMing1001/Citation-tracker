@@ -481,6 +481,8 @@ function updateAuthUI() {
   }
 }
 
+let wantLoginToast = false;
+
 async function onAuthClick() {
   if (!sbClient) return toast('云同步未配置（见 supabase/README.md）', 'error');
   if (authUser) {
@@ -491,11 +493,13 @@ async function onAuthClick() {
     return;
   }
   try {
+    wantLoginToast = true;
     await sbClient.auth.signInWithOAuth({
       provider: 'github',
       options: { redirectTo: location.origin + location.pathname }
     });
   } catch (e) {
+    wantLoginToast = false;
     toast('登录失败: ' + (e.message || e), 'error');
   }
 }
@@ -556,8 +560,10 @@ function scheduleCloudPush() {
   cloudSyncTimer = setTimeout(pushLibraryToCloud, 800);
 }
 
-async function pullLibraryFromCloud() {
+async function pullLibraryFromCloud(opts) {
   if (!sbClient || !authUser) return;
+  const silent = !!(opts && opts.silent);
+  const toastIf = (msg, type) => { if (!silent) toast(msg, type); };
   try {
     const { data, error } = await sbClient
       .from('user_library')
@@ -567,17 +573,35 @@ async function pullLibraryFromCloud() {
     if (error) throw error;
     const remote = (data && data.papers) || [];
     const local = papers || [];
+    const localKeys = new Set(local.map(paperKey).filter(Boolean));
+    const remoteKeys = new Set(remote.map(paperKey).filter(Boolean));
+    let newFromRemote = 0;
+    remoteKeys.forEach(k => { if (k && !localKeys.has(k)) newFromRemote++; });
+    let newFromLocal = 0;
+    localKeys.forEach(k => { if (k && !remoteKeys.has(k)) newFromLocal++; });
+
     papers = mergePaperLists(local, remote);
     saveToStorage();
     renderAll();
-    if (remote.length) toast('已从云端恢复 ' + remote.length + ' 条论文记录', 'success');
-    else if (local.length) {
+
+    // 仅在「真正有新内容」时提示，避免每次进站都弹
+    if (remote.length && local.length === 0) {
+      toastIf('已从云端恢复 ' + remote.length + ' 条论文记录', 'success');
+    } else if (newFromRemote > 0) {
+      toastIf('已从云端合并 ' + newFromRemote + ' 篇新论文', 'success');
+    } else if (!remote.length && local.length) {
+      const flagKey = 'citeglow_cloud_uploaded_' + authUser.id;
+      const already = localStorage.getItem(flagKey);
       await pushLibraryToCloud();
-      toast('已将本地 ' + local.length + ' 条论文同步到云端', 'success');
+      if (!already) {
+        localStorage.setItem(flagKey, '1');
+        toastIf('已将本地 ' + local.length + ' 条论文同步到云端', 'success');
+      }
     }
+    // 内容一致时静默完成，不打扰
   } catch (e) {
     console.warn('cloud pull failed', e);
-    toast('云端同步失败，仍可使用本地数据', 'error');
+    toastIf('云端同步失败，仍可使用本地数据', 'error');
   }
 }
 
@@ -587,11 +611,15 @@ async function initSupabaseAuth() {
     const { data } = await sbClient.auth.getSession();
     authUser = (data && data.session && data.session.user) || null;
     updateAuthUI();
-    if (authUser) await pullLibraryFromCloud();
+    if (authUser) await pullLibraryFromCloud({ silent: true });
     sbClient.auth.onAuthStateChange(async (event, session) => {
       authUser = (session && session.user) || null;
       updateAuthUI();
-      if (authUser && event === 'SIGNED_IN') await pullLibraryFromCloud();
+      if (event === 'SIGNED_IN' && authUser) {
+        const show = wantLoginToast;
+        wantLoginToast = false;
+        await pullLibraryFromCloud({ silent: !show });
+      }
     });
   } catch (e) {
     console.warn('auth init', e);
