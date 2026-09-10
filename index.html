@@ -213,6 +213,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
     <div class="topnav-links">
       <a href="/" class="active">引用追踪</a>
       <a href="/journals/">期刊投稿</a>
+      <button id="btnAuth" type="button" onclick="onAuthClick()" style="margin-left:10px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.35);color:var(--pri2);padding:6px 14px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:.85rem">登录</button>
     </div>
   </nav>
 
@@ -234,7 +235,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
     <div class="input-card">
       <div class="input-label">📝 输入论文 DOI <span>（每行一个）</span></div>
       <textarea class="doi-input" id="doiInput" placeholder="例如：&#10;10.1016/j.jhydrol.2023.129887&#10;10.1029/2022WR034123&#10;&#10;也可以直接粘贴论文标题，我会自动搜索 DOI"></textarea>
-      <div class="input-hint">💡 支持 DOI 格式（10.xxxx/xxxxx）或完整论文标题。数据会保存在浏览器本地，下次打开自动恢复。</div>
+      <div class="input-hint">💡 支持 DOI 格式（10.xxxx/xxxxx）或完整论文标题。未登录时保存在浏览器本地；登录后可云端同步。</div>
       <div class="input-actions">
         <button class="btn btn-pri" id="btnFetch" onclick="fetchAll()">🔍 查询引用</button>
         <button class="btn btn-ghost" onclick="loadSample()">📋 加载示例</button>
@@ -279,6 +280,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
 <script>
 // ═══════════════════════════════════════════
 // 🥚 彩蛋 1：切走 tab 标题变文案，切回来恢复
@@ -411,6 +413,158 @@ let papers = []; // {doi, title, year, venue, openalex_id, cited_by_count, citat
 let sortMode = 'cites'; // 'cites' | 'year' | 'added'
 const STORAGE_KEY = 'citation_tracker_papers';
 
+// ─── Supabase（填好后自动启用云同步；未配置则仅本地）───
+// 配置步骤见 /supabase/README.md
+const SUPABASE_URL = 'https://vbrvfpoqgklezvykmzvn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_HUsypDUn_0t3kyVhQZ5nrw_ESfLMZ3P';
+const sbConfigured = SUPABASE_URL && SUPABASE_ANON_KEY
+  && !String(SUPABASE_URL).includes('YOUR_PROJECT')
+  && !String(SUPABASE_ANON_KEY).includes('YOUR_ANON');
+let sbClient = null;
+let authUser = null;
+let cloudSyncTimer = null;
+
+if (sbConfigured && typeof supabase !== 'undefined') {
+  try { sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+  catch (e) { console.warn('Supabase init failed', e); }
+}
+
+function updateAuthUI() {
+  const btn = document.getElementById('btnAuth');
+  if (!btn) return;
+  if (!sbConfigured) {
+    btn.style.display = 'none';
+    return;
+  }
+  btn.style.display = '';
+  if (authUser) {
+    const name = (authUser.user_metadata && (authUser.user_metadata.user_name || authUser.user_metadata.full_name)) || authUser.email || '已登录';
+    btn.textContent = name + ' · 退出';
+    btn.title = '已登录，论文列表云端同步';
+  } else {
+    btn.textContent = '登录同步';
+    btn.title = 'GitHub 登录后可在多设备同步论文列表（未登录仍可用本地缓存）';
+  }
+}
+
+async function onAuthClick() {
+  if (!sbClient) return toast('云同步未配置（见 supabase/README.md）', 'error');
+  if (authUser) {
+    await sbClient.auth.signOut();
+    authUser = null;
+    updateAuthUI();
+    toast('已退出登录，仍使用本地数据', 'info');
+    return;
+  }
+  try {
+    await sbClient.auth.signInWithOAuth({
+      provider: 'github',
+      options: { redirectTo: location.origin + location.pathname }
+    });
+  } catch (e) {
+    toast('登录失败: ' + (e.message || e), 'error');
+  }
+}
+
+function paperKey(p) {
+  if (!p) return '';
+  const doi = (p.doi || '').toLowerCase().replace(/^https?:\/\/doi.org\//, '').trim();
+  if (doi) return 'doi:' + doi;
+  const t = (p.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  return t ? 'title:' + t : '';
+}
+
+function mergePaperLists(localList, remoteList) {
+  const map = new Map();
+  (remoteList || []).forEach(p => {
+    const k = paperKey(p);
+    if (k) map.set(k, Object.assign({}, p));
+  });
+  (localList || []).forEach(p => {
+    const k = paperKey(p);
+    if (!k) return;
+    const r = map.get(k);
+    if (!r) { map.set(k, Object.assign({}, p)); return; }
+    const merged = Object.assign({}, r, p);
+    merged.cited_by_count = Math.max(p.cited_by_count || 0, r.cited_by_count || 0);
+    const ll = p.citation_list || [];
+    const rl = r.citation_list || [];
+    merged.citation_list = ll.length >= rl.length ? ll : rl;
+    merged.loaded = !!(p.loaded || r.loaded);
+    map.set(k, merged);
+  });
+  return Array.from(map.values());
+}
+
+async function pushLibraryToCloud() {
+  if (!sbClient || !authUser) return;
+  try {
+    // 不上传超大 citation_list，减负；云端以元数据为主
+    const slim = papers.map(p => {
+      const c = Object.assign({}, p);
+      if (c.citation_list && c.citation_list.length > 5) c.citation_list = c.citation_list.slice(0, 5);
+      return c;
+    });
+    const { error } = await sbClient.from('user_library').upsert({
+      user_id: authUser.id,
+      papers: slim,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+    if (error) throw error;
+  } catch (e) {
+    console.warn('cloud push failed', e);
+  }
+}
+
+function scheduleCloudPush() {
+  if (!authUser) return;
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(pushLibraryToCloud, 800);
+}
+
+async function pullLibraryFromCloud() {
+  if (!sbClient || !authUser) return;
+  try {
+    const { data, error } = await sbClient
+      .from('user_library')
+      .select('papers,updated_at')
+      .eq('user_id', authUser.id)
+      .maybeSingle();
+    if (error) throw error;
+    const remote = (data && data.papers) || [];
+    const local = papers || [];
+    papers = mergePaperLists(local, remote);
+    saveToStorage();
+    renderAll();
+    if (remote.length) toast('已从云端恢复 ' + remote.length + ' 条论文记录', 'success');
+    else if (local.length) {
+      await pushLibraryToCloud();
+      toast('已将本地 ' + local.length + ' 条论文同步到云端', 'success');
+    }
+  } catch (e) {
+    console.warn('cloud pull failed', e);
+    toast('云端同步失败，仍可使用本地数据', 'error');
+  }
+}
+
+async function initSupabaseAuth() {
+  if (!sbClient) { updateAuthUI(); return; }
+  try {
+    const { data } = await sbClient.auth.getSession();
+    authUser = (data && data.session && data.session.user) || null;
+    updateAuthUI();
+    if (authUser) await pullLibraryFromCloud();
+    sbClient.auth.onAuthStateChange(async (event, session) => {
+      authUser = (session && session.user) || null;
+      updateAuthUI();
+      if (authUser && event === 'SIGNED_IN') await pullLibraryFromCloud();
+    });
+  } catch (e) {
+    console.warn('auth init', e);
+    updateAuthUI();
+  }
+}
+
 // ─── Init ───
 window.addEventListener('DOMContentLoaded', () => {
   showRandomEncouragement();
@@ -420,6 +574,7 @@ window.addEventListener('DOMContentLoaded', () => {
     takeSnapshot();
     // 进站不自动联网刷新；需要最新数据时点「刷新数据」
   }
+  initSupabaseAuth();
 });
 
 function showRandomEncouragement() {
@@ -537,6 +692,7 @@ function renderSparkline(paper) {
 // ─── Storage ───
 function saveToStorage() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(papers)); } catch(e) {}
+  scheduleCloudPush();
 }
 
 function loadFromStorage() {
