@@ -241,7 +241,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
         <button class="btn btn-ghost" onclick="loadSample()">📋 加载示例</button>
         <button class="btn btn-ghost" id="btnRefresh" onclick="autoRefresh()">🔄 刷新数据</button>
         <button class="btn btn-ghost" onclick="clearAll()">🗑️ 清空</button>
-        <button class="btn btn-ghost" id="btnShare" style="display:none">📤 分享结果</button>
+        <button class="btn btn-ghost" id="btnShare" style="display:none" onclick="shareResult()">🖼️ 分享图片</button>
         <button class="btn btn-ghost" onclick="openExportModal()">⬇️ 导出论文</button>
       </div>
     </div>
@@ -308,7 +308,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
 
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button type="button" class="btn btn-ghost" onclick="closeExportModal()">取消</button>
-      <button type="button" class="btn btn-pri" id="btnDoExport" onclick="runExport()">下载导出文件</button>
+      <button type="button" class="btn btn-pri" id="btnDoExport" onclick="runExport()">⬇️ 导出并下载</button>
     </div>
     <div id="exportStatus" style="margin-top:10px;font-size:.8rem;color:var(--text2);min-height:1.2em"></div>
   </div>
@@ -1423,7 +1423,7 @@ function loadSample() {
   toast('已加载示例 DOI，点击查询即可', 'info');
 }
 
-// ─── Share ───
+// ─── Share as image ───
 function shareResult() {
   if (papers.length === 0) return toast('暂无数据可分享', 'error');
   const totalCites = papers.reduce((s, p) => s + (p.cited_by_count || 0), 0);
@@ -1431,20 +1431,132 @@ function shareResult() {
   let hIndex = 0;
   for (let i = 0; i < citeCounts.length; i++) { if (citeCounts[i] >= i + 1) hIndex = i + 1; else break; }
 
-  const lines = papers.map((p, i) => `${i + 1}. ${p.title} — ${p.cited_by_count} 次引用`).join('\n');
-  const text = `📊 我的 CiteGlow 引用报告\n\n📄 论文: ${papers.length} 篇\n📊 总引用: ${totalCites} 次\n📈 H-Index: ${hIndex}\n\n${lines}\n\n🔍 数据来源: OpenAlex + Semantic Scholar + CrossRef\n✨ citeglow.com`;
+  const sorted = papers.slice().sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
+  const maxList = Math.min(sorted.length, 12);
+  const W = 900;
+  const rowH = 56;
+  const H = 340 + maxList * rowH + 40;
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const font = '14px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+  const fontSm = '12px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+  const fontLg = '28px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
 
-  if (navigator.share) {
-    navigator.share({ title: 'CiteGlow 引用报告', text: text }).catch(() => {});
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(() => {
-      toast('📋 已复制到剪贴板，可以粘贴分享', 'success');
-    }).catch(() => {
-      fallbackCopy(text);
-    });
-  } else {
-    fallbackCopy(text);
+  // background
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#080e1a');
+  grad.addColorStop(1, '#0c1425');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // soft accent bar
+  const acc = ctx.createLinearGradient(0, 0, W, 0);
+  acc.addColorStop(0, '#6366f1');
+  acc.addColorStop(1, '#22d3ee');
+  ctx.fillStyle = acc;
+  ctx.fillRect(0, 0, W, 6);
+
+  // header
+  ctx.fillStyle = '#ffffff';
+  ctx.font = fontLg;
+  ctx.fillText('CiteGlow · 引用报告', 40, 56);
+  ctx.fillStyle = '#818cf8';
+  ctx.font = fontSm;
+  ctx.fillText(new Date().toLocaleString('zh-CN') + '  ·  citeglow.com', 40, 82);
+
+  // stats cards
+  const stats = [
+    ['论文', String(papers.length)],
+    ['总引用', String(totalCites)],
+    ['H-Index', String(hIndex)],
+  ];
+  stats.forEach((s, i) => {
+    const x = 40 + i * 200;
+    const y = 110;
+    ctx.fillStyle = 'rgba(99,102,241,.12)';
+    roundRect(ctx, x, y, 180, 88, 12);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(99,102,241,.35)';
+    ctx.lineWidth = 1;
+    roundRect(ctx, x, y, 180, 88, 12);
+    ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = fontSm;
+    ctx.fillText(s[0], x + 18, y + 32);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 26px "Segoe UI", "PingFang SC", sans-serif';
+    ctx.fillText(s[1], x + 18, y + 68);
+  });
+
+  // list title
+  ctx.fillStyle = '#e2e8f0';
+  ctx.font = 'bold 15px "Segoe UI", "PingFang SC", sans-serif';
+  ctx.fillText(sorted.length > maxList ? `引用最高 ${maxList} 篇` : '全部论文', 40, 230);
+
+  // rows
+  let y = 258;
+  for (let i = 0; i < maxList; i++) {
+    const p = sorted[i];
+    const title = (p.title || 'Untitled');
+    const short = title.length > 52 ? title.slice(0, 50) + '…' : title;
+    ctx.fillStyle = i % 2 ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.04)';
+    roundRect(ctx, 32, y - 22, W - 64, 46, 8);
+    ctx.fill();
+    ctx.fillStyle = '#64748b';
+    ctx.font = fontSm;
+    ctx.fillText(String(i + 1).padStart(2, '0'), 48, y + 4);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = font;
+    ctx.fillText(short, 88, y + 4);
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 14px "Segoe UI", sans-serif';
+    const citeTxt = String(p.cited_by_count || 0) + ' 引用';
+    ctx.fillText(citeTxt, W - 48 - ctx.measureText(citeTxt).width, y + 4);
+    y += rowH;
   }
+
+  // footer
+  ctx.fillStyle = '#64748b';
+  ctx.font = fontSm;
+  ctx.fillText('数据来源 OpenAlex · Semantic Scholar · CrossRef', 40, H - 28);
+
+  canvas.toBlob(async (blob) => {
+    if (!blob) {
+      toast('图片生成失败', 'error');
+      return;
+    }
+    const day = new Date().toISOString().slice(0, 10);
+    const file = new File([blob], `citeglow-report-${day}.png`, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: 'CiteGlow 引用报告' });
+        toast('🖼️ 已打开系统分享', 'success');
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return;
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+    toast('🖼️ 报告图片已下载', 'success');
+  }, 'image/png');
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
 }
 
 function fallbackCopy(text) {
@@ -1653,7 +1765,8 @@ async function runExport() {
     else if (fmt === 'json') downloadTextFile(base + '.json', buildJson(list, fields), 'application/json');
     else downloadTextFile(base + '.md', buildMarkdown(list, fields), 'text/markdown');
     status.textContent = `已导出 ${list.length} 篇（${fields.length} 个字段）`;
-    toast('✅ 导出完成', 'success');
+    toast('✅ 导出成功，文件已开始下载', 'success');
+    setTimeout(closeExportModal, 600);
   } catch (e) {
     status.textContent = '';
     toast('导出失败: ' + (e.message || e), 'error');
