@@ -106,6 +106,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .paper-title a:hover{color:var(--pri2)}
 .paper-meta{font-size:.82rem;color:var(--dim);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .paper-meta .sep{opacity:.3}
+.paper-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.ptag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(34,211,238,.12);color:var(--acc);border:1px solid rgba(34,211,238,.25)}
+.ptag.ptag-代表作{background:rgba(251,191,36,.14);color:var(--gold);border-color:rgba(251,191,36,.3)}
+.ptag.ptag-一作,.ptag.ptag-通讯{background:rgba(99,102,241,.16);color:var(--pri2);border-color:rgba(99,102,241,.3)}
+.ptag-btn{background:none;border:1px dashed var(--border);color:var(--dim);border-radius:999px;padding:3px 10px;font-size:.72rem;cursor:pointer;font-family:inherit}
+.ptag-btn:hover{color:var(--pri2);border-color:var(--pri)}
 .paper-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:.8rem;font-weight:600}
 .badge-cite{background:rgba(251,191,36,.12);color:var(--gold)}
 .badge-doi{background:rgba(99,102,241,.12);color:var(--pri2)}
@@ -261,6 +267,7 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
     <button class="sort-btn active" data-sort="cites" onclick="setSort('cites')">📊 引用数↓</button>
     <button class="sort-btn" data-sort="year" onclick="setSort('year')">📅 年份↓</button>
     <button class="sort-btn" data-sort="added" onclick="setSort('added')">🕐 添加顺序</button>
+    <span id="tagFilterWrap" style="display:none;margin-left:8px"></span>
   </div>
 
   <!-- Papers -->
@@ -337,6 +344,25 @@ if(!navigator.onLine){var b=document.getElementById('offlineBanner');b.style.dis
       <div style="font-size:.8rem;color:var(--text2);margin-bottom:8px">预览（可右键另存为；或点「下载 PNG」）</div>
       <img id="shareImgPreview" alt="引用报告预览" style="max-width:100%;border-radius:10px;border:1px solid var(--border);display:block;margin:0 auto"/>
       <div id="shareImgStatus" style="margin-top:8px;font-size:.8rem;color:var(--text2);min-height:1.2em"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Tag modal -->
+<div id="tagModal" style="display:none;position:fixed;inset:0;z-index:320;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px">
+  <div style="width:min(440px,100%);background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.35)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 style="margin:0;font-size:1.05rem;color:var(--text)">🏷️ 论文标签</h3>
+      <button type="button" onclick="closeTagModal()" style="background:none;border:none;color:var(--text2);font-size:1.3rem;cursor:pointer;line-height:1">×</button>
+    </div>
+    <p id="tagPaperTitle" style="margin:0 0 12px;font-size:.82rem;color:var(--text2);line-height:1.45;max-height:3.6em;overflow:hidden"></p>
+    <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">常用标签</div>
+    <div id="tagPresetBox" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+    <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:8px">自定义（逗号分隔，最多 8 个）</div>
+    <input id="tagCustomInput" type="text" placeholder="例如：水文模型, 代表作" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:inherit;font-size:.9rem;margin-bottom:16px;box-sizing:border-box">
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button type="button" class="btn btn-ghost" onclick="closeTagModal()">取消</button>
+      <button type="button" class="btn btn-pri" onclick="savePaperTags()">保存标签</button>
     </div>
   </div>
 </div>
@@ -472,6 +498,7 @@ let lastCiteSnapshot = {}; // {openalex_id: cited_by_count} 上次快照
 // ─── State ───
 let papers = []; // {doi, title, year, venue, openalex_id, cited_by_count, citation_list:[], loaded:false, cite_delta:0}
 let sortMode = 'cites'; // 'cites' | 'year' | 'added'
+let activeTagFilter = ''; // '' = all
 const STORAGE_KEY = 'citation_tracker_papers';
 
 // ─── Supabase（填好后自动启用云同步；未配置则仅本地）───
@@ -556,6 +583,9 @@ function mergePaperLists(localList, remoteList) {
     const rl = r.citation_list || [];
     merged.citation_list = ll.length >= rl.length ? ll : rl;
     merged.loaded = !!(p.loaded || r.loaded);
+    const tagSet = [];
+    [...(r.tags || []), ...(p.tags || [])].forEach(t => { if (t && !tagSet.includes(t)) tagSet.push(t); });
+    if (tagSet.length) merged.tags = tagSet.slice(0, 8);
     map.set(k, merged);
   });
   return Array.from(map.values());
@@ -734,12 +764,37 @@ function setSort(mode) {
 }
 
 function getSortedPapers() {
-  if (sortMode === 'cites') {
-    return [...papers].sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
-  } else if (sortMode === 'year') {
-    return [...papers].sort((a, b) => (b.year || 0) - (a.year || 0));
+  let list = papers;
+  if (activeTagFilter) {
+    list = list.filter(p => (p.tags || []).includes(activeTagFilter));
   }
-  return [...papers]; // 'added' = original order
+  if (sortMode === 'cites') {
+    return [...list].sort((a, b) => (b.cited_by_count || 0) - (a.cited_by_count || 0));
+  } else if (sortMode === 'year') {
+    return [...list].sort((a, b) => (b.year || 0) - (a.year || 0));
+  }
+  return [...list]; // 'added' = original order
+}
+
+function setTagFilter(tag) {
+  activeTagFilter = activeTagFilter === tag ? '' : tag;
+  renderAll();
+}
+
+function renderTagFilterUI() {
+  const wrap = document.getElementById('tagFilterWrap');
+  if (!wrap) return;
+  const allTags = [];
+  papers.forEach(p => (p.tags || []).forEach(t => { if (!allTags.includes(t)) allTags.push(t); }));
+  if (!allTags.length) {
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.style.display = '';
+  wrap.innerHTML = '<span class="sort-label">标签：</span>' +
+    `<button class="sort-btn ${activeTagFilter ? '' : 'active'}" onclick="setTagFilter('')" style="margin-left:4px">全部</button>` +
+    allTags.map(t => `<button class="sort-btn ${activeTagFilter === t ? 'active' : ''}" onclick="setTagFilter('${escHtml(t).replace(/'/g, "\\'")}')" style="margin-left:4px">${escHtml(t)}</button>`).join('');
 }
 
 // ─── Sparkline data ───
@@ -1232,6 +1287,10 @@ function renderAll() {
             ${p.venue ? `<span class="sep">·</span><span>${escHtml(p.venue)}</span>` : ''}
             ${p.doi ? `<span class="badge-doi" style="font-size:.72rem;opacity:.6">${escHtml(p.doi.substring(0,30))}${p.doi.length>30?'...':''}</span>` : ''}
           </div>
+          <div class="paper-tags" onclick="event.stopPropagation()">
+            ${(p.tags || []).map(t => `<span class="ptag ptag-${escHtml(t)}">${escHtml(t)}</span>`).join('')}
+            <button type="button" class="ptag-btn" onclick="openTagModal(${i})">${(p.tags && p.tags.length) ? '编辑标签' : '+ 标签'}</button>
+          </div>
           ${sparkline}
         </div>
         <div class="paper-right">
@@ -1252,6 +1311,7 @@ function renderAll() {
   });
 
   list.innerHTML = html;
+  renderTagFilterUI();
   updateStats();
   updateShareButton();
 
@@ -1323,6 +1383,64 @@ function removePaper(index) {
   saveToStorage();
   renderAll();
   toast('已删除', 'info');
+}
+
+// ─── Paper tags ───
+const TAG_PRESETS = ['一作', '通讯', '代表作', '水文模型', 'HEC-RAS', '基金成果', '会议', '综述'];
+let tagEditIndex = -1;
+
+function openTagModal(index) {
+  const p = papers[index];
+  if (!p) return;
+  tagEditIndex = index;
+  document.getElementById('tagPaperTitle').textContent = p.title || '';
+  const cur = new Set(p.tags || []);
+  document.getElementById('tagPresetBox').innerHTML = TAG_PRESETS.map(t => {
+    const on = cur.has(t);
+    return `<button type="button" class="ptag-btn" data-tag-preset="${escHtml(t)}" style="${on ? 'border-color:var(--acc);color:var(--acc);background:rgba(34,211,238,.12)' : ''}" onclick="toggleTagPreset(this)">${on ? '✓ ' : '+ '}${escHtml(t)}</button>`;
+  }).join('');
+  const custom = (p.tags || []).filter(t => !TAG_PRESETS.includes(t));
+  document.getElementById('tagCustomInput').value = custom.join(', ');
+  document.getElementById('tagModal').style.display = 'flex';
+}
+
+function toggleTagPreset(btn) {
+  const t = btn.getAttribute('data-tag-preset');
+  const active = btn.textContent.trim().startsWith('✓');
+  if (active) {
+    btn.textContent = '+ ' + t;
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.style.background = '';
+  } else {
+    btn.textContent = '✓ ' + t;
+    btn.style.borderColor = 'var(--acc)';
+    btn.style.color = 'var(--acc)';
+    btn.style.background = 'rgba(34,211,238,.12)';
+  }
+}
+
+function closeTagModal() {
+  document.getElementById('tagModal').style.display = 'none';
+  tagEditIndex = -1;
+}
+
+function savePaperTags() {
+  if (tagEditIndex < 0 || !papers[tagEditIndex]) return;
+  const presets = Array.from(document.querySelectorAll('#tagPresetBox button[data-tag-preset]'))
+    .filter(b => b.textContent.trim().startsWith('✓'))
+    .map(b => b.getAttribute('data-tag-preset'));
+  const customRaw = document.getElementById('tagCustomInput').value || '';
+  const custom = customRaw.split(/[,，、]/).map(s => s.trim()).filter(Boolean);
+  const tags = [];
+  [...presets, ...custom].forEach(t => {
+    if (t && !tags.includes(t) && tags.length < 8) tags.push(t);
+  });
+  papers[tagEditIndex].tags = tags;
+  saveToStorage();
+  renderAll();
+  closeTagModal();
+  toast('标签已保存', 'success');
 }
 
 function updateStats() {
@@ -1716,6 +1834,7 @@ const EXPORT_FIELD_DEFS = [
   { key: 'venue', label: '期刊/会议', def: true },
   { key: 'cited_by_count', label: '引用数', def: true },
   { key: 'authors', label: '作者', def: true },
+  { key: 'tags', label: '我的标签', def: true },
   { key: 'type', label: '文献类型', def: false },
   { key: 'publication_date', label: '发表日期', def: false },
   { key: 'volume', label: '卷', def: false },
@@ -1770,6 +1889,7 @@ function csvEscape(v) {
 function fieldValue(p, key) {
   if (key === 'authors') return (p.authors || []).join('; ');
   if (key === 'concepts') return (p.concepts || []).join('; ');
+  if (key === 'tags') return (p.tags || []).join('; ');
   if (key === 'is_oa') return p.is_oa == null ? '' : (p.is_oa ? '是' : '否');
   if (key === 'cited_by_count' || key === 'oa_cited_by' || key === 'ss_cited_by' || key === 'cr_cited_by' || key === 'ref_count') {
     return p[key] == null || p[key] === '' ? '' : p[key];
@@ -1836,7 +1956,7 @@ function buildCsv(list, fields) {
 function buildJson(list, fields) {
   const out = list.map(p => {
     const o = {};
-    fields.forEach(f => { o[f] = f === 'authors' || f === 'concepts' ? (p[f] || []) : fieldValue(p, f); });
+    fields.forEach(f => { o[f] = f === 'authors' || f === 'concepts' || f === 'tags' ? (p[f] || []) : fieldValue(p, f); });
     return o;
   });
   return JSON.stringify({ exported_at: new Date().toISOString(), count: out.length, papers: out }, null, 2);
