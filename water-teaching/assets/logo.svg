@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="水利数值模拟">
+  <defs>
+    <linearGradient id="b-g" x1="12" y1="22" x2="52" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b9eff"/>
+      <stop offset="100%" stop-color="#00d4aa"/>
+    </linearGradient>
+    <linearGradient id="b-w" x1="10" y1="42" x2="54" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b9eff"/>
+      <stop offset="100%" stop-color="#00d4aa"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="#0a1628"/>
+  <circle cx="32" cy="32" r="29" fill="none" stroke="url(#b-g)" stroke-width="1.4" opacity="0.9"/>
+  <!-- 桥面 -->
+  <rect x="11" y="24.5" width="42" height="3.2" rx="1.6" fill="#e8f4ff"/>
+  <!-- 拱（加粗填充感：双描边） -->
+  <path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="url(#b-g)" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="#7dffc8" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/>
+  <!-- 桥墩 -->
+  <rect x="13.2" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/>
+  <rect x="48" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/>
+  <!-- 水波 -->
+  <path d="M12 43.5 C17 40.8 20 46.2 26 43.2 C32 40.2 35 45.5 41 42.8 C45 41 48 42.5 52 44"
+        fill="none" stroke="url(#b-w)" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M14 49 C19 47 22 51 28 48.6 C34 46.2 37 50.5 43 48.2 C46 47 48.5 48 50 49"
+        fill="none" stroke="url(#b-w)" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/>
+</svg>

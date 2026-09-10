@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实战经验 | 水利数值模拟教学</title>
+  <meta name="description" content="HEC-RAS 与 GIS 实战经验、坐标系与底图技巧。">
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/logo.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  
+</head>
+<body>
+  <div class="bg-water"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
+  <div class="particles" id="particles"></div>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><defs><linearGradient id="b-g" x1="12" y1="22" x2="52" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b9eff"/><stop offset="100%" stop-color="#00d4aa"/></linearGradient><linearGradient id="b-w" x1="10" y1="42" x2="54" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b9eff"/><stop offset="100%" stop-color="#00d4aa"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="#0a1628"/><circle cx="32" cy="32" r="29" fill="none" stroke="url(#b-g)" stroke-width="1.4" opacity="0.9"/><rect x="11" y="24.5" width="42" height="3.2" rx="1.6" fill="#e8f4ff"/><path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="url(#b-g)" stroke-width="3.2" stroke-linecap="round"/><path d="M16 27.7 C16 40.5 48 40.5 48 27.7" fill="none" stroke="#7dffc8" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/><rect x="13.2" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/><rect x="48" y="27.7" width="2.8" height="10" rx="1.2" fill="#8ec9ff" opacity="0.95"/><path d="M12 43.5 C17 40.8 20 46.2 26 43.2 C32 40.2 35 45.5 41 42.8 C45 41 48 42.5 52 44" fill="none" stroke="url(#b-w)" stroke-width="2.2" stroke-linecap="round"/><path d="M14 49 C19 47 22 51 28 48.6 C34 46.2 37 50.5 43 48.2 C46 47 48.5 48 50 49" fill="none" stroke="url(#b-w)" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/></svg>
+        水利数值模拟
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="">首页</a></li><li><a href="courses.html" class="">课程</a></li><li><a href="docs.html" class="">文档</a></li><li><a href="experience.html" class="active">经验</a></li>
+        <li><a href="index.html#contact">联系</a></li>
+      </ul>
+      <button class="nav-mobile-btn" id="navBtn" aria-label="菜单">☰</button>
+    </div>
+  </nav>
+
+
+  <section class="page-hero">
+    <div class="container reveal">
+      <div class="crumb">实战经验</div>
+      <h1>踩坑记录与技巧</h1>
+      <p class="lead">来自建模与教学过程中的真实问题，帮你少走弯路。</p>
+    </div>
+  </section>
+<section id="experience">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">📝 实战：经验分享</div>
+        <h2 class="section-title">实战经验与踩坑记录</h2>
+        <p class="section-desc">建模过程中遇到的实际问题与解决方案。</p>
+      </div>
+      <div class="experience-grid reveal" id="experienceList">
+        <!-- ⬇️ 添加经验贴：复制下面的 article-card 块，修改 data-cvid 和内容即可 -->
+        <a class="article-card" href="https://www.bilibili.com/read/cv19162842/" target="_blank" data-cvid="cv19162842">
+          <div class="article-thumb">
+            <img src="https://i0.hdslb.com/bfs/article/banner/13161f6ed6ba760b498623f2a9578853dcafd219.png" alt="HEC RAS二维计算步长设置" loading="lazy">
+          </div>
+          <div class="article-body">
+            <h3 class="article-title">HEC RAS二维计算步长设置</h3>
+            <p class="article-desc">详解 Courant 数原理，教你快速判断计算步长是否合理，避免模型跑崩报 'unstable'。</p>
+            <div class="article-meta">
+              <span>👁 1,142 阅读</span>
+              <span>👍 7 点赞</span>
+            </div>
+          </div>
+        </a>
+        <!-- 👆 示例结束 -->
+
+        <a class="article-card" href="https://www.bilibili.com/read/cv22969341/" target="_blank" data-cvid="cv22969341">
+          <div class="article-thumb">
+            <img src="https://i0.hdslb.com/bfs/article/banner/a2513db7c5285b70399b219c8b318e46b6bc958e.png" alt="地球坐标系与投影方式的理解" loading="lazy">
+          </div>
+          <div class="article-body">
+            <h3 class="article-title">地球坐标系与投影方式的理解(关于北京54,西安80,WGS84;高斯,兰勃特,墨卡托投影)</h3>
+            <p class="article-desc">详解北京 54、西安 80、WGS84 坐标系区别，以及高斯、兰勃特、墨卡托投影的适用场景。</p>
+            <div class="article-meta">
+              <span>👁 3,726 阅读</span>
+              <span>👍 33 点赞</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="article-card" href="https://www.bilibili.com/read/cv22450046/" target="_blank" data-cvid="cv22450046">
+          <div class="article-thumb">
+            <img src="https://i0.hdslb.com/bfs/article/e7c045995bf915c5ed25ffc6967b3a8fbc0476b0.png" alt="GISPRO中如何添加底图" loading="lazy">
+          </div>
+          <div class="article-body">
+            <h3 class="article-title">GISPRO中如何添加底图</h3>
+            <p class="article-desc">ArcGIS Pro 添加在线底图的步骤与常见问题，适合 GIS 新手快速上手。</p>
+            <div class="article-meta">
+              <span>👁 2,391 阅读</span>
+              <span>👍 15 点赞</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div id="experienceToggle" style="text-align:center;margin-top:20px;display:none;">
+        <button onclick="toggleExperience()" class="btn btn-ghost" style="font-size:0.9rem;">
+          <span id="toggleText">展开全部 ▼</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <footer><p>© 2026 水利数值模拟教学 · 用数据驱动水利智慧</p></footer>
+  <div class="modal-overlay" id="videoModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-video-wrap" id="modalVideoWrap"></div>
+      <div class="modal-title" id="modalTitle"></div>
+    </div>
+  </div>
+
+  <script src="assets/site.js"></script>
+</body>
+</html>
