@@ -418,7 +418,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (papers.length > 0) {
     renderAll();        // 先用本地缓存渲染，用户立刻看到内容
     takeSnapshot();
-    autoRefresh();      // 后台静默刷新
+    // 进站不自动联网刷新；需要最新数据时点「刷新数据」
   }
 });
 
