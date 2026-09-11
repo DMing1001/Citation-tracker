@@ -89,6 +89,7 @@ $env:MIMO_PYTHON -c "import fitz; d=fitz.open(r'path.pdf'); print('\n'.join(p.ge
   oa: 'hybrid',             // gold | hybrid | subscription
   apc: '$3,000',
   reviewType: '单盲',       // 单盲 | 双盲 | 公开评审
+  updated: '2026-09-10',    // 资料整理日期，列表卡片会显示
   badges: ['SCI Q1', 'Elsevier'],
   badgesClass: ['jbadge-q1', 'jbadge-pub'],
   stats: { if: '6.4', partition: 'JCR Q1', review: '2–4 月' },

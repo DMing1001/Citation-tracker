@@ -82,6 +82,7 @@ body.compare-mode .jcard-hero{padding-right:48px}
 .jcard-icon{font-size:2rem;flex-shrink:0}
 .jcard-name{font-size:1.05rem;font-weight:700;color:var(--bright);line-height:1.4;margin-bottom:4px}
 .jcard-pub{font-size:.82rem;color:var(--dim)}
+.jcard-date{font-size:.7rem;color:var(--dim);opacity:.75;margin-top:4px}
 .jcard-body{padding:0 24px 20px}
 .jcard-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .jbadge{padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:600}
@@ -263,6 +264,7 @@ const journals = [
     oa: 'hybrid',
     apc: '$3,390',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q1', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '6.4', partition: 'JCR Q1', review: '2–4 月' },
@@ -279,6 +281,7 @@ const journals = [
     oa: 'subscription',
     apc: '$3,150',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q1', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '5.4', partition: 'JCR Q1', review: '2–3 月' },
@@ -295,6 +298,7 @@ const journals = [
     oa: 'hybrid',
     apc: '$3,500',
     reviewType: '单盲',
+    updated: '2026-03-26',
     badges: ['SCI Q1', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '12.8', partition: 'JCR Q1', review: '2–3 月' },
@@ -311,6 +315,7 @@ const journals = [
     oa: 'subscription',
     apc: '$2,650',
     reviewType: '单盲',
+    updated: '2026-03-26',
     badges: ['SCI Q1', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '5.5', partition: 'JCR Q1', review: '2–4 月' },
@@ -327,6 +332,7 @@ const journals = [
     oa: 'subscription',
     apc: '$3,200',
     reviewType: '单盲',
+    updated: '2026-03-26',
     badges: ['SCI Q1', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '6.6', partition: 'JCR Q1', review: '2–4 月' },
@@ -343,6 +349,7 @@ const journals = [
     oa: 'gold',
     apc: '$2,000',
     reviewType: '双盲',
+    updated: '2026-03-26',
     badges: ['SCI Q1', 'Gold OA', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-oa', 'jbadge-pub'],
     stats: { if: '7.3', partition: 'JCR Q1', review: '2–4 月' },
@@ -359,6 +366,7 @@ const journals = [
     oa: 'gold',
     apc: '$1,400',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q2', 'Gold OA', 'KeAi'],
     badgesClass: ['jbadge-q1', 'jbadge-oa', 'jbadge-pub'],
     stats: { if: '3.8', partition: 'JCR Q2', review: '2–4 月' },
@@ -375,6 +383,7 @@ const journals = [
     oa: 'hybrid',
     apc: '$3,500',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q1', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '8.0', partition: 'JCR Q1', review: '2–3 月' },
@@ -391,6 +400,7 @@ const journals = [
     oa: 'hybrid',
     apc: '$2,990',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q1', 'Springer'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '4.7', partition: 'JCR Q1', review: '2–4 月' },
@@ -407,6 +417,7 @@ const journals = [
     oa: 'hybrid',
     apc: '$3,490',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q1', 'Elsevier'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '9.8', partition: 'JCR Q1', review: '2–3 月' },
@@ -423,6 +434,7 @@ const journals = [
     oa: 'hybrid',
     apc: '约 $3,300',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q2', 'Wiley'],
     badgesClass: ['jbadge-q2', 'jbadge-pub'],
     stats: { if: '3.7', partition: 'JCR Q2', review: '2–4 月' },
@@ -439,6 +451,7 @@ const journals = [
     oa: 'gold',
     apc: '€1,800',
     reviewType: '公开评审',
+    updated: '2026-09-10',
     badges: ['SCI Q1', 'Gold OA', 'Copernicus'],
     badgesClass: ['jbadge-q1', 'jbadge-oa', 'jbadge-pub'],
     stats: { if: '5.8', partition: 'JCR Q1', review: '6 周讨论' },
@@ -455,6 +468,7 @@ const journals = [
     oa: 'hybrid',
     apc: '¥600/页',
     reviewType: '单盲',
+    updated: '2026-09-10',
     badges: ['SCI Q1', 'Springer'],
     badgesClass: ['jbadge-q1', 'jbadge-pub'],
     stats: { if: '3.5', partition: 'JCR Q1', review: '~2 月' },
@@ -513,6 +527,7 @@ function renderJournals(list) {
         <div>
           <div class="jcard-name">${j.name}</div>
           <div class="jcard-pub">${j.publisher} · ISSN ${j.issn}</div>
+          <div class="jcard-date">资料整理 ${j.updated || '2026-09-10'}</div>
         </div>
       </div>
       <div class="jcard-body">
@@ -601,6 +616,7 @@ function openCompareModal() {
     ['OA 类型', j => oaLabel(j.oa)],
     ['APC', j => j.apc || '—'],
     ['审稿制度', j => j.reviewType || '—'],
+    ['资料整理', j => j.updated || '—'],
   ];
   document.getElementById('compareTableWrap').innerHTML = `
     <table class="compare-table">
