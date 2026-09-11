@@ -15,7 +15,7 @@
     'journal-of-environmental-management': { name: 'J. Environmental Management', icon: '🌿', if: '8.0', partition: 'Q1' },
     'water-resources-management': { name: 'Water Resources Management', icon: '💧', if: '4.7', partition: 'Q1' },
     'journal-of-cleaner-production': { name: 'J. Cleaner Production', icon: '♻️', if: '9.8', partition: 'Q1' },
-    'land-degradation-development': { name: 'Land Degradation & Dev.', icon: '🏜️', if: '3.7', partition: 'Q2' },
+    'land-degradation-development': { name: 'Land Degradation & Dev.', icon: '🏜️', if: '4.0', partition: 'Q2' },
     'hydrology-and-earth-system-sciences': { name: 'HESS', icon: '🌊', if: '5.8', partition: 'Q1' },
     'journal-of-hydrodynamics': { name: 'J. Hydrodynamics', icon: '💧', if: '3.5', partition: 'Q1' },
     'hydrological-processes': { name: 'Hydrological Processes', icon: '💧', if: '3.2', partition: 'Q1' },
