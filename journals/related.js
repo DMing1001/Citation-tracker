@@ -17,14 +17,18 @@
     'journal-of-cleaner-production': { name: 'J. Cleaner Production', icon: '♻️', if: '9.8', partition: 'Q1' },
     'land-degradation-development': { name: 'Land Degradation & Dev.', icon: '🏜️', if: '3.7', partition: 'Q2' },
     'hydrology-and-earth-system-sciences': { name: 'HESS', icon: '🌊', if: '5.8', partition: 'Q1' },
-    'journal-of-hydrodynamics': { name: 'J. Hydrodynamics', icon: '💧', if: '3.5', partition: 'Q1' }
+    'journal-of-hydrodynamics': { name: 'J. Hydrodynamics', icon: '💧', if: '3.5', partition: 'Q1' },
+    'hydrological-processes': { name: 'Hydrological Processes', icon: '💧', if: '3.2', partition: 'Q2' },
+    'journal-of-flood-risk-management': { name: 'J. Flood Risk Management', icon: '🌊', if: '3.7', partition: 'Q1' },
+    'journal-of-hydraulic-engineering': { name: 'J. Hydraulic Engineering', icon: '⚙️', if: '2.1', partition: 'Q2' },
+    'geomorphology': { name: 'Geomorphology', icon: '🏔️', if: '3.6', partition: 'Q1' }
   };
 
   var RELATED = {
     'journal-of-hydrology': [
       ['hydrology-and-earth-system-sciences', '同属水文核心，地球系统视角'],
+      ['hydrological-processes', '过程水文与实验观测'],
       ['water-resources-management', '偏管理与配置，可作方法互补'],
-      ['water-research', '水环境与处理交叉，IF 更高'],
       ['catena', '坡面/土壤水文过程交叉']
     ],
     'water-research': [
@@ -34,10 +38,10 @@
       ['hydrology-and-earth-system-sciences', '大尺度水循环与讨论型研究']
     ],
     'catena': [
+      ['geomorphology', '地貌过程与形态演化'],
       ['land-degradation-development', '土地退化与恢复'],
       ['international-soil-and-water-conservation-research', '水土保持措施与效益'],
-      ['international-journal-of-sediment-research', '泥沙输移与侵蚀'],
-      ['journal-of-hydrology', '土壤水文与流域过程']
+      ['international-journal-of-sediment-research', '泥沙输移与侵蚀']
     ],
     'environmental-modelling-software': [
       ['journal-of-hydrology', '水文模型与率定应用'],
@@ -58,10 +62,10 @@
       ['agricultural-water-management', '农艺节水与保护性耕作']
     ],
     'international-journal-of-sediment-research': [
+      ['geomorphology', '河流/海岸地貌演化'],
       ['catena', '坡面侵蚀产沙'],
       ['international-soil-and-water-conservation-research', '流域保持措施'],
-      ['journal-of-hydrology', '水沙过程与水文驱动'],
-      ['land-degradation-development', '土地退化与泥沙响应']
+      ['journal-of-hydraulic-engineering', '泥沙水力学']
     ],
     'journal-of-environmental-management': [
       ['journal-of-cleaner-production', '清洁生产与循环经济'],
@@ -71,9 +75,9 @@
     ],
     'water-resources-management': [
       ['journal-of-hydrology', '过程水文与预报输入'],
+      ['journal-of-flood-risk-management', '洪水风险与管理'],
       ['agricultural-water-management', '农业用水效率'],
-      ['hydrology-and-earth-system-sciences', '变化归因与可预测性'],
-      ['journal-of-cleaner-production', '资源效率与可持续性']
+      ['hydrology-and-earth-system-sciences', '变化归因与可预测性']
     ],
     'journal-of-cleaner-production': [
       ['journal-of-environmental-management', '环境治理与政策'],
@@ -89,15 +93,39 @@
     ],
     'hydrology-and-earth-system-sciences': [
       ['journal-of-hydrology', '经典水文研究'],
+      ['hydrological-processes', '过程水文与观测'],
       ['water-resources-management', '管理与适应性'],
-      ['environmental-modelling-software', '建模方法与软件'],
-      ['water-research', '水环境交叉']
+      ['environmental-modelling-software', '建模方法与软件']
     ],
     'journal-of-hydrodynamics': [
-      ['journal-of-hydrology', '工程水文与明渠应用'],
+      ['journal-of-hydraulic-engineering', 'ASCE 工程水力学'],
       ['international-journal-of-sediment-research', '泥沙起动与输移'],
       ['environmental-modelling-software', 'CFD/数值方法交叉'],
-      ['hydrology-and-earth-system-sciences', '大尺度水循环背景']
+      ['journal-of-flood-risk-management', '防洪工程应用']
+    ],
+    'hydrological-processes': [
+      ['journal-of-hydrology', '更广覆盖的水文综合刊'],
+      ['hydrology-and-earth-system-sciences', '地球系统与可讨论研究'],
+      ['catena', '坡面与土壤水文过程'],
+      ['journal-of-flood-risk-management', '洪水过程与风险应用']
+    ],
+    'journal-of-flood-risk-management': [
+      ['water-resources-management', '水资源与风险管理'],
+      ['journal-of-hydrology', '洪水过程与预报输入'],
+      ['journal-of-hydraulic-engineering', '防洪工程水力学'],
+      ['hydrological-processes', '洪水相关水文过程']
+    ],
+    'journal-of-hydraulic-engineering': [
+      ['journal-of-hydrodynamics', '更偏水动力学机理与 CFD'],
+      ['international-journal-of-sediment-research', '泥沙起动与输移'],
+      ['journal-of-flood-risk-management', '防洪与洪水工程应用'],
+      ['hydrological-processes', '明渠与流域过程背景']
+    ],
+    'geomorphology': [
+      ['catena', '土壤—坡面过程，偏土壤'],
+      ['international-journal-of-sediment-research', '河流/海岸泥沙地貌'],
+      ['land-degradation-development', '退化与修复的管理向'],
+      ['journal-of-hydrology', '水文驱动的地貌过程']
     ]
   };
 
