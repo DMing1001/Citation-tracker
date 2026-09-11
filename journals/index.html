@@ -79,6 +79,7 @@ body.compare-mode .journal-card.selected .jcard-check{background:var(--pri);bord
 body.compare-mode .journal-card.selected .jcard-check::after{content:'';width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
 body.compare-mode .jcard-hero{padding-right:48px}
 .jcard-hero{padding:24px 24px 16px;display:flex;align-items:flex-start;gap:14px}
+.jcard-cover{width:56px;height:78px;flex-shrink:0;border-radius:6px;object-fit:cover;background:var(--bg2);border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .jcard-icon{font-size:2rem;flex-shrink:0}
 .jcard-name{font-size:1.05rem;font-weight:700;color:var(--bright);line-height:1.4;margin-bottom:4px}
 .jcard-pub{font-size:.82rem;color:var(--dim)}
@@ -576,6 +577,18 @@ function applyFilters() {
   document.getElementById('resetFilters').hidden = !(hasChip || q);
 }
 
+function coverSrc(slug) {
+  const real = {
+    'water-resources-management': 'jpg',
+    'journal-of-hydrodynamics': 'jpg',
+    'land-degradation-development': 'jpg',
+    'hydrological-processes': 'png',
+    'journal-of-flood-risk-management': 'png'
+  };
+  const ext = real[slug] || 'svg';
+  return 'covers/' + slug + '.' + ext;
+}
+
 function renderJournals(list) {
   const grid = document.getElementById('journalGrid');
   const noResult = document.getElementById('noResult');
@@ -591,7 +604,8 @@ function renderJournals(list) {
     <a class="journal-card${selected}" href="${j.slug}.html" data-slug="${j.slug}">
       <span class="jcard-check" aria-hidden="true"><input type="checkbox" tabindex="-1" ${compareSet.has(j.slug) ? 'checked' : ''}></span>
       <div class="jcard-hero">
-        <div class="jcard-icon">${j.icon}</div>
+        <img class="jcard-cover" src="${coverSrc(j.slug)}" alt="${j.name} 封面" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="jcard-icon" style="display:none">${j.icon}</div>
         <div>
           <div class="jcard-name">${j.name}</div>
           <div class="jcard-pub">${j.publisher} · ISSN ${j.issn}</div>

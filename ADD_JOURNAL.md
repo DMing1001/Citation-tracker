@@ -41,6 +41,7 @@
 | `theme-toggle.js` | 主题切换按钮 |
 | `checklist.js` | 投稿清单可勾选 + localStorage |
 | `related.js` | 详情页「相似期刊」推荐（维护 RELATED 表） |
+| `covers.js` | 详情页顶部封面图（`covers/<slug>.jpg/png/svg`） |
 | `template.html` | **新刊骨架**，复制后只替换 `{{...}}` 与填空 |
 | `feedback.js` | 列表页反馈浮窗 |
 
@@ -50,7 +51,8 @@
 3. 填写 10 个板块正文（重点：scope / fit / types / reference）
 4. `index.html` 的 `journals` 数组追加完整字段（含 `updated`）
 5. `related.js` 的 `META` + `RELATED` 登记新刊与 3–4 本相似刊
-6. 列表页打开确认筛选、对比、详情跳转
+6. 将官方封面放到 `journals/covers/<slug>.jpg`（或 `.png`）；若抓不到可放同名 `.svg` 占位卡
+7. 列表页打开确认筛选、对比、封面、详情跳转
 
 ## 步骤
 
