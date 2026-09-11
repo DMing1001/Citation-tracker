@@ -9,7 +9,17 @@
     'journal-of-hydrodynamics': 'jpg',
     'land-degradation-development': 'jpg',
     'hydrological-processes': 'png',
-    'journal-of-flood-risk-management': 'png'
+    'journal-of-flood-risk-management': 'png',
+    'journal-of-hydrology': 'jpg',
+    'catena': 'jpg',
+    'water-research': 'jpg',
+    'environmental-modelling-software': 'jpg',
+    'agricultural-water-management': 'jpg',
+    'international-soil-and-water-conservation-research': 'jpg',
+    'international-journal-of-sediment-research': 'jpg',
+    'journal-of-environmental-management': 'jpg',
+    'journal-of-cleaner-production': 'jpg',
+    'geomorphology': 'jpg'
   };
   var ext = real[slug] || 'svg';
   var src = 'covers/' + slug + '.' + ext;
