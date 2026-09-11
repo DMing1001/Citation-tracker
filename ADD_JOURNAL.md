@@ -49,6 +49,7 @@
 - IF、JCR 分区、审稿周期、APC、OA 类型（Hybrid/Gold/订阅）
 - 审稿制度（单盲/双盲）
 - 收稿范围 + 不接受类型
+- **适合什么稿 / 常见拒稿点**（本刊专属，见 `id="fit"` 区块）
 - 文章类型及字数限制
 - 引用格式（编号制 / 作者-年份 / APA）
 - 投稿步骤、Cover Letter 要点
@@ -68,6 +69,7 @@ $env:MIMO_PYTHON -c "import fitz; d=fitz.open(r'path.pdf'); print('\n'.join(p.ge
 - 内嵌 style 只保留 `:root` 主题色
 - 面包屑：`<a href="/journals/">期刊投稿</a> / XXX`
 - Hero 6 项：IF、分区、审稿周期、APC、审稿制度、OA 类型
+- 侧栏与正文须含 `id="fit"`「适合什么稿」：适合 3–5 条 + 拒稿/不匹配 3–5 条
 - 页脚写「资料整理于 YYYY-MM-DD · 费用与审稿周期请以官网为准」
 
 ### 3. 更新列表页 `journals/index.html`
