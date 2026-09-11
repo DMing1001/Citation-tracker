@@ -33,13 +33,15 @@
 | `journals.css` | 详情页公共布局（topnav/hero/sidebar/section/table） |
 | `theme-toggle.js` | 主题切换按钮 |
 | `checklist.js` | 投稿清单可勾选 + localStorage |
+| `related.js` | 详情页「相似期刊」推荐（维护 RELATED 表） |
 | `feedback.js` | 列表页反馈浮窗 |
 
 新详情页只需：
 1. `<link>` theme.css + journals.css
 2. 内嵌 `<style>` 只写 `:root` 主题色（含 `--pri` / `--pri2` / `--pri-rgb` / `--border`）
 3. 正文 HTML 按现有模板填 10 个板块
-4. 末尾 `<script src="checklist.js"></script>` + `<script src="theme-toggle.js"></script>`
+4. 末尾 `<script src="checklist.js"></script>` + `<script src="related.js"></script>` + `<script src="theme-toggle.js"></script>`
+5. 在 `related.js` 的 `META` 与 `RELATED` 中登记新刊及 3–4 本相似刊
 
 ## 步骤
 
