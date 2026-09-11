@@ -18,10 +18,10 @@
     'land-degradation-development': { name: 'Land Degradation & Dev.', icon: '🏜️', if: '3.7', partition: 'Q2' },
     'hydrology-and-earth-system-sciences': { name: 'HESS', icon: '🌊', if: '5.8', partition: 'Q1' },
     'journal-of-hydrodynamics': { name: 'J. Hydrodynamics', icon: '💧', if: '3.5', partition: 'Q1' },
-    'hydrological-processes': { name: 'Hydrological Processes', icon: '💧', if: '3.2', partition: 'Q2' },
-    'journal-of-flood-risk-management': { name: 'J. Flood Risk Management', icon: '🌊', if: '3.7', partition: 'Q1' },
-    'journal-of-hydraulic-engineering': { name: 'J. Hydraulic Engineering', icon: '⚙️', if: '2.1', partition: 'Q2' },
-    'geomorphology': { name: 'Geomorphology', icon: '🏔️', if: '3.6', partition: 'Q1' }
+    'hydrological-processes': { name: 'Hydrological Processes', icon: '💧', if: '3.2', partition: 'Q1' },
+    'journal-of-flood-risk-management': { name: 'J. Flood Risk Management', icon: '🌊', if: '3.7', partition: 'Q2' },
+    'journal-of-hydraulic-engineering': { name: 'J. Hydraulic Engineering', icon: '⚙️', if: '2.5', partition: 'Q2' },
+    'geomorphology': { name: 'Geomorphology', icon: '🏔️', if: '3.8', partition: 'Q1' }
   };
 
   var RELATED = {

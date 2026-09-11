@@ -25,12 +25,12 @@
 | Land Degradation & Dev. | land-degradation-development | 琥珀 #d97706 | 3.7 | Q2 | ~$3,300 | Hybrid |
 | HESS | hydrology-and-earth-system-sciences | 蓝 #3b82f6 | 5.8 | Q1 | €1,800 | Gold OA |
 | J. Hydrodynamics | journal-of-hydrodynamics | 蓝 | 3.5 | Q1 | ¥600/页 | Hybrid |
-| Hydrological Processes | hydrological-processes | 天蓝 #0ea5e9 | 3.2 | Q2 | 见官网 | Hybrid |
-| J. Flood Risk Management | journal-of-flood-risk-management | 蓝 #2563eb | 3.7 | Q1 | 见官网 | Hybrid |
-| J. Hydraulic Engineering | journal-of-hydraulic-engineering | 深蓝 #0369a1 | 2.1 | Q2 | ASCE 页费 | Hybrid |
-| Geomorphology | geomorphology | 琥珀 #d97706 | 3.6 | Q1 | 见官网 | Hybrid |
+| Hydrological Processes | hydrological-processes | 天蓝 #0ea5e9 | 3.2 | Q1 | ~$4,190 | Hybrid |
+| J. Flood Risk Management | journal-of-flood-risk-management | 蓝 #2563eb | 3.7 | Q2 | 见官网 | Hybrid |
+| J. Hydraulic Engineering | journal-of-hydraulic-engineering | 深蓝 #1d4ed8 | ~2.5 | Q2 | 见 ASCE | Hybrid |
+| Geomorphology | geomorphology | 琥珀 #d97706 | 3.8 | Q1 | ~$3,500 | Hybrid |
 
-> 后四本 IF/APC 为整理值，页脚已标「以官网为准」；上线前可再核对一次官方数据。
+> 后四本 IF/APC 为公开资料整理值，页脚已标「以官网为准」；投稿前请再核对官方 JCR 与 APC。
 
 ## 共享资源（优先复用，勿再整页内嵌 CSS）
 
