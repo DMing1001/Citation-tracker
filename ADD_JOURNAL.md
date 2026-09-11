@@ -20,17 +20,17 @@
 | ISWCR | international-soil-and-water-conservation-research | 绿 #16a34a | 7.3 | Q1 | $2,000 | Gold OA |
 | Int. J. Sediment Research | international-journal-of-sediment-research | 青 #0891b2 | 3.8 | Q2 | $1,400 | Gold OA |
 | J. Environmental Management | journal-of-environmental-management | 绿 #059669 | 8.0 | Q1 | $3,500 | Hybrid |
-| Water Resources Management | water-resources-management | 蓝 #2563eb | 4.7 | Q1 | $2,990 | Hybrid |
+| Water Resources Management | water-resources-management | 蓝 #2563eb | 5.7 | Q1 | $2,990 | Hybrid |
 | J. Cleaner Production | journal-of-cleaner-production | 紫 #7c3aed | 9.8 | Q1 | $3,490 | Hybrid |
-| Land Degradation & Dev. | land-degradation-development | 琥珀 #d97706 | 3.7 | Q2 | ~$3,300 | Hybrid |
+| Land Degradation & Dev. | land-degradation-development | 琥珀 #d97706 | 4.0 | Q2 | 2027 转 OA | Hybrid |
 | HESS | hydrology-and-earth-system-sciences | 蓝 #3b82f6 | 5.8 | Q1 | €1,800 | Gold OA |
-| J. Hydrodynamics | journal-of-hydrodynamics | 蓝 | 3.5 | Q1 | ¥600/页 | Hybrid |
-| Hydrological Processes | hydrological-processes | 天蓝 #0ea5e9 | 3.2 | Q1 | ~$4,190 | Hybrid |
+| J. Hydrodynamics | journal-of-hydrodynamics | 蓝 | 4.0 | Q1 | ¥600/页 | Hybrid |
+| Hydrological Processes | hydrological-processes | 天蓝 #0ea5e9 | ~3.1 | Q1 | 见官网 | Hybrid |
 | J. Flood Risk Management | journal-of-flood-risk-management | 蓝 #2563eb | 3.7 | Q2 | 见官网 | Hybrid |
 | J. Hydraulic Engineering | journal-of-hydraulic-engineering | 深蓝 #1d4ed8 | ~2.5 | Q2 | 见 ASCE | Hybrid |
 | Geomorphology | geomorphology | 琥珀 #d97706 | 3.8 | Q1 | ~$3,500 | Hybrid |
 
-> 后四本 IF/APC 为公开资料整理值，页脚已标「以官网为准」；投稿前请再核对官方 JCR 与 APC。
+> 2026-09-11 浏览器核验：LDD/Wiley/Springer 已更新。ScienceDirect/ASCE 反爬 403，Elsevier 刊指标待 PDF 或人工确认。LDD 在线 ISSN 为 **1099-145X**（勿用 1099-081X）。HP 印刷 ISSN 为 **0885-6087**。
 
 ## 共享资源（优先复用，勿再整页内嵌 CSS）
 
