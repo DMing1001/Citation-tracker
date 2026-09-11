@@ -1,7 +1,8 @@
 # ADD_JOURNAL.md — 添加新期刊操作指南
 
 > 本文件记录了在 CiteGlow 期刊投稿板块中添加新期刊的完整流程。
-> 下次用户要求添加新期刊时，严格按此流程执行。
+> 下次用户要求添加新期刊时，**优先复制 `journals/template.html`**，严格按此流程执行。
+> `template.html` 不是期刊页，勿加入 `index.html` 列表，也勿在 related 中登记。
 
 ## 前置条件
 - 用户提供新期刊的 PDF（Guide for Authors）或仅告诉期刊名
@@ -34,14 +35,16 @@
 | `theme-toggle.js` | 主题切换按钮 |
 | `checklist.js` | 投稿清单可勾选 + localStorage |
 | `related.js` | 详情页「相似期刊」推荐（维护 RELATED 表） |
+| `template.html` | **新刊骨架**，复制后只替换 `{{...}}` 与填空 |
 | `feedback.js` | 列表页反馈浮窗 |
 
-新详情页只需：
-1. `<link>` theme.css + journals.css
-2. 内嵌 `<style>` 只写 `:root` 主题色（含 `--pri` / `--pri2` / `--pri-rgb` / `--border`）
-3. 正文 HTML 按现有模板填 10 个板块
-4. 末尾 `<script src="checklist.js"></script>` + `<script src="related.js"></script>` + `<script src="theme-toggle.js"></script>`
-5. 在 `related.js` 的 `META` 与 `RELATED` 中登记新刊及 3–4 本相似刊
+新刊标准流程（推荐，勿再手搭页面）：
+1. 复制 `journals/template.html` → `journals/<slug>.html`
+2. 全文替换 `{{...}}` 占位符，并改 `:root` 主题色（含 `--pri-rgb`）
+3. 填写 10 个板块正文（重点：scope / fit / types / reference）
+4. `index.html` 的 `journals` 数组追加完整字段（含 `updated`）
+5. `related.js` 的 `META` + `RELATED` 登记新刊与 3–4 本相似刊
+6. 列表页打开确认筛选、对比、详情跳转
 
 ## 步骤
 
@@ -64,15 +67,16 @@
 $env:MIMO_PYTHON -c "import fitz; d=fitz.open(r'path.pdf'); print('\n'.join(p.get_text() for p in d))"
 ```
 
-### 2. 创建期刊详情页
-`journals/<slug>.html`：
+### 2. 从模板创建详情页
+```powershell
+Copy-Item journals\template.html journals\<slug>.html
+```
 - slug：小写英文连字符
-- 复制任一标准详情页作骨架（勿复制 hydrodynamics，结构不同）
-- 内嵌 style 只保留 `:root` 主题色
-- 面包屑：`<a href="/journals/">期刊投稿</a> / XXX`
-- Hero 6 项：IF、分区、审稿周期、APC、审稿制度、OA 类型
-- 侧栏与正文须含 `id="fit"`「适合什么稿」：适合 3–5 条 + 拒稿/不匹配 3–5 条
-- 页脚写「资料整理于 YYYY-MM-DD · 费用与审稿周期请以官网为准」
+- 替换全部 `{{...}}`：JOURNAL_NAME / ICON / PUBLISHER / ISSN / IF / PARTITION / APC / OA_TYPE / REVIEW_TYPE / REVIEW_TIME / SUBMIT_URL / GUIDE_URL / UPDATED_DATE 等
+- 内嵌 style 只改 `:root` 主题色
+- Hero 6 项与列表 `apc`/`updated` 必须一致
+- `id="fit"`：适合 3–5 条 + 拒稿/不匹配 3–5 条
+- 页脚：`资料整理于 YYYY-MM-DD · 费用与审稿周期请以官网为准`
 
 ### 3. 更新列表页 `journals/index.html`
 在 `journals` 数组追加对象（字段齐全，筛选与对比依赖它们）：

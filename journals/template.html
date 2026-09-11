@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!--
+  CiteGlow 新刊模板 template.html
+  用法：
+  1. 复制为 journals/<slug>.html
+  2. 全文搜索替换 {{...}} 占位符
+  3. 只改 :root 主题色（见 ADD_JOURNAL.md 配色表）
+  4. 填完 10 个板块正文后删除本注释
+  5. 同步更新 index.html 的 journals 数组 + related.js 的 META/RELATED
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="{{JOURNAL_NAME}} 投稿指南 — 收稿范围、审稿流程、格式要求、参考文献格式等投稿必备信息。">
+<title>{{JOURNAL_NAME}} — 投稿指南 | CiteGlow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='8' y='14' font-size='14' text-anchor='middle'>{{ICON}}</text></svg>">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="journals.css">
+<script>!function(){var t=localStorage.getItem('citeglow-theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='light'?'#f5f7fa':'#080e1a'}();</script>
+<style>
+:root{
+  --bg:#080e1a;--bg2:#0c1425;--card:#111d33;--card2:#152240;
+  --pri:#3b82f6;--pri2:#60a5fa;--acc:#22d3ee;--acc2:#a78bfa;
+  --gold:#fbbf24;--green:#34d399;--red:#f87171;
+  --txt:#e2e8f0;--dim:#64748b;--bright:#f8fafc;
+  --border:rgba(59,130,246,.15);--glow:rgba(59,130,246,.2);--pri-rgb:59,130,246
+}
+/* 布局样式见 journals.css；此处仅本刊主题色 */
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div></div>
+
+<nav class="topnav">
+  <a href="/" class="topnav-logo">📊 <span>CiteGlow</span></a>
+  <div class="topnav-links">
+    <a href="/">引用追踪</a>
+    <a href="/journals/" class="active">期刊投稿</a>
+  </div>
+</nav>
+
+<div class="j-breadcrumb"><a href="/journals/">期刊投稿</a> / {{JOURNAL_NAME}}</div>
+
+<div class="j-hero">
+  <div class="icon">{{ICON}}</div>
+  <h1>{{JOURNAL_NAME}}</h1>
+  <div class="subtitle">{{PUBLISHER}} · ISSN {{ISSN}} · 创刊于 {{FOUNDED_YEAR}} 年</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-val">{{IF}}</div><div class="meta-lbl">影响因子 ({{IF_YEAR}})</div></div>
+    <div class="meta-item"><div class="meta-val">{{PARTITION}}</div><div class="meta-lbl">分区</div></div>
+    <div class="meta-item"><div class="meta-val">{{REVIEW_TIME}}</div><div class="meta-lbl">审稿周期</div></div>
+    <div class="meta-item"><div class="meta-val">{{APC}}</div><div class="meta-lbl">OA 费用</div></div>
+    <div class="meta-item"><div class="meta-val">{{REVIEW_TYPE}}</div><div class="meta-lbl">审稿制度</div></div>
+    <div class="meta-item"><div class="meta-val">{{OA_TYPE}}</div><div class="meta-lbl">开放获取</div></div>
+  </div>
+</div>
+
+<div class="j-layout">
+  <aside class="j-sidebar">
+    <div class="nav-section">
+      <div class="nav-title">期刊信息</div>
+      <a class="nav-link active" href="#overview" data-section="overview">📋 期刊概览</a>
+      <a class="nav-link" href="#scope" data-section="scope">🎯 收稿范围</a>
+      <a class="nav-link" href="#fit" data-section="fit">✅ 适合什么稿</a>
+      <a class="nav-link" href="#types" data-section="types">📝 文章类型</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">审稿与投稿</div>
+      <a class="nav-link" href="#review" data-section="review">🔍 审稿流程</a>
+      <a class="nav-link" href="#submission" data-section="submission">📤 投稿流程</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">稿件要求</div>
+      <a class="nav-link" href="#manuscript" data-section="manuscript">📄 稿件准备</a>
+      <a class="nav-link" href="#format" data-section="format">📐 格式要求</a>
+      <a class="nav-link" href="#reference" data-section="reference">📖 参考文献</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">其他</div>
+      <a class="nav-link" href="#checklist" data-section="checklist">✅ 投稿清单</a>
+      <a class="nav-link" href="#ethics" data-section="ethics">⚖️ 伦理与政策</a>
+    </div>
+  </aside>
+
+  <main class="j-main">
+
+    <!-- 1. 期刊概览 -->
+    <section class="j-section" id="overview">
+      <div class="j-section-head"><span class="j-section-icon">📊</span><h2 class="j-section-title">期刊概览</h2></div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">期刊全称</div><div class="info-value">{{JOURNAL_NAME}}</div></div>
+        <div class="info-item"><div class="info-label">缩写</div><div class="info-value">{{ABBREV}}</div></div>
+        <div class="info-item"><div class="info-label">出版商</div><div class="info-value">{{PUBLISHER}}</div></div>
+        <div class="info-item"><div class="info-label">ISSN</div><div class="info-value">{{ISSN}}</div></div>
+        <div class="info-item"><div class="info-label">创刊年份</div><div class="info-value">{{FOUNDED_YEAR}}</div></div>
+        <div class="info-item"><div class="info-label">出版频率</div><div class="info-value">{{FREQUENCY}}</div></div>
+        <div class="info-item"><div class="info-label">影响因子</div><div class="info-value">{{IF}} ({{IF_YEAR}})</div></div>
+        <div class="info-item"><div class="info-label">JCR 分区</div><div class="info-value">{{PARTITION}}</div></div>
+        <div class="info-item"><div class="info-label">开放获取</div><div class="info-value">{{OA_TYPE}}</div></div>
+        <div class="info-item"><div class="info-label">OA 费用</div><div class="info-value">{{APC}}</div></div>
+        <div class="info-item"><div class="info-label">平均审稿</div><div class="info-value">{{REVIEW_TIME}}</div></div>
+        <div class="info-item"><div class="info-label">审稿制度</div><div class="info-value">{{REVIEW_TYPE}}</div></div>
+      </div>
+    </section>
+
+    <!-- 2. 收稿范围 -->
+    <section class="j-section" id="scope">
+      <div class="j-section-head"><span class="j-section-icon">🎯</span><h2 class="j-section-title">收稿范围</h2></div>
+      <div class="c-block">
+        <h4>Aims & Scope</h4>
+        <p>【填 2–4 句：本刊定位与主要关注领域。】</p>
+        <ul>
+          <li>【主题方向 1】</li>
+          <li>【主题方向 2】</li>
+          <li>【主题方向 3】</li>
+          <li>【主题方向 4】</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 不接受的稿件类型</h4>
+        <ul>
+          <li>【不收类型 1】</li>
+          <li>【不收类型 2】</li>
+          <li>【不收类型 3】</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 2b. 适合什么稿 -->
+    <section class="j-section" id="fit">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">适合什么稿</h2></div>
+      <div class="c-block">
+        <h4>什么样的稿子适合投这里</h4>
+        <p>【填 2–3 句：本刊真正想要的稿件画像，写给作者判断「该不该投」。】</p>
+        <ul>
+          <li>【适合点 1：过程/方法/数据增量】</li>
+          <li>【适合点 2：结论可推广或管理含义】</li>
+          <li>【适合点 3：与本刊核心读者相关】</li>
+          <li>【适合点 4】</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>⚠️ 常见拒稿 / 不匹配点</h4>
+        <ul>
+          <li>【拒稿/不匹配点 1】</li>
+          <li>【拒稿/不匹配点 2】</li>
+          <li>【拒稿/不匹配点 3】</li>
+          <li>【拒稿/不匹配点 4】</li>
+        </ul>
+        <p style="margin:12px 0 0;font-size:.85rem;color:var(--dim)">以上为投稿匹配提示，综合自期刊 Aims & Scope 与编辑惯例，非官方拒稿清单。以最新 Guide for Authors 为准。</p>
+      </div>
+    </section>
+
+    <!-- 3. 文章类型 -->
+    <section class="j-section" id="types">
+      <div class="j-section-head"><span class="j-section-icon">📝</span><h2 class="j-section-title">文章类型</h2></div>
+      <div class="c-block" style="padding:0;overflow-x:auto">
+        <table class="j-table">
+          <thead><tr><th>类型</th><th>说明</th><th>字数/限制</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Research Article</strong></td><td>【完整研究报告】</td><td>【如 8000–12000 词】</td><td><span class="tag tag-blue">最常见</span></td></tr>
+            <tr><td><strong>Review</strong></td><td>【综述；是否约稿】</td><td>【限制】</td><td><span class="tag tag-purple">领域总结</span></td></tr>
+            <tr><td><strong>Short Communication</strong></td><td>【短篇快报】</td><td>【限制】</td><td><span class="tag tag-green">快速发表</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. 审稿流程 -->
+    <section class="j-section" id="review">
+      <div class="j-section-head"><span class="j-section-icon">🔍</span><h2 class="j-section-title">审稿流程</h2></div>
+      <div class="c-block">
+        <h4>审稿制度</h4>
+        <div class="info-grid" style="margin-bottom:16px">
+          <div class="info-item"><div class="info-label">审稿方式</div><div class="info-value">{{REVIEW_TYPE}}</div></div>
+          <div class="info-item"><div class="info-label">审稿人数量</div><div class="info-value">【2–3 位】</div></div>
+          <div class="info-item"><div class="info-label">首轮审稿</div><div class="info-value">{{REVIEW_TIME}}</div></div>
+          <div class="info-item"><div class="info-label">修改轮数</div><div class="info-value">【通常 1–2 轮】</div></div>
+        </div>
+        <p>【单盲/双盲/公开评审的具体说明。】</p>
+      </div>
+      <div class="c-block">
+        <h4>审稿流程时间线</h4>
+        <ol>
+          <li><strong>提交</strong> → 编辑初审 / Desk Review</li>
+          <li><strong>送审</strong> → 邀请审稿人</li>
+          <li><strong>审稿</strong> → 【约 X 周】</li>
+          <li><strong>决定</strong> → Major / Minor / Accept / Reject</li>
+          <li><strong>修改</strong> → 逐条回复审稿意见</li>
+          <li><strong>最终决定</strong> → 编辑确认</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>申诉与转投</h4>
+        <p>【是否可申诉、周期；被拒后是否有 Transfer Desk / 姊妹刊建议。】</p>
+      </div>
+    </section>
+
+    <!-- 5. 投稿流程 -->
+    <section class="j-section" id="submission">
+      <div class="j-section-head"><span class="j-section-icon">📤</span><h2 class="j-section-title">投稿流程</h2></div>
+      <div class="c-block">
+        <h4>投稿步骤</h4>
+        <ol>
+          <li>登录 <a href="{{SUBMIT_URL}}" target="_blank">{{SUBMIT_SYSTEM}}</a></li>
+          <li>选择文章类型</li>
+          <li>填写标题、摘要、关键词</li>
+          <li>添加作者与单位</li>
+          <li>上传稿件与 Cover Letter</li>
+          <li>填写 Funding / Data Availability 等声明</li>
+          <li>确认提交</li>
+        </ol>
+      </div>
+      <div class="c-block">
+        <h4>Cover Letter 要点</h4>
+        <ul>
+          <li>研究问题与主要发现（2–3 句）</li>
+          <li>创新点与适合本刊的理由</li>
+          <li>未一稿多投声明</li>
+          <li>通讯作者联系方式</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>投稿后注意事项</h4>
+        <ul>
+          <li>【超时未审可否询问】</li>
+          <li>【修改稿期限】</li>
+          <li>【校样阶段是否可大改】</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. 稿件准备 -->
+    <section class="j-section" id="manuscript">
+      <div class="j-section-head"><span class="j-section-icon">📄</span><h2 class="j-section-title">稿件准备</h2></div>
+      <div class="c-block">
+        <h4>文章结构</h4>
+        <ul>
+          <li><strong>Title</strong> — 【长度/是否要求亮点标题】</li>
+          <li><strong>Abstract</strong> — 【结构式/非结构式，字数】</li>
+          <li><strong>Keywords</strong> — 【数量】</li>
+          <li><strong>Introduction / Methods / Results / Discussion</strong></li>
+          <li><strong>Declarations</strong> — Funding / COI / CRediT / Data</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>语言与作者</h4>
+        <ul>
+          <li>【投稿语言】</li>
+          <li>【ORCID 是否强制】</li>
+          <li>【双盲是否需单独标题页】</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7. 格式要求 -->
+    <section class="j-section" id="format">
+      <div class="j-section-head"><span class="j-section-icon">📐</span><h2 class="j-section-title">格式要求</h2></div>
+      <div class="c-block">
+        <h4>文件与排版</h4>
+        <ul>
+          <li>源文件：【Word / LaTeX / 其他】</li>
+          <li>页边距/行距：【有无强制】</li>
+          <li>图表：【分辨率、格式、是否需可编辑源文件】</li>
+          <li>补充材料：【格式与命名】</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>字数与页数</h4>
+        <ul>
+          <li>【正文建议长度】</li>
+          <li>【参考文献条数建议】</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8. 参考文献 -->
+    <section class="j-section" id="reference">
+      <div class="j-section-head"><span class="j-section-icon">📖</span><h2 class="j-section-title">参考文献</h2></div>
+      <div class="c-block">
+        <h4>引用格式</h4>
+        <p>【编号制 / 作者-年份 / APA；是否必须含 DOI。】</p>
+        <div class="ref-example">
+          【这里放 1–2 条官方示例，原文照抄，勿自行改写。】
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. 投稿清单 -->
+    <section class="j-section" id="checklist">
+      <div class="j-section-head"><span class="j-section-icon">✅</span><h2 class="j-section-title">投稿清单</h2></div>
+      <div class="c-block">
+        <h4>提交前检查以下事项</h4>
+        <ul class="checklist">
+          <li>稿件符合期刊 Aims & Scope</li>
+          <li>文章类型选择正确</li>
+          <li>标题与摘要符合本刊要求</li>
+          <li>关键词数量达标</li>
+          <li>作者信息完整，含 ORCID（如需）</li>
+          <li>CRediT / 作者贡献已填写</li>
+          <li>通讯作者已标注</li>
+          <li>利益冲突声明已准备</li>
+          <li>基金信息完整</li>
+          <li>数据可用性声明已提供</li>
+          <li>图表格式与分辨率达标</li>
+          <li>参考文献格式正确</li>
+          <li>所有图表在正文中已引用</li>
+          <li>语言经过润色</li>
+          <li>Cover Letter 已准备</li>
+          <li>未同时投其他期刊</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 伦理与政策 -->
+    <section class="j-section" id="ethics">
+      <div class="j-section-head"><span class="j-section-icon">⚖️</span><h2 class="j-section-title">伦理与政策</h2></div>
+      <div class="c-block">
+        <h4>利益冲突 / 作者贡献 / 数据政策</h4>
+        <ul>
+          <li>【COI 标准表述】</li>
+          <li>【AI 工具使用政策】</li>
+          <li>【数据/代码共享要求】</li>
+        </ul>
+      </div>
+      <div class="c-block">
+        <h4>实用链接</h4>
+        <div class="link-row">
+          <a class="link-btn" href="{{JOURNAL_URL}}" target="_blank">🏠 期刊主页</a>
+          <a class="link-btn" href="{{SUBMIT_URL}}" target="_blank">📤 投稿系统</a>
+          <a class="link-btn" href="{{GUIDE_URL}}" target="_blank">📋 官方 Guide for Authors</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="j-footer">
+  数据来源于 {{JOURNAL_NAME}} 官方 Guide for Authors · <a href="/journals/">返回期刊列表</a> · <a href="https://citeglow.com">CiteGlow</a> · 资料整理于 {{UPDATED_DATE}} · 费用与审稿周期请以官网为准
+</footer>
+
+<script>
+const sections = document.querySelectorAll('.j-section');
+const navLinks = document.querySelectorAll('.nav-link[data-section]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.section === e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(link.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+<script src="theme-toggle.js"></script>
+<script src="checklist.js"></script>
+<script src="related.js"></script>
+</body>
+</html>
