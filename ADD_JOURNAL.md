@@ -51,8 +51,42 @@
 3. 填写 10 个板块正文（重点：scope / fit / types / reference）
 4. `index.html` 的 `journals` 数组追加完整字段（含 `updated`）
 5. `related.js` 的 `META` + `RELATED` 登记新刊与 3–4 本相似刊
-6. 将官方封面放到 `journals/covers/<slug>.jpg`（或 `.png`）；若抓不到可放同名 `.svg` 占位卡
+6. **按「封面下载」节**拉官方封面 → `journals/covers/<slug>.jpg`，并在 `coverSrc()` / `covers.js` 登记
 7. 列表页打开确认筛选、对比、封面、详情跳转
+
+## 封面下载（2026-09-11 已验证，后续加刊照此）
+
+**原则**：不要硬打 ScienceDirect / ASCE 主站（Cloudflare 人机验证）。优先走出版社**静态封面 CDN**。
+
+### Elsevier（最稳）
+
+```text
+https://secure-ecsd.elsevier.com/covers/80/Tango2/large/{ISSN去连字符}.jpg
+```
+
+例：JoH `0022-1694` → `.../large/00221694.jpg`  
+Playwright 需走代理 `http://127.0.0.1:9567`，Referer 可带 `https://www.sciencedirect.com/`。  
+校验：JPEG `0xFF` 开头，约 198×264 竖版。
+
+### Springer
+
+```text
+https://media.springernature.com/full/springer-static/cover/journal/{journalId}.jpg
+```
+
+例：WRM `11269`。
+
+### Wiley
+
+打开 `https://onlinelibrary.wiley.com/journal/{onlineISSN无连字符}`，对封面 `img` 截图；直链常 403。
+
+### ASCE / HESS 等仍失败时
+
+- 只收官方 cms 域名图；禁止把无关搜索图当封面
+- 可放 `covers/<slug>.svg` 封面卡占位
+- 收尾：删 `*-page.png`，更新 `coverSrc()` 与 `covers.js`
+
+---
 
 ## 步骤
 
