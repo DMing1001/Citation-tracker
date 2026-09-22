@@ -1510,40 +1510,171 @@ section.wrap.toc-on{max-width:1180px}
     <div class="sec-head">
       <div class="sec-kicker">01 · Sediment Transport</div>
       <h2>泥沙输移模拟</h2>
-      <p>以水动力结果为基础，模拟"床沙在动"的长期过程：冲刷、淤积、河床粗化与水库淤积，用于中长期河床演变研究。</p>
+      <p>以水动力结果为基础，模拟"床沙在动"的长期过程：冲刷、淤积、河床粗化与水库淤积。内容依据 HEC 官方 Guides &amp; Tutorials（1D / 2D Sediment Transport、Mud and Debris Flow）与 Sediment 建模经验页整理，可对照官网逐步跟做。</p>
     </div>
 
-    <div class="sec-tag">泥沙输移 / 动床计算</div>
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本专题能回答的问题：</b>河床会冲深还是淤高？粗颗粒会不会在床面富集形成粗化层（armoring）？水库会淤掉多少库容？桥墩附近冲刷坑有多深？——先保证水动力合理，再叠加动床与输沙。</div></div>
+
+    <div class="sec-tag">核心概念 · 级配 · 床层 · 输沙能力</div>
     <div class="cards">
-      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M3 14h18M6 10V6h12v4M6 14v4h12v-4"/></svg></span>按粒径分级计算</h3><p>输沙能力按粒径组分（grain size fraction）计算，可模拟水力分选（sorting）与河床粗化（armoring），更真实地反映床沙级配演变。</p></div>
-      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span>两种计算模式</h3><p>准非恒定流（Quasi-Unsteady）：把过程线离散为一系列恒定时段，计算快，适合多年尺度；全非恒定流（Fully Unsteady）：1D 与 2D 均可，适合洪水过程内的冲淤响应。</p></div>
-      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l6-12 6 12"/></svg></span>配套工具</h3><p>SIAM（泥沙影响分析）快速评估方案影响；BSTEM 岸坡稳定性分析；2D 泥沙支持 Capacity Only / Concentration Only 等固定床简化分析；泥石流（非牛顿流体）1D/2D 模拟。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M3 14h18M6 10V6h12v4M6 14v4h12v-4"/></svg></span>按粒径分级计算</h3><p>输沙能力按粒径组分（grain size fraction）计算，可模拟水力分选（sorting）与河床粗化（armoring）。隐藏–暴露（Hiding and Exposure）修正细颗粒"藏"在粗颗粒背影、粗颗粒更暴露于水流的效应，通常会降低总输沙并提高稳定性。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span>床层与活动层</h3><p>床沙可分表层（active / surface）、覆盖层与底层。冲淤时活动层厚度与级配记账（bed mixing）决定粗化过程；沙质河床默认活动层偏薄，建议设最小厚度或放大 d90 倍数，否则容易不稳定。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l6-12 6 12"/></svg></span>两种计算模式</h3><p><b>准非恒定流（Quasi-Unsteady）</b>：把过程线离散为一系列恒定流量档，计算快，适合多年尺度；<b>全非恒定流（Fully Unsteady）</b>：1D 与 2D 均可，适合洪水过程内的冲淤响应。另有 <b>Capacity Only / Concentration Only</b> 固定床简化分析。</p></div>
     </div>
-    <p>官方教程目录中的泥沙案例包括：<i>1D Sediment Transport、2D Sediment Transport、Mud and Debris Flow</i>，每个案例都附有示例数据集，可逐步跟做。</p>
+
+    <div class="sec-tag">准非恒定流 · 三层时间步（官方定义）</div>
+    <p>官方将准非恒定流的时间离散拆成三层：流量档内流量近似不变，但水力与床面在"计算增量"内更新，级配记账在更细的"混合时间步"内更新。</p>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:28%"><col style="width:72%"></colgroup>
+      <caption>Quasi-Unsteady 时间步层级</caption>
+      <thead><tr><th>时间步</th><th>含义与使用要点</th></tr></thead>
+      <tbody>
+        <tr><td><b>Duration 流量档时长</b></td><td>最粗一层。假定该时段内流量（以及温度、来沙等）恒定。例如用日流量时，Duration 常取 24 小时。</td></tr>
+        <tr><td><b>Computational Increment 计算增量</b></td><td>水力与泥沙的主时间步，必须 ≤ Duration。每个增量结束时更新河床与水力。床面变化剧烈时增量过大会切断"冲淤 ↔ 水力"反馈，导致异常淤积/冲刷甚至崩溃——对床面变化敏感时应做步长敏感性试验。</td></tr>
+        <tr><td><b>Bed Mixing Time Step 床层混合步</b></td><td>在一个计算增量内再细分数次，只更新活动层/覆盖层的级配记账（分选与粗化），不改断面高程。输沙能力按活动层级配计算，因此即使水力不变，混合步之间输沙能力仍可变化。</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>温度不是可选项：</b>沉速与部分输沙公式依赖水的粘度，而粘度随水温变化。准非恒定流编辑器底部 <code>Set Temperature…</code> 必填温度序列；全非恒定流在 Unsteady Flow 的 <code>Options | Water Temperature (for Unsteady Sediment)</code> 中指定。缺省按 55&nbsp;°F 处理，细颗粒体系对温度更敏感。长期序列可用常数、年内高低温插值，或月平均（Duration≈730.48&nbsp;h）重复构造。</div></div>
+
+    <div class="sec-tag">常用输沙能力公式（官方手册常用集）</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup>
+      <caption>按河床组成选择起点公式</caption>
+      <thead><tr><th>公式</th><th>更适用</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><b>Engelund-Hansen</b></td><td>沙质河床、全沙</td><td>经典全沙公式，常作沙质河流起点。</td></tr>
+        <tr><td><b>Meyer-Peter Müller</b></td><td>卵石/砾石、推移质</td><td>粗颗粒推移质常用，需注意适用粒径与能坡。</td></tr>
+        <tr><td><b>Yang</b></td><td>沙–砾石，流功率型</td><td>基于单位水流功率，适用范围较宽。</td></tr>
+        <tr><td><b>Parker</b></td><td>卵石河床</td><td>砾石河床常用；与隐藏暴露修正配合更好。</td></tr>
+        <tr><td><b>Laursen / Ackers-White / Wilcock 等</b></td><td>视粒径与资料</td><td>官方泥沙手册与附录给出多组公式与示例计算，建议用实测输沙率或冲淤量率定后再定主公式。</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-tag">阶段 A · 一维动床建模流程（对照官方 1D Sediment 教程）</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>先有一套能算稳的水动力模型</h4>
+        <p>几何（断面、河段）与恒定流/非恒定流边界先跑通。动床计算对水力误差很敏感：水面线、流速、曼宁 n 不合理时，冲淤结果通常不可用。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>定义泥沙级配与初始床沙</h4>
+        <p>在 <b>Sediment Data</b> 编辑器中定义粒径分组（例如 0.1&nbsp;mm / 0.5&nbsp;mm / 2&nbsp;mm / 8&nbsp;mm），各组给定重量百分比；再初始化床面组成（表层 + 基质层）。级配应反映河床质取样，而不是"随便分几组"。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>选择输沙公式与床层参数</h4>
+        <p>在 <code>Sediment Data → Options → Transport Methods</code> 选主公式；在 <code>Bed Mixing Options</code> 配置隐藏暴露、活动层厚度（沙床务必检查 d90 倍数与最小厚度）。冲淤速率可配适应长度（adaptation length），官方经验起点约为平均网格尺寸的 1–2 倍（2D）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>设置来沙边界、温度与形态加速</h4>
+        <p>上游可给定输沙率过程线，或按"与输沙能力平衡"的平衡来沙。设置温度序列。长期演变可用形态加速因子（Morphology Acceleration Factor）缩短机时，但加速过大可能扭曲过程，需做敏感性对比。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>运行并读结果</h4>
+        <p><code>Run → Sediment Transport Analysis</code>（或 Plan 中的泥沙计算）。查看河床高程沿程变化、冲淤量、分粒径输沙率、活动层级配（粗化）。必要时用 <b>BSTEM</b> 评估岸坡趾部冲刷与稳定性，用 <b>SIAM</b> 做方案影响快速对比。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 二维泥沙：参数优先级（官方经验表）</div>
+    <p>官方《Summary of 2D Sediment Parameters and Options》强调：2D 泥沙选项很多，应按优先级设置，而不是一次拧完所有旋钮。</p>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:18%"><col style="width:28%"><col style="width:54%"></colgroup>
+      <caption>2D 泥沙方法/参数建议顺序</caption>
+      <thead><tr><th>优先级</th><th>项</th><th>官方建议</th></tr></thead>
+      <tbody>
+        <tr><td><b>Tier 0</b></td><td>浅水方程 + 水力 warmup</td><td><b>必须</b>使用完整浅水方程（SWE），扩散波结果对泥沙无意义。网格先充分湿润并达到水面平衡，再加泥沙，否则边充水边输沙极易冲刷失稳。</td></tr>
+        <tr><td><b>Tier 1</b></td><td>Hiding / Adaptation / 求解器 / 紊动 / 活动层</td><td>隐藏暴露建议开启（Wu 法起步）；适应长度约 1–2 倍网格尺寸；求解器可用 FGMRES-SOR 试算、终算换 PARADISO；紊动选 Conservative 默认；沙床必须改活动层厚度。</td></tr>
+        <tr><td><b>Tier 2</b></td><td>泥沙计算倍增器、底坡系数、层厚</td><td>倍增器一般 &lt;10 并做敏感性；底坡重力输移系数约 0.1–0.5，输沙率低时更重要；初始层厚常取 1–2&nbsp;m 量级更稳。</td></tr>
+        <tr><td><b>Tier 3</b></td><td>Subgrid 等</td><td>床面亚网格能改善细节但加机时，模型稳定后再试。</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-tag">常见病：边界猛冲猛淤与"糙率陷阱"</div>
+    <div class="cards">
+      <div class="card"><h3>边界处剧烈冲淤</h3><p>多为 <b>来沙能力与来沙量/级配不匹配</b>，或平衡来沙边界放在不反映主槽过水的位置。上游能坡过陡会形成"射流"，应勾选 <b>Tail Water check</b> 让尾水修正边界坡降。</p></div>
+      <div class="card"><h3>滩地曼宁 n 过大</h3><p>水力对滩地 n 不敏感，但输沙对应力极敏感：曼宁关系下摩阻坡降 ∝ n²，输沙常再取剪力约 1.5 次方，综合可近似 n 的三次方。滩地 n 从 0.06 调到 0.12，水位几乎不动，输沙却可能差一个数量级——滩地糙率要按泥沙问题重新审视。</p></div>
+      <div class="card"><h3>固定床快速诊断</h3><p><b>Capacity Only</b>：只算输沙能力场，看哪里能力大（冲刷风险）；<b>Concentration Only</b>：固定床示踪浓度。二者仍需完整泥沙数据（级配等），但对来沙边界不敏感，适合工程方案前后对比（如加构筑物后能力是否提高）。</p></div>
+    </div>
+
+    <div class="sec-tag">泥石流 / 高含沙（Mud and Debris）</div>
+    <p>官方将高浓度流体按流变分层：<b>Bingham / 超浓度流</b>有屈服应力；泥流与颗粒流为二次"剪切增稠"型；泥石流颗粒持续接触，以摩擦为主，需 Mohr-Coulomb 类摩擦模型。可用非牛顿流体库模拟堆积范围、厚度与流速，典型步骤是：沿沟加密 2D 网格 → 设屈服应力/塑性粘度（及摩擦参数）→ 上游给流量与浓度过程线 → 分析堆积。调不通时优先查浓度–流变参数是否超出模型假定。</p>
+
+    <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div><b>校准态度：</b>官方对 1D 泥沙校准页目前仍以视频/播客指引为主，强调用实测冲淤、输沙率或历史地形变化约束，而不是只调一个公式系数到"看起来像"。公式、级配、温度、形态加速与时间步应一起做敏感性。</div></div>
+
+    <p>官方教程与文档入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/1d-sediment-transport" target="_blank" rel="noopener">1D Sediment Transport</a> · <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-sediment-transport" target="_blank" rel="noopener">2D Sediment Transport</a> · <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/mud-and-debris-flow" target="_blank" rel="noopener">Mud and Debris Flow</a> · <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" rel="noopener">Guides &amp; Tutorials 总目录</a></p>
 
   </section>
 
   <!-- ================= 进阶专题 02：水质模拟 ================= -->
   <section id="a-sec2" class="wrap">
     <div class="sec-head">
-      <div class="sec-kicker">02 · Water Quality</div>
+      <div class="sec-kicker">02 · Water Quality &amp; Temperature</div>
       <h2>水质与水温模拟</h2>
-      <p>模拟"水质在变"的过程：水温沿程变化与营养盐、溶解氧等组分的迁移转化，用于河流环境研究。</p>
+      <p>模拟"水质在变"的过程：水温沿程变化，以及营养盐、溶解氧、藻类等组分的迁移转化。依据 HEC 水温/水质模块文档（WTSM 能量平衡、GCSM 一般组分、NSM 营养盐库）与 HEC-RAS 用户手册中"水温与组分输运"能力整理。</p>
     </div>
 
-    <div class="sec-tag">水质 / 水温模拟</div>
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本专题能回答的问题：</b>夏季水温会不会超标？入库/过坝后溶解氧如何变化？氨氮、硝氮、磷在沿程是降解还是累积？——水动力提供输运场，水质模块给出源汇与反应。</div></div>
+
+    <div class="sec-tag">水温 WTSM · 能量平衡</div>
+    <p>水温是最核心的物理状态量：既直接影响生物，又通过 Arrhenius 型温度修正控制几乎所有动力学速率。官方水温模块（Water Temperature Simulation Module）按<strong>能量守恒</strong>计算水面与床面的热交换，表层净热通量可写成：</p>
+    <div class="chart-box" style="padding:18px">$$q_{net}=\beta\,q_{sw}+q_{atm}-q_{b}-q_{h}-q_{l}-q_{sed}$$</div>
+    <p>其中 \(q_{sw}\) 为短波太阳辐射，\(q_{atm}\) 为大气下行长波，\(q_{b}\) 为水面向上长波，\(q_{h}\) 为感热，\(q_{l}\) 为潜热（蒸发/凝结），\(q_{sed}\) 为沉积物–水体热通量；\(\beta\) 为水面吸收的短波比例。水温变化由净热通量对水体热容积分得到：</p>
+    <div class="chart-box" style="padding:18px">$$\rho_w C_{pw} V\,\frac{\partial T_w}{\partial t}=A_s\,q_{net}$$</div>
     <div class="tbl-wrap"><table>
-      <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
-      <caption>当前版本支持的水质组分</caption>
+      <colgroup><col style="width:28%"><col style="width:72%"></colgroup>
+      <caption>热通量要点（WTSM）</caption>
+      <thead><tr><th>项</th><th>要点</th></tr></thead>
       <tbody>
-        <tr><td><b>水温 Water Temperature</b></td><td>一维对流-扩散（QUICKEST-ULTIMATE 格式），完整热平衡（太阳辐射、蒸发、对流等）</td></tr>
-        <tr><td><b>藻类 Algae</b></td><td>藻类生物量与营养盐摄取的耦合模拟</td></tr>
-        <tr><td><b>溶解氧 DO</b></td><td>复氧、耗氧、光合呼吸等过程</td></tr>
-        <tr><td><b>碳质生化需氧量 CBOD</b></td><td>有机污染物耗氧衰减</td></tr>
-        <tr><td><b>氮</b></td><td>有机氮、氨氮 NH₄-N、亚硝氮 NO₂-N、硝氮 NO₃-N 的迁移转化</td></tr>
-        <tr><td><b>磷</b></td><td>溶解有机磷 Org-P、溶解正磷酸盐 PO₄-P</td></tr>
+        <tr><td><b>短波 \(q_{sw}\)</b></td><td>按 Beer 定律随水深指数衰减；消光系数含纯水背景、悬沙与藻类三部分。需太阳辐射过程线。</td></tr>
+        <tr><td><b>长波 \(q_{atm}, q_b\)</b></td><td>大气长波受云量影响（如 Wunderlich 型经验式）；水面长波按 Stefan–Boltzmann 由水温发射，是主要失热项之一。</td></tr>
+        <tr><td><b>潜热 \(q_l\) / 感热 \(q_h\)</b></td><td>取决于水汽压差、气温–水温差与风速函数；扩散系数比 \(K_h/K_w\) 常取 1.0（建议 0.9–1.1）。风速需统一到水面 2&nbsp;m 高度。</td></tr>
+        <tr><td><b>床面热交换 \(q_{sed}\)</b></td><td>浅水中不可忽略。活动底泥层厚度常取 5&nbsp;mm–15&nbsp;cm；热扩散系数可取约 0.005&nbsp;cm²/s 量级。</td></tr>
+        <tr><td><b>植被河岸</b></td><td>遮荫系数 \(f_{shade}\) 减少短波，挡风系数 \(f_{shelt}\) 减少潜热/感热，保温系数 \(f_{insul}\) 削弱长波交换。0 表示无植被影响，可常数或季节变化。</td></tr>
       </tbody>
     </table></div>
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>气象强迫：</b>完整能量平衡至少需要太阳辐射、气压、气温、湿度、风速、云量。气温与辐射日变化大，官方建议使用<strong>逐时</strong>气象序列。河网水质单元沿纵向分段，水库则可垂向分层。</div></div>
+
+    <div class="sec-tag">水质组分库 · 三套模块</div>
+    <div class="cards">
+      <div class="card"><h3>WTSM 水温库</h3><p>组分包括 <b>Water Temperature</b> 与 <b>Sediment Temperature</b>。泥沙输移分析本身也依赖水温（粘度→沉速）。</p></div>
+      <div class="card"><h3>NSM 营养盐库</h3><p>常见组分：<b>藻类/浮游植物、溶解氧 DO、CBOD、氨氮 NH₄、硝氮 NO₃、无机磷</b> 等，描述藻类生长与营养盐摄取、耗氧与复氧、氮磷迁移转化。</p></div>
+      <div class="card"><h3>GCSM 一般组分库</h3><p>可自定义保守示踪、大肠杆菌、活性颗粒等。对单一组分考虑零级/一级衰减、沉降损失与底泥释放，速率按温度修正。</p></div>
+    </div>
+    <p>GCSM 的浓度方程概括为（各源汇符号以官方文档为准）：</p>
+    <div class="chart-box" style="padding:18px">$$\frac{\partial C}{\partial t}= \text{输运} - k_0 - k_1 C + \frac{k_{sed}}{h} - \frac{v_s}{h}\,C$$</div>
+    <p>动力学系数按修正 Arrhenius 从 20&nbsp;°C 率定值换算到当前水温：\(k(T_w)=k(20)\,\theta^{T_w-20}\)，\(\theta\) 常见 1.01–1.10。沉降：表层仅与表层浓度有关，内部层还与垂向梯度有关；底泥释放与接触床面的单元面积有关。</p>
+
+    <div class="sec-tag">当前版本常见组分一览</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+      <caption>水温与水质组分</caption>
+      <tbody>
+        <tr><td><b>水温 Water Temperature</b></td><td>一维对流–扩散输运 + 完整热平衡（太阳辐射、蒸发、对流、床面热交换等）</td></tr>
+        <tr><td><b>藻类 Algae / Phytoplankton</b></td><td>藻类生物量与营养盐摄取的耦合模拟；也影响光衰减</td></tr>
+        <tr><td><b>溶解氧 DO</b></td><td>复氧、CBOD/硝化耗氧、藻类光合与呼吸等</td></tr>
+        <tr><td><b>碳质生化需氧量 CBOD</b></td><td>有机污染物耗氧衰减</td></tr>
+        <tr><td><b>氮</b></td><td>有机氮、氨氮 NH₄-N、亚硝氮/硝氮 NO₂-N / NO₃-N 的迁移转化</td></tr>
+        <tr><td><b>磷</b></td><td>溶解有机磷与正磷酸盐 PO₄-P 等</td></tr>
+        <tr><td><b>一般组分（可扩展）</b></td><td>保守示踪、微生物、颗粒物等（GCSM：零级/一级、沉降、底泥释放）</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-tag">建模流程 · 从水质组分集到率定</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>水动力与温度打底</h4>
+        <p>先保证一维/二维水流场合理，再建水温：输入气象强迫与初始水温，看沿程/分层水温是否贴近观测。水质速率几乎都随温度变，水温不对，DO 与氮磷很难对。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>创建 WQ Constituent Set（组分集）</h4>
+        <p>新建组分集后，在 <b>WQ Constituent Selector</b> 中从 <b>Temperature / NSM / GCSM</b> 等库勾选组分并 <b>Apply</b>。可建多套组分集做方案对比；切换前注意保存，清除选择会同时清掉已填参考值。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>边界与初始浓度</h4>
+        <p>为各组分指定上游/旁侧入流浓度过程线与初始场。入流是点源还是分布源汇，会改变沿程衰减与累积形态；点源附近应有足够网格/断面分辨率。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>反应速率与温度系数</h4>
+        <p>按 20&nbsp;°C 率定值填写 \(k(20)\) 与 \(\theta\)。CBOD 衰减、硝化、藻类生长、复氧等尽量用文献或本站监测约束，避免"全凭默认值"。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>率定与情景</h4>
+        <p>优先率定水温，再率定 DO 与氮磷。可用流量、排污、水库调度、植被遮荫等情景对比。保守示踪（GCSM 近保守）可先验证输运时间尺度，再上反应组分。</p>
+      </div></li>
+    </ol>
+
+    <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div><b>与泥沙的耦合提示：</b>悬沙浓度会改变光消光，从而影响水温与藻类；泥沙温度也可作为边界条件。若同时做动床与水质，应统一温度序列与时间步，避免两套强迫不一致。</div></div>
+
+    <p>官方/文档入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a> · <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" rel="noopener">Guides &amp; Tutorials</a> · <a href="https://www.hec.usace.army.mil/software/hec-ras/documentation.aspx" target="_blank" rel="noopener">Documentation Home</a></p>
   </section>
   </div>
 
