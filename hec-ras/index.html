@@ -1,0 +1,2153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="HEC-RAS 从入门到精通：系统讲解一维恒定流、一维/二维非恒定流、泥沙输移、水质模拟与 RAS Mapper 淹没制图，含官方教程实战与常见问题。">
+<meta name="keywords" content="HEC-RAS,水动力模型,一维恒定流,二维建模,RAS Mapper,泥沙输移,洪水淹没">
+<meta name="author" content="CiteGlow">
+<link rel="canonical" href="https://citeglow.com/hec-ras/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:site_name" content="CiteGlow">
+<meta property="og:title" content="HEC-RAS 从入门到精通 · 完整中文教程">
+<meta property="og:description" content="系统讲解一维恒定流、一维/二维非恒定流、泥沙输移与水质模拟，带你从零完成第一个可运行的 HEC-RAS 模型。">
+<meta property="og:url" content="https://citeglow.com/hec-ras/">
+<meta property="og:image" content="https://citeglow.com/hec-ras/assets/hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HEC-RAS 从入门到精通 · 完整中文教程">
+<meta name="twitter:description" content="一维/二维水动力建模完整中文教程，含官方实战与 RAS Mapper。">
+<meta name="twitter:image" content="https://citeglow.com/hec-ras/assets/hero.jpg">
+
+<title>HEC-RAS 从入门到精通 · 完整中文教程</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B2545'/%3E%3Cpath d='M6 20c3-6 6-6 8 0s5 6 8 0c1.6-3.2 3-4 4-4v4c-1 0-2 .8-3 2.6-2.6 5.2-5.6 4-8 0s-5-4-8 0H6z' fill='%2300B4D8'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<script defer src="vendor/katex/katex.min.js"></script>
+<script defer src="vendor/katex/auto-render.min.js"></script>
+<script src="vendor/echarts.min.js"></script>
+<style>
+/* ============ 设计令牌 ============ */
+:root{
+  --navy-950:#071528;
+  --navy-900:#0A1F3C;
+  --navy-800:#0B2545;
+  --navy-700:#12355B;
+  --blue-600:#1D4E89;
+  --cyan-500:#00B4D8;
+  --cyan-300:#90E0EF;
+  --sand-500:#E9A23B;
+  --sand-100:#FBF3E3;
+  --paper:#F4F7FA;
+  --card:#FFFFFF;
+  --ink:#22303F;
+  --muted:#5A6B7B;
+  --line:#D9E2EC;
+  --line-soft:#E7EDF3;
+  --mono:"Cascadia Mono","JetBrains Mono",Consolas,"Courier New",ui-monospace,monospace;
+  --serif:"Songti SC","SimSun","STSong","Noto Serif SC",serif;
+  --sans:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans SC",system-ui,-apple-system,sans-serif;
+  --sidebar-w:272px;
+  --accent-soft:#E4F6FA;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.75;
+  font-size:15.5px;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--cyan-500);color:#fff}
+:focus-visible{outline:2px solid var(--cyan-500);outline-offset:2px;border-radius:4px}
+img{max-width:100%;display:block}
+a{color:var(--blue-600);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3,h4{font-family:var(--serif);line-height:1.35;color:var(--navy-800);text-wrap:balance}
+code,kbd{
+  font-family:var(--mono);
+  font-size:.86em;
+  background:#EAF0F6;
+  border:1px solid var(--line);
+  border-radius:5px;
+  padding:.1em .38em;
+  color:#12355B;
+}
+kbd{background:var(--navy-800);color:#DCEAFF;border-color:var(--navy-800)}
+pre{
+  background:var(--navy-900);
+  color:#C9DFF2;
+  border-radius:10px;
+  padding:14px 16px;
+  overflow-x:auto;
+  font-family:var(--mono);
+  font-size:.85rem;
+  line-height:1.65;
+  margin:10px 0;
+  position:relative;
+}
+pre code{background:none;border:none;color:inherit;padding:0}
+/* 进度条 */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--cyan-500);width:0;z-index:1000;transition:width .1s linear}
+
+/* ============ 侧边栏 ============ */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);
+  background:var(--navy-900);
+  color:#B9CBDE;
+  display:flex;flex-direction:column;
+  z-index:900;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  padding:20px 20px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.brand svg{flex:0 0 auto}
+.brand-name{font-family:var(--serif);font-weight:700;color:#F2F7FB;font-size:16.5px;line-height:1.3}
+.brand-sub{font-size:11px;color:#7E9BB8;letter-spacing:.05em;margin-top:2px}
+.side-nav{flex:1;overflow-y:auto;padding:14px 0 20px;scrollbar-width:thin;scrollbar-color:#24406B transparent}
+.side-nav::-webkit-scrollbar{width:6px}
+.side-nav::-webkit-scrollbar-thumb{background:#24406B;border-radius:3px}
+.nav-group{font-size:11px;letter-spacing:.14em;color:#6E8CA8;padding:17px 24px 7px;font-weight:500}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 22px;margin:2px 8px;
+  border-radius:8px;
+  color:#B9CBDE;font-size:14px;cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background .18s,color .18s;
+}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff;text-decoration:none}
+.nav-item .num{font-family:var(--mono);font-size:11px;color:#5E7EA0;min-width:20px}
+.nav-item.active{
+  background:rgba(0,180,216,.14);
+  color:#8EE0F0;
+  border-left-color:var(--cyan-500);
+}
+.nav-item.active .num{color:var(--cyan-300)}
+
+.side-foot{
+  padding:14px 20px;border-top:1px solid rgba(255,255,255,.08);
+  font-size:11.5px;color:#6E8CA8;line-height:1.7;
+}
+.side-foot b{color:#A8C3D9;font-weight:500}
+
+/* ============ 主内容 ============ */
+.main{margin-left:var(--sidebar-w)}
+.topbar{
+  display:none;position:fixed;top:0;left:0;right:0;height:54px;z-index:950;
+  background:var(--navy-900);color:#fff;
+  align-items:center;gap:12px;padding:0 16px;
+  box-shadow:0 2px 10px rgba(7,21,40,.3);
+}
+.topbar .burger{
+  background:none;border:1px solid rgba(255,255,255,.25);border-radius:8px;
+  color:#fff;width:44px;height:44px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.topbar-title{font-family:var(--serif);font-weight:600;font-size:15px}
+.scrim{display:none;position:fixed;inset:0;background:rgba(7,21,40,.5);z-index:880}
+
+/* ============ 封面 ============ */
+.hero{
+  position:relative;
+  min-height:560px;
+  display:flex;align-items:center;
+  background:var(--navy-900);
+  overflow:hidden;
+}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 38%;opacity:.42;animation:heroIn 1.1s cubic-bezier(.22,1,.36,1)}
+@keyframes heroIn{from{opacity:0;transform:scale(1.04)}to{opacity:.42;transform:scale(1)}}
+.hero::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(100deg,rgba(7,21,40,.96) 0%,rgba(10,31,60,.86) 34%,rgba(11,37,69,.45) 68%,rgba(11,37,69,.25) 100%),
+    linear-gradient(0deg,rgba(7,21,40,.55) 0%,transparent 40%);
+}
+.hero-contour{
+  position:absolute;inset:0;opacity:.5;pointer-events:none;
+}
+.hero-contour path{stroke:#6FB7D9;stroke-width:.8;fill:none;stroke-dasharray:6 10;animation:dash 30s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-320}}
+.hero-inner{position:relative;z-index:2;max-width:900px;padding:70px 48px 64px}
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12.5px;letter-spacing:.18em;color:var(--cyan-300);
+  border:1px solid rgba(0,180,216,.4);border-radius:999px;
+  padding:5px 14px;background:rgba(0,180,216,.1);
+  margin-bottom:22px;
+}
+.hero-kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan-500);animation:pulse 2.4s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{
+  color:#F4F9FE;font-size:clamp(30px,4.6vw,52px);font-weight:900;
+  line-height:1.22;margin-bottom:16px;letter-spacing:.01em;
+}
+.hero h1 .accent{color:var(--cyan-300)}
+.hero-sub{color:#C6D7E8;font-size:clamp(14.5px,1.6vw,17px);max-width:620px;font-weight:300;line-height:1.85}
+.hero-stats{
+  display:flex;flex-wrap:wrap;gap:0;margin-top:34px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;padding:6px 8px;max-width:640px;
+}
+.stat{flex:1;min-width:110px;padding:12px 16px}
+.stat b{display:block;font-family:var(--serif);font-size:24px;color:#fff;font-weight:700}
+.stat span{font-size:12px;color:#8FA9C2}
+.stat + .stat{border-left:1px solid rgba(255,255,255,.12)}
+.hero-cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 22px;border-radius:10px;font-size:14.5px;font-weight:500;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+}
+.btn:hover{text-decoration:none;transform:translateY(-1px)}
+.btn-primary{background:var(--cyan-500);color:#04263A;box-shadow:0 6px 18px rgba(0,180,216,.35)}
+.btn-primary:hover{background:var(--cyan-300);color:#04263A}
+.btn-ghost{border:1px solid rgba(255,255,255,.35);color:#E8F1F9;background:rgba(255,255,255,.04)}
+.btn-ghost:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* ============ 章节通用 ============ */
+.wrap{max-width:880px;margin:0 auto;padding:56px 40px 10px}
+section{scroll-margin-top:60px}
+.sec-head{margin-bottom:26px}
+.sec-kicker{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;color:var(--blue-600);
+  text-transform:uppercase;
+}
+.sec-kicker::after{content:"";flex:1;height:1px;background:var(--line)}
+.sec-head h2{
+  font-size:clamp(24px,3vw,32px);font-weight:700;margin:10px 0 8px;
+}
+.sec-head p{color:var(--muted);font-size:15px;max-width:680px}
+.lead{font-size:16px;color:#33475B}
+p{margin:12px 0}
+ul,ol{margin:10px 0 10px 22px}
+li{margin:5px 0}
+b,strong{color:#16324F;font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.divider{height:1px;background:var(--line);margin:44px 0 0}
+
+/* 章节脚标 */
+.sec-tag{
+  display:inline-block;font-size:11.5px;color:var(--blue-600);
+  background:var(--accent-soft);border:1px solid #BFE7F1;
+  border-radius:999px;padding:2px 11px;margin-bottom:10px;letter-spacing:.04em;
+}
+
+/* 卡片 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:20px 0}
+.cards-4{grid-template-columns:repeat(2,1fr)}
+.card{
+  background:var(--card);border:1px solid var(--line-soft);border-radius:12px;
+  padding:20px;transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+.card:hover{border-color:#B9D7E6;transform:translateY(-2px);box-shadow:0 10px 26px rgba(11,37,69,.08)}
+.card h3{font-size:16.5px;margin-bottom:8px;display:flex;align-items:center;gap:9px}
+.card p{font-size:13.8px;color:var(--muted);margin:0;line-height:1.75}
+.card-icon{
+  width:36px;height:36px;border-radius:9px;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy-800);color:var(--cyan-300);
+}
+.card-icon svg{width:19px;height:19px}
+.card .tag{
+  display:inline-block;font-size:11px;color:var(--blue-600);
+  background:var(--accent-soft);border-radius:5px;padding:1px 8px;margin-top:10px;
+}
+
+/* 时间轴（三列 grid） */
+.timeline{
+  display:grid;grid-template-columns:86px 44px 1fr;
+  row-gap:0;margin:24px 0 8px;
+}
+.tl-row{display:contents}
+.tl-year{
+  text-align:right;padding:16px 12px 16px 0;
+  font-family:var(--mono);font-weight:600;color:var(--blue-600);font-size:14.5px;
+  align-self:start;
+}
+.tl-axis{position:relative;width:44px;justify-self:center;display:flex;justify-content:center;align-self:stretch}
+.tl-axis::before{content:"";position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:2px;background:var(--line)}
+.tl-row:first-child .tl-axis::before{background:linear-gradient(to bottom,transparent 12%,var(--cyan-500) 32%)}
+.tl-row:last-child .tl-axis::before{background:linear-gradient(to top,transparent 12%,var(--cyan-500) 32%)}
+.tl-dot{position:relative;z-index:1;width:12px;height:12px;border-radius:50%;background:var(--cyan-500);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--cyan-500);margin-top:16px;flex:0 0 auto}
+.tl-body{padding:10px 0 26px 18px}
+.tl-body h4{font-size:15.5px;margin-bottom:3px;color:var(--navy-800)}
+.tl-body p{font-size:14px;color:var(--muted);margin:0;line-height:1.7}
+
+/* 步骤列表 */
+.steps{list-style:none;margin:18px 0;padding:0;counter-reset:step}
+.step{
+  position:relative;padding:0 0 0 52px;margin:0 0 4px;counter-increment:step;
+}
+.step::before{
+  content:counter(step);
+  position:absolute;left:0;top:2px;
+  width:34px;height:34px;border-radius:50%;
+  background:var(--navy-800);color:var(--cyan-300);
+  font-family:var(--mono);font-weight:600;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  border:3px solid var(--paper);box-shadow:0 0 0 1px var(--navy-800);
+}
+.step:not(:last-child)::after{
+  content:"";position:absolute;left:17px;top:40px;bottom:-8px;width:2px;background:var(--line);
+}
+.step h4{font-size:16px;margin:2px 0 6px}
+.step .step-body{margin-bottom:18px}
+.step .step-body p,.step .step-body li{font-size:15px}
+.step .step-body ul,.step .step-body ol{margin-left:20px}
+.step .act{display:block;margin-top:6px;font-size:13.5px;color:var(--muted)}
+.step .act code{font-size:.85em}
+
+/* 检查项 */
+.check{display:flex;gap:10px;align-items:flex-start;margin:7px 0;font-size:14.5px;cursor:pointer}
+.check input{margin-top:5px;accent-color:var(--cyan-500);width:16px;height:16px;flex:0 0 auto;cursor:pointer}
+.check.done{color:var(--muted);text-decoration:line-through;text-decoration-color:#9DB4C8}
+
+/* 提示框 */
+.callout{
+  border-radius:10px;padding:14px 18px 14px 16px;margin:16px 0;
+  font-size:14.5px;line-height:1.8;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.callout .ico{flex:0 0 auto;margin-top:3px}
+.callout.note{background:var(--accent-soft);border:1px solid #BFE7F1}
+.callout.note .ico{color:var(--blue-600)}
+.callout.warn{background:var(--sand-100);border:1px solid #F0D9AC}
+.callout.warn .ico{color:#B97B12}
+.callout.tip{background:#EDF5EC;border:1px solid #CBE3C8}
+.callout.tip .ico{color:#4C7A3D}
+.callout b{font-size:13.5px}
+.callout p{margin:2px 0 0}
+
+/* 表格 */
+.tbl-wrap{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:12px;background:#fff}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14.2px}
+caption{
+  text-align:left;padding:11px 16px;font-weight:600;color:var(--navy-800);
+  border-bottom:1px solid var(--line);background:#FBFDFE;font-size:14px;font-family:var(--serif);
+}
+th,td{padding:9px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line-soft);word-break:break-word}
+th{background:#F2F7FB;color:var(--navy-800);font-weight:600;font-size:13.2px;letter-spacing:.02em}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:hover td{background:#FAFCFE}
+
+/* 图容器 */
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin:18px 0;overflow-x:auto}
+.chart-box .katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 2px}
+.chart-box{position:relative}
+.copy-fx{position:absolute;top:8px;right:8px;width:30px;height:30px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s,color .18s,border-color .18s;z-index:2}
+.copy-fx:hover{color:var(--blue);border-color:var(--blue);background:#f4f8fc}
+.copy-fx.done{color:#1a7f37;border-color:#1a7f37}
+@media (hover:none){.copy-fx{opacity:1}}
+.chart-title{font-family:var(--serif);font-weight:600;font-size:14.5px;color:var(--navy-800);margin-bottom:2px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.chart-cap{font-size:12.5px;color:var(--muted);margin:8px 2px 0;line-height:1.65}
+.chart-flag{font-size:10.5px;color:#8a6d1f;background:var(--sand-100);border:1px solid #F0D9AC;border-radius:999px;padding:1px 9px;white-space:nowrap}
+#chartFlow,#chartHydro,#chartProfile{width:100%;height:380px}
+#chartProfile{height:400px}
+#chartFlow{height:430px}
+
+/* SVG 示意图 */
+.fig{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0;
+}
+.fig .fig-title{font-family:var(--serif);font-weight:600;font-size:14.5px;color:var(--navy-800);margin-bottom:2px}
+.fig .fig-cap{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7}
+.fig svg{width:100%;height:auto;display:block}
+.fig-flag{font-size:10.5px;color:#8a6d1f;background:var(--sand-100);border:1px solid #F0D9AC;border-radius:999px;padding:1px 9px;float:right}
+
+/* 折叠问答 */
+.acc{margin:14px 0;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+.acc summary{
+  cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px;
+  padding:15px 18px;font-weight:600;color:var(--navy-800);font-size:14.8px;
+  position:relative;
+}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary .q{font-family:var(--mono);font-size:12px;color:var(--cyan-500);background:var(--accent-soft);border-radius:6px;padding:2px 9px;flex:0 0 auto}
+.acc summary::after{
+  content:"+";margin-left:auto;font-size:20px;color:var(--blue-600);font-weight:400;
+  transition:transform .2s;
+}
+.acc[open] summary::after{transform:rotate(45deg)}
+.acc .acc-body{padding:2px 18px 16px 48px;font-size:14px;color:#33475B}
+.acc .acc-body p{margin:6px 0}
+
+/* 资源链接 */
+.res-link{
+  display:flex;gap:14px;align-items:flex-start;
+  border:1px solid var(--line-soft);border-radius:12px;background:#fff;
+  padding:16px 18px;margin:10px 0;
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+  color:inherit;
+}
+.res-link:hover{text-decoration:none;border-color:#B9D7E6;transform:translateY(-2px);box-shadow:0 10px 26px rgba(11,37,69,.08)}
+.res-link .r-ico{
+  width:42px;height:42px;border-radius:10px;flex:0 0 auto;
+  background:var(--navy-800);color:var(--cyan-300);
+  display:flex;align-items:center;justify-content:center;
+}
+.res-link .r-ico svg{width:21px;height:21px}
+.res-link b{display:block;font-size:15px;margin-bottom:3px;color:var(--navy-800);font-family:var(--serif)}
+.res-link span{font-size:13px;color:var(--muted);line-height:1.7}
+.res-link .r-en{font-family:var(--mono);font-size:11px;color:#7E93A6;margin-top:5px;word-break:break-all}
+
+/* 键位/路径行 */
+.pathline{
+  display:flex;align-items:center;gap:8px;background:var(--navy-900);color:#C9DFF2;
+  border-radius:8px;padding:8px 14px;margin:8px 0;font-family:var(--mono);font-size:12.8px;
+}
+.pathline .p-icon{color:var(--cyan-300);flex:0 0 auto}
+.pathline code{background:transparent;border:none;color:inherit;padding:0}
+.copy-btn{
+  margin-left:auto;flex:0 0 auto;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#BFE3F0;
+  border-radius:6px;font-size:12px;padding:6px 12px;min-height:30px;font-family:var(--sans);cursor:pointer;
+}
+.copy-btn:hover{background:rgba(255,255,255,.16);color:#fff}
+
+/* 底部 */
+.footer{
+  margin-top:60px;background:var(--navy-900);color:#8FA9C2;
+  padding:44px 40px 40px;font-size:13px;
+}
+.footer .f-inner{max-width:880px;margin:0 auto}
+.footer h4{color:#E8F1F9;font-family:var(--serif);margin-bottom:10px}
+.footer a{color:var(--cyan-300)}
+.footer .f-src{margin-top:16px;border-top:1px solid rgba(255,255,255,.1);padding-top:14px;font-size:12px;line-height:1.8}
+.footer .f-src a{word-break:break-all}
+
+/* 页内锚点工具条 */
+.toc-mini{display:none}
+
+/* ============ 响应式 ============ */
+@media (max-width:1080px){
+  .sidebar{transform:translateX(-100%);transition:transform .28s ease;box-shadow:0 0 40px rgba(7,21,40,.4)}
+  body.nav-open .sidebar{transform:none}
+  .topbar{display:flex}
+  body.nav-open .scrim{display:block}
+  .main{margin-left:0}
+  .wrap{padding:46px 22px 10px}
+  .hero-inner{padding:60px 24px 52px}
+}
+@media (max-width:640px){
+  body{font-size:14.8px}
+  .hero{min-height:520px}
+  .hero-stats{flex-direction:column}
+  .stat + .stat{border-left:none;border-top:1px solid rgba(255,255,255,.12)}
+  .cards{grid-template-columns:1fr}
+  .timeline{grid-template-columns:64px 30px 1fr}
+  .tl-body{padding-left:12px}
+  .step{padding-left:46px}
+  .step::before{width:31px;height:31px;font-size:13px}
+  .step:not(:last-child)::after{left:15px}
+  .wrap{padding:40px 16px 8px}
+  .sec-head h2{font-size:22px}
+  .chart-box{padding:10px}
+  #chartFlow,#chartHydro{height:340px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+
+/* ============ 三视图与分组导航 ============ */
+.topbar-tabs{display:flex;gap:6px;margin-left:16px;min-width:0}
+.tab-btn{background:none;border:1px solid rgba(255,255,255,.22);color:#C6D7E8;border-radius:8px;padding:6px 14px;font-size:13.5px;font-family:var(--sans);cursor:pointer;transition:background .18s,color .18s,border-color .18s;white-space:nowrap}
+.tab-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.tab-btn.active{background:rgba(0,180,216,.18);border-color:rgba(0,180,216,.55);color:#8EE0F0}
+.view{display:none}
+.view.active{display:block}
+.view-head{max-width:880px;margin:0 auto;padding:52px 40px 8px}
+.vh-kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:#4E7FA8;text-transform:uppercase}
+.view-head h2{font-family:var(--serif);font-size:clamp(24px,3vw,32px);color:var(--navy);margin:6px 0 10px}
+.view-head p{color:#5A6B7B;max-width:720px;line-height:1.8;margin:0}
+.group-nav{max-width:880px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:34px 40px 4px}
+.gnav-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 20px;text-decoration:none;transition:transform .18s,box-shadow .18s,border-color .18s;display:block}
+.gnav-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(11,37,69,.08);border-color:#8CC8E0}
+.gnav-card .gn-num{font-family:var(--mono);font-size:11.5px;color:#4E7FA8;letter-spacing:.08em}
+.gnav-card h3{font-family:var(--serif);font-size:18px;color:var(--navy);margin:6px 0 8px}
+.gnav-card p{font-size:13px;color:#5A6B7B;line-height:1.7;margin:0 0 10px}
+.gnav-card .gn-list{display:block;font-size:12.5px;color:#7E93A6;line-height:1.9;margin-bottom:12px}
+.gnav-card .gn-go{display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:13px;color:#0B7A96;font-weight:600}
+.seg-nav{max-width:880px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;padding:8px 40px 0}
+.seg-btn{background:#fff;border:1px solid var(--line);color:#33475B;border-radius:999px;padding:8px 18px;font-size:14px;font-family:var(--sans);cursor:pointer;transition:background .18s,color .18s,border-color .18s}
+.seg-btn:hover{border-color:#8CC8E0;color:#0B7A96}
+.seg-btn.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.nav-group{cursor:pointer;width:100%;text-align:left;background:none;border:none;font-family:var(--sans)}
+.nav-group.active{color:#8EE0F0}
+.fig{margin:20px 0;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.fig-title{display:flex;align-items:center;gap:8px;padding:12px 16px;font-size:14.5px;font-weight:600;color:var(--navy);background:#F7FAFC;border-bottom:1px solid var(--line)}
+.fig-flag{margin-left:auto;font-size:11px;font-weight:500;color:#B97B12;background:#FBF1DD;border:1px solid #EED9AC;border-radius:999px;padding:2px 9px;font-family:var(--sans);white-space:nowrap}
+.fig img{display:block;width:100%;height:auto;max-width:780px;margin:0 auto}
+.fig img + img{margin-top:8px}
+.fig-cap{padding:10px 16px 12px;font-size:12.5px;color:#5A6B7B;line-height:1.7;border-top:1px solid #EDF1F5;background:#FBFDFE}
+.fig-cap b{color:#33475B}
+.dl-card{display:flex;align-items:center;gap:14px;background:#F2F8FB;border:1px solid #C8E2EE;border-radius:12px;padding:14px 18px;margin:16px 0}
+.dl-card .dl-ico{flex:0 0 auto;width:42px;height:42px;border-radius:10px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center}
+.dl-card .dl-info{flex:1;min-width:0}
+.dl-card .dl-info b{color:var(--navy);font-size:14.5px}
+.dl-card .dl-info span{display:block;font-size:12.5px;color:#5A6B7B;line-height:1.6;margin-top:2px}
+.dl-card .dl-btn{flex:0 0 auto;background:var(--cyan-500);color:#06324A;text-decoration:none;font-weight:600;border-radius:8px;padding:9px 14px;font-size:13px}
+@media (max-width:900px){
+  .group-nav{grid-template-columns:repeat(2,1fr);padding:24px 16px 4px}
+  .view-head{padding:40px 16px 8px}
+  .seg-nav{padding:6px 16px 0}
+  .dl-card{flex-wrap:wrap}
+  .dl-card .dl-btn{width:100%;text-align:center}
+}
+@media (max-width:640px){
+  .group-nav{grid-template-columns:1fr}
+  .topbar{flex-wrap:wrap;height:auto;min-height:54px;padding:7px 12px;row-gap:6px}
+  .topbar-title{font-size:13.5px}
+  .topbar-tabs{order:3;flex:1 1 100%;margin:0;gap:6px;justify-content:stretch}
+  .tab-btn{flex:1;padding:8px 4px;font-size:12.5px;text-align:center;min-height:32px}
+}
+.f-src a{white-space:nowrap}
+/* 侧边栏：仅显示当前视图条目 */
+.side-nav .nav-item{display:none}
+body[data-view="home"] .nav-item[data-view="home"],
+body[data-view="practical"] .nav-item[data-view="practical"],
+body[data-view="advanced"] .nav-item[data-view="advanced"],
+body[data-view="reference"] .nav-item[data-view="reference"]{display:flex}
+/* 返回首页入口 */
+.brand{cursor:pointer}
+.topbar-title{cursor:pointer}
+.back-home{display:inline-flex;align-items:center;gap:6px;color:#0B7A96;font-size:13px;font-weight:600;text-decoration:none;margin-bottom:14px}
+.back-home:hover{color:#06324A}
+.back-home svg{transition:transform .18s}
+.back-home:hover svg{transform:translateX(-3px)}
+
+
+/* ============ 章节内两级导航（TOC） · 样式 ============ */
+section.wrap.toc-on{max-width:1180px}
+.toc-layout{display:flex;gap:32px;align-items:flex-start}
+.toc-main{flex:1;min-width:0}
+.toc-rail{flex:0 0 270px;position:sticky;top:24px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#C9D8E4 transparent;padding-bottom:28px}
+.toc-panel{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(11,37,69,.06)}
+.toc-head{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;user-select:none;background:#F7FAFC;border-bottom:1px solid var(--line);font-size:14px;font-weight:600;color:var(--navy)}
+.toc-head svg{flex:0 0 auto;color:#0B7A96}
+.toc-chev{margin-left:auto;transition:transform .2s;color:#5A6B7B}
+.toc-panel.collapsed .toc-chev{transform:rotate(-90deg)}
+.toc-panel.collapsed .toc-body{display:none}
+.toc-count{margin-left:auto;font-size:11.5px;font-weight:500;color:#7E93A6;background:#EDF2F7;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.toc-body{padding:8px 10px 12px}
+.toc-group{margin-bottom:2px;opacity:.36;transition:opacity .25s}
+.toc-group:hover{opacity:1}
+.toc-group.active{opacity:1}
+.toc-group .toc-l1{transition:background .2s,color .2s}
+.toc-l1{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:#33475B;cursor:pointer;font-family:var(--sans);line-height:1.4}
+.toc-l1:hover{background:#F0F6FA;color:#0B7A96}
+.toc-l1.active{background:rgba(0,180,216,.12);color:#0B7A96}
+.toc-badge{flex:0 0 auto;width:20px;height:20px;border-radius:6px;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+.toc-steps{display:flex;flex-direction:column;gap:1px;margin:1px 0 6px 34px;border-left:1px solid #DDE7EF;padding-left:8px}
+.toc-l2{display:block;width:100%;text-align:left;background:none;border:none;padding:6px 8px;border-radius:6px;font-size:12.5px;color:#5A6B7B;cursor:pointer;font-family:var(--sans);line-height:1.5}
+.toc-l2:hover{background:#F0F6FA;color:#0B7A96}
+.toc-l2.active{color:#0B7A96;font-weight:600}
+@media (max-width:1000px){
+  .toc-layout{flex-direction:column}
+  .toc-main{order:2;width:100%}
+  .toc-rail{order:1;position:static;flex:none;width:100%;max-height:none;overflow:visible;padding-bottom:0}
+  .toc-panel{margin:0 0 22px}
+  .toc-body{max-height:calc(100vh - 210px);overflow-y:auto}
+}
+</style>
+</head>
+<body data-view="home">
+<div class="progress-bar" id="progressBar"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#12355B"/><path d="M6 20c3-6 6-6 8 0s5 6 8 0c1.6-3.2 3-4 4-4v4c-1 0-2 .8-3 2.6-2.6 5.2-5.6 4-8 0s-5-4-8 0H6z" fill="#00B4D8"/></svg>
+    <div>
+      <div class="brand-name">HEC-RAS 教程</div>
+      <div class="brand-sub">RIVER ANALYSIS SYSTEM</div>
+    </div>
+  </div>
+  <nav class="side-nav" id="sideNav" aria-label="章节导航">
+    <button class="nav-group active" data-view="home">教程目录</button>
+    <a class="nav-item" href="#home/sec1" data-view="home" data-target="sec1"><span class="num">01</span>认识 HEC-RAS</a>
+    <a class="nav-item" href="#home/sec2" data-view="home" data-target="sec2"><span class="num">02</span>核心能力</a>
+    <a class="nav-item" href="#home/sec3" data-view="home" data-target="sec3"><span class="num">03</span>安装与界面</a>
+    <a class="nav-item" href="#home/sec4" data-view="home" data-target="sec4"><span class="num">04</span>核心概念</a>
+    <a class="nav-item" href="#home/sec5" data-view="home" data-target="sec5"><span class="num">05</span>建模总流程</a>
+    <button class="nav-group" data-view="practical">官方教程实战</button>
+    <a class="nav-item" href="#practical/p-sec1" data-view="practical" data-target="p-sec1"><span class="num">01</span>1D 恒定流建模</a>
+    <a class="nav-item" href="#practical/p-sec2" data-view="practical" data-target="p-sec2"><span class="num">02</span>1D 非恒定流</a>
+    <a class="nav-item" href="#practical/p-sec3" data-view="practical" data-target="p-sec3"><span class="num">03</span>2D 建模入门</a>
+    <a class="nav-item" href="#practical/p-sec4" data-view="practical" data-target="p-sec4"><span class="num">04</span>RAS Mapper</a>
+    <button class="nav-group" data-view="advanced">进阶专题</button>
+    <a class="nav-item" href="#advanced/a-sec1" data-view="advanced" data-target="a-sec1"><span class="num">01</span>泥沙输移</a>
+    <a class="nav-item" href="#advanced/a-sec2" data-view="advanced" data-target="a-sec2"><span class="num">02</span>水质模拟</a>
+    <button class="nav-group" data-view="reference">学习参考</button>
+    <a class="nav-item" href="#reference/r-sec1" data-view="reference" data-target="r-sec1"><span class="num">01</span>理论基础</a>
+    <a class="nav-item" href="#reference/r-sec2" data-view="reference" data-target="r-sec2"><span class="num">02</span>常见问题</a>
+    <a class="nav-item" href="#reference/r-sec3" data-view="reference" data-target="r-sec3"><span class="num">03</span>学习资源</a>
+  </nav>
+  <div class="side-foot">
+    依据 <b>USACE HEC 官方文档与教程</b><br>整理编译 · 持续更新
+  </div>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<header class="topbar">
+  <button class="burger" id="burger" aria-label="打开目录" aria-expanded="false">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <div class="topbar-title">HEC-RAS 从入门到精通</div>
+  <div class="topbar-tabs" role="tablist" aria-label="教程分区">
+    <button class="tab-btn active" data-view="home">教程目录</button>
+    <button class="tab-btn" data-view="practical">官方教程实战</button>
+    <button class="tab-btn" data-view="advanced">进阶专题</button>
+    <button class="tab-btn" data-view="reference">学习参考</button>
+  </div>
+</header>
+
+<main class="main">
+  <div class="view active" id="view-home">
+  <header class="hero">
+    <div class="hero-bg" style="background-image:url('assets/hero.jpg')"></div>
+    <svg class="hero-contour" viewBox="0 0 900 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <path d="M-20 120 C 150 60, 260 190, 420 140 S 700 60, 920 130"/>
+      <path d="M-20 200 C 140 150, 280 270, 440 220 S 720 130, 920 210"/>
+      <path d="M-20 300 C 160 240, 300 380, 470 320 S 730 230, 920 300"/>
+      <path d="M-20 400 C 180 350, 320 470, 500 420 S 740 340, 920 400"/>
+      <path d="M-20 480 C 190 430, 340 540, 520 490 S 750 420, 920 480"/>
+    </svg>
+    <div class="hero-inner">
+      <div class="hero-kicker">美国陆军工程兵团 · 官方开源软件</div>
+      <h1>HEC-RAS 从入门到精通<br><span class="accent">河流水力学建模完整教程</span></h1>
+      <p class="hero-sub">以美国陆军工程兵团水文工程中心（HEC）官方文档与教程为蓝本，系统讲解一维恒定流、一维/二维非恒定流、泥沙输移与水质模拟，带你从零完成第一个可运行的河流模型。</p>
+      <div class="hero-stats">
+        <div class="stat"><b>1995</b><span>首个版本发布</span></div>
+        <div class="stat"><b>4</b><span>大分析组件</span></div>
+        <div class="stat"><b>100%</b><span>免费开源</span></div>
+        <div class="stat"><b>1D + 2D</b><span>全维度水动力</span></div>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#practical/p-sec1">开始第一个模型</a>
+        <a class="btn btn-ghost" href="#reference/r-sec3">官方学习资源</a>
+      </div>
+    </div>
+  </header>
+
+    <div class="group-nav">
+      <a class="gnav-card" href="#home">
+        <span class="gn-num">PART 01 · 入门基础</span>
+        <h3>教程目录</h3>
+        <p>从认识 HEC-RAS、核心能力到安装与界面、核心概念与整体建模流程，建立完整的知识框架。</p>
+        <span class="gn-list">01 认识 HEC-RAS · 02 核心能力 · 03 安装与界面 · 04 核心概念 · 05 建模总流程</span>
+        <span class="gn-go">进入教程目录 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="gnav-card" href="#practical/p-sec1">
+        <span class="gn-num">PART 02 · 官方教程实战</span>
+        <h3>官方教程实战</h3>
+        <p>照 HEC 官方分步教程动手做：Merced 河 1D 恒定流、1D 非恒定流、Bald Eagle Creek 2D 建模与 RAS Mapper 应用。</p>
+        <span class="gn-list">01 1D 恒定流 · 02 1D 非恒定流 · 03 2D 建模 · 04 RAS Mapper</span>
+        <span class="gn-go">进入官方教程实战 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="gnav-card" href="#advanced/a-sec1">
+        <span class="gn-num">PART 03 · 进阶专题</span>
+        <h3>进阶专题</h3>
+        <p>面向建模进阶的专题模块：泥沙输移与水质模拟，更多专题持续扩充中。</p>
+        <span class="gn-list">01 泥沙输移 · 02 水质模拟 · 持续扩展中…</span>
+        <span class="gn-go">进入进阶专题 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="gnav-card" href="#reference/r-sec1">
+        <span class="gn-num">PART 04 · 学习参考</span>
+        <h3>学习参考</h3>
+        <p>理论基础、常见问题排查与官方学习资源——查理论、查报错、找官方入口，随查随用。</p>
+        <span class="gn-list">01 理论基础 · 02 常见问题 · 03 学习资源</span>
+        <span class="gn-go">进入学习参考 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+
+  <!-- ================= 01 认识 HEC-RAS ================= -->
+  <section id="sec1" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">01 · Overview</div>
+      <h2>认识 HEC-RAS</h2>
+      <p>HEC-RAS（Hydrologic Engineering Center – River Analysis System）是美国陆军工程兵团水文工程中心开发的河流分析系统，是全球应用最广的开源免费水力学建模软件之一。</p>
+    </div>
+    <p class="lead">HEC-RAS 允许你执行<strong>一维恒定流</strong>、<strong>一维与二维非恒定流</strong>水力学计算、<strong>泥沙输移/动床</strong>模拟、<strong>水温与水质</strong>模拟。它是一个集成系统：图形界面（GUI）、独立的水力分析计算内核、数据存储与管理、图形与报告输出共同组成一个整体，四大分析组件共享同一套几何数据表示和计算例程。</p>
+    <p>软件由美国陆军工程兵团（US Army Corps of Engineers）水文工程中心（HEC，隶属于水资源研究所 IWR）在加州戴维斯开发，<strong>完全免费</strong>，可从官方网站下载，无 License 限制。自 1995 年 1.0 版发布以来，它逐步从单一的一维恒定流计算工具，发展为覆盖 1D/2D 非恒定流、溃坝分析、泥沙、水质乃至泥石流模拟的综合性水动力学平台，也是 FEMA 洪泛区制图、水利工程设计、防洪调度研究中最常被引用的标准工具。</p>
+
+    <div class="sec-tag">版本沿革</div>
+    <div class="timeline">
+      <div class="tl-row"><div class="tl-year">1995</div><div class="tl-axis"><span class="tl-dot"></span></div><div class="tl-body"><h4>HEC-RAS 1.0 发布</h4><p>7 月发布首个版本，具备一维恒定流（steady flow）水面线计算能力，取代了此前的 HEC-2。</p></div></div>
+      <div class="tl-row"><div class="tl-year">1997</div><div class="tl-axis"><span class="tl-dot"></span></div><div class="tl-body"><h4>2.x 引入非恒定流</h4><p>加入一维非恒定流模拟（求解器改编自 UNET 模型），可模拟洪水波的传播。</p></div></div>
+      <div class="tl-row"><div class="tl-year">2008</div><div class="tl-axis"><span class="tl-dot"></span></div><div class="tl-body"><h4>4.0 泥沙与水质</h4><p>加入准非恒定流泥沙输移/动床计算与水质模拟组件，功能覆盖显著扩展。</p></div></div>
+      <div class="tl-row"><div class="tl-year">2016</div><div class="tl-axis"><span class="tl-dot"></span></div><div class="tl-body"><h4>5.0 二维时代</h4><p>正式加入二维非恒定流求解器与 RAS Mapper 空间数据环境，支持 1D/2D 耦合建模与淹没制图。</p></div></div>
+      <div class="tl-row"><div class="tl-year">2020</div><div class="tl-axis"><span class="tl-dot"></span></div><div class="tl-body"><h4>6.0 全面增强</h4><p>加入空间降水/入渗、2D 内桥梁水力学、2D 泥沙、非牛顿流体（泥石流）、新的显式浅水求解器等。</p></div></div>
+      <div class="tl-row"><div class="tl-year">2023–24</div><div class="tl-axis"><span class="tl-dot"></span></div><div class="tl-body"><h4>6.4 / 6.6 迭代</h4><p>6.4（2023-06）加入 1D/2D 侵占（encroachment）分析、流量优化；6.6（2024-09）加入 HEC-RAS 2025 网格导入、粗糙度标定区等。</p></div></div>
+      <div class="tl-row"><div class="tl-year">2025+</div><div class="tl-axis"><span class="tl-dot"></span></div><div class="tl-body"><h4>HEC-RAS 2025 新一代平台</h4><p>HEC 正在开发全新架构的 HEC-RAS 2025（Beta），重构界面与网格系统、引入 GPU 求解器与实时渲染；传统 6.x 系列与 7.0 继续并行维护。</p></div></div>
+    </div>
+
+    <div class="sec-tag">典型应用场景</div>
+    <div class="cards">
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20V9l5 3 3-5 3 4 5-6v15"/></svg></span>洪泛区管理与洪水保险研究</h3><p>计算不同频率洪水的水面线，划定行洪区与洪泛区边界，支持 FEMA 洪水保险研究（Flood Insurance Study）中的洪泛区侵占（floodway encroachment）分析。</p><span class="tag">恒定流为主</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-9 4 6 3-4 7 8M3 21h18"/></svg></span>溃坝与堤防溃决分析</h3><p>模拟大坝溃决、堤防漫顶与溃口发展，生成下游洪水演进过程线与淹没范围，支撑应急预案与风险图编制。</p><span class="tag">非恒定流 / 2D</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/></svg></span>河道整治与桥梁设计</h3><p>评估桥梁、涵洞、堰等水工建筑物对水位的影响，进行河道糙率、束窄、清淤等设计方案比选与敏感性分析。</p><span class="tag">恒定流 / 非恒定流</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c2-6 4-6 5-2s3 6 5 3 4-1 5-2M3 20h18"/></svg></span>泥沙与河道演变研究</h3><p>模拟长时间尺度上的冲刷与淤积、水库淤积、河道疏浚影响、河床粗化（armoring），评估取水与输沙工程效果。</p><span class="tag">泥沙输移</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0-9-9 9 9 0 0 0 5 8"/><path d="M12 12l4-2M12 12V7"/></svg></span>城市雨洪与排水模拟</h3><p>与水文模型（如 HEC-HMS）耦合，模拟城市河道、管网出口、蓄滞洪区的洪水演进过程，评估内涝风险。</p><span class="tag">1D/2D 耦合</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4 8-4zM4 11l8 4 8-4M4 15l8 4 8-4"/></svg></span>水温与水质模拟</h3><p>模拟河流水温沿程变化与营养盐、溶解氧等水质组分的迁移转化，评估排污口与取水工程影响。</p><span class="tag">水质分析</span></div>
+    </div>
+  </section>
+
+  <!-- ================= 02 核心能力 ================= -->
+  <section id="sec2" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">02 · Capabilities</div>
+      <h2>四大分析组件与特色能力</h2>
+      <p>HEC-RAS 的核心是四个河流分析组件，外加一个空间数据处理环境 RAS Mapper。所有组件共享同一套几何数据与计算例程。</p>
+    </div>
+    <div class="cards cards-4">
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 20V10l4 2 3-6 3 5 4-4v13"/></svg></span>恒定流 · 水面线计算</h3><p>计算恒定渐变流的水面线，可处理完整河网、树枝状水系或单一河段；支持亚临界、超临界与混合流态。基本算法求解一维能量方程，摩阻损失用曼宁公式，收缩/扩张损失用流速水头变化乘系数；急变流（水跃、桥梁、汇流口）改用动量方程。</p><span class="tag">子/超/混合临界流</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c1.5-5 3.5-5 4.5-2S10 17 12 14s3.5-1 5-3.5 2.5-2.5 4-1.5M3 21h18"/></svg></span>非恒定流 · 1D/2D 水动力</h3><p>模拟一维、二维或一维+二维耦合的非恒定流，覆盖完整开放河道网络、洪泛区与冲积扇。支持溃坝分析、堤防溃决与漫顶、泵站、通航闸运行、有压管道、自动率定、用户自定义规则等。1D 求解器改编自 UNET，以亚临界为主；2D 提供多种浅水方程求解器。</p><span class="tag">洪水演进 / 溃坝</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span>泥沙输移 · 动床计算</h3><p>模拟一维与二维的泥沙输移/动床冲刷淤积（准非恒定流或全非恒定流），按粒径分级计算输沙能力，可模拟水力分选与河床粗化。支持全河网、河道疏浚、堤防与侵占方案、多种输沙公式，以及 SIAM 泥沙影响分析和 BSTEM 岸坡稳定性。</p><span class="tag">冲刷 / 淤积 / 粗化</span></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0-9-9 9 9 0 0 0 5 8"/><path d="M12 12l4-2M12 12V7"/></svg></span>水质与水温模拟</h3><p>进行详细的河流水温分析（完整热平衡）和有限水质组分的迁移转化模拟：藻类、溶解氧（DO）、碳质生化需氧量（CBOD）、溶解态正磷酸盐与有机磷、溶解态氨氮/亚硝氮/硝氮与有机氮，采用一维对流-扩散方程（QUICKEST-ULTIMATE 格式）。</p><span class="tag">水温 / 营养盐 / DO</span></div>
+    </div>
+
+    <div class="sec-tag">RAS Mapper 空间环境</div>
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg></span><div><b>RAS Mapper 不是单独的"第五组件"，而是空间数据工作台。</b>它用于：建立水平坐标系统、创建 HEC-RAS 地形模型（Terrain）、布置几何数据模型并提取地形数据、生成 2D 计算网格、以地图/绘图/表格形式可视化结果，还能从 USGS 与 GRiD 服务在线下载地形数据。</div></div>
+
+    <div class="sec-tag">主要模块与产出对比</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:20%"><col style="width:32%"><col style="width:24%"><col style="width:24%"></colgroup>
+      <caption>四大组件速览</caption>
+      <thead><tr><th>组件</th><th>核心输入</th><th>核心输出</th><th>典型应用</th></tr></thead>
+      <tbody>
+        <tr><td><b>恒定流</b></td><td>几何 + 各断面流量 + 下游边界条件</td><td>各方案（Profile）水面线、流速、断面水力要素表</td><td>洪水水面线、行洪区、桥梁壅水</td></tr>
+        <tr><td><b>非恒定流</b></td><td>几何 + 上下游水文过程线/水位过程线 + 初始条件</td><td>随时间变化的水位、流量、淹没范围（可做动画）</td><td>洪水演进、溃坝、调度运行</td></tr>
+        <tr><td><b>泥沙输移</b></td><td>几何 + 准非恒定/非恒定水流 + 床沙级配 + 泥沙边界</td><td>冲淤厚度、床沙级配变化、输沙率随时间变化</td><td>水库淤积、河床演变、疏浚方案</td></tr>
+        <tr><td><b>水质/水温</b></td><td>几何 + 水流 + 初始/边界浓度 + 气象（温度）</td><td>水温与各水质组分时空分布</td><td>热污染、富营养化、排污影响</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>学习路径建议：</b>先掌握 <b>1D 恒定流</b>（官方教程实战 · 01）建立"河网—断面—流量—方案"的完整心智模型，再进入 1D 非恒定流（实战 · 02），最后学习 2D 建模（实战 · 03）与 RAS Mapper 制图（实战 · 04）。泥沙与水质等进阶专题需要以前面的水动力结果为基础。</div></div>
+  </section>
+
+  <!-- ================= 03 安装与界面 ================= -->
+  <section id="sec3" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">03 · Installation</div>
+      <h2>下载、安装与界面初识</h2>
+      <p>HEC-RAS 免费开源，官方下载地址与全量文档均在 HEC 官网；安装流程与 Windows 常规软件一致。</p>
+    </div>
+
+    <div class="sec-tag">下载与系统要求</div>
+    <div class="pathline"><span class="p-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></span><code>https://www.hec.usace.army.mil/software/hec-ras/</code><button class="copy-btn" data-copy="https://www.hec.usace.army.mil/software/hec-ras/">复制</button></div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <caption>官方建议的安装环境（HEC-RAS 6.x / 7.x）</caption>
+      <tbody>
+        <tr><td><b>操作系统</b></td><td>仅 64 位 Windows（6.0 及以上支持 Windows 7/8/8.1/10/11 64 位；7.x 官网标注 Windows 10/11 64 位）。安装前请更新全部系统补丁。6.1 起提供 Linux 计算内核，7.0.1 安装包内含 Linux 编译版计算引擎（配合 WSL 使用）。</td></tr>
+        <tr><td><b>内存</b></td><td>最低 8 GB（大模型建议 16 GB 或以上）。2D 网格与地形数据非常吃内存。</td></tr>
+        <tr><td><b>磁盘</b></td><td>安装包约 171 MB（7.0.1）；建议为项目与地形数据预留数十 GB 空间。</td></tr>
+        <tr><td><b>其他</b></td><td>建议将项目与数据放在非 OneDrive 等云同步目录下，大型模型在云同步中极易损坏或备份缓慢。</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-tag">安装步骤</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>下载安装包</h4><p>进入官网下载页，选择最新稳定版安装包（Setup Package）。若用于生产研究，优先选择最新正式版（如 6.6 / 7.0.x）；如需体验新界面可下载 HEC-RAS 2025 Beta。</p></div></li>
+      <li class="step"><div class="step-body"><h4>运行安装程序</h4><p>解压后运行安装程序，按向导完成安装。HEC-RAS 会同时安装主程序与计算内核（computational engine）。安装目录建议避开用户配置文件路径（如 <code>C:\Users</code>），以获得更好的兼容性与杀毒软件兼容性。</p></div></li>
+      <li class="step"><div class="step-body"><h4>首次启动</h4><p>首次启动会出现设置界面，可调整默认项目目录、单位制等。确认默认项目目录不在企业托管的 OneDrive 目录下。</p></div></li>
+      <li class="step"><div class="step-body"><h4>验证安装</h4><p>启动后通过 <code>Help | About</code> 查看版本号；用随附示例工程或新建空项目测试保存与计算是否正常。</p></div></li>
+    </ol>
+
+    <div class="sec-tag">主界面快速认识</div>
+    <div class="fig">
+      <div class="fig-title">HEC-RAS 主窗口功能分布<span class="fig-flag">示意</span></div>
+      <svg viewBox="0 0 900 300" role="img" aria-label="HEC-RAS 主界面示意">
+        <rect x="0" y="0" width="900" height="300" rx="10" fill="#FFFFFF" stroke="#D9E2EC"/>
+        <rect x="10" y="10" width="880" height="34" rx="6" fill="#0B2545"/>
+        <text x="24" y="32" font-family="Consolas,monospace" font-size="12" fill="#90E0EF">File    Edit    Run    View    Options    GIS Tools    Help</text>
+        <g font-family="Consolas,monospace" font-size="11" fill="#33475B">
+          <rect x="10" y="52" width="880" height="52" rx="6" fill="#F2F7FB" stroke="#D9E2EC"/>
+          <rect x="22" y="62" width="86" height="32" rx="6" fill="#0B2545"/><text x="34" y="82" fill="#90E0EF">项目</text>
+          <rect x="116" y="62" width="86" height="32" rx="6" fill="#1D4E89"/><text x="130" y="82" fill="#fff">几何</text>
+          <rect x="210" y="62" width="86" height="32" rx="6" fill="#1D4E89"/><text x="220" y="82" fill="#fff">水流数据</text>
+          <rect x="304" y="62" width="86" height="32" rx="6" fill="#1D4E89"/><text x="316" y="82" fill="#fff">模拟计算</text>
+          <rect x="398" y="62" width="86" height="32" rx="6" fill="#1D4E89"/><text x="414" y="82" fill="#fff">RAS Mapper</text>
+          <rect x="492" y="62" width="86" height="32" rx="6" fill="#00B4D8"/><text x="506" y="82" fill="#04263A">结果查看</text>
+        </g>
+        <rect x="10" y="112" width="880" height="176" rx="6" fill="#FBFDFE" stroke="#D9E2EC"/>
+        <text x="24" y="136" font-family="Consolas,monospace" font-size="12" fill="#5A6B7B">项目浏览器 / 河网示意图工作区</text>
+        <g stroke="#B9D7E6" stroke-width="2.5" fill="none">
+          <path d="M120 200 C 180 180, 220 230, 300 210 S 420 170, 500 190 S 640 230, 720 200"/>
+          <path d="M300 210 L 380 260"/>
+          <path d="M300 210 L 380 160"/>
+        </g>
+        <g font-family="Consolas,monospace" font-size="10.5" fill="#1D4E89">
+          <text x="700" y="196">下游</text>
+          <text x="90" y="196">上游</text>
+          <line x1="260" y1="180" x2="260" y2="228" stroke="#E9A23B" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="252" y="246" fill="#B97B12">断面</text>
+        </g>
+        <rect x="790" y="118" width="92" height="30" rx="6" fill="#EAF0F6" stroke="#D9E2EC"/><text x="798" y="137" font-family="Consolas,monospace" font-size="11" fill="#33475B">信息栏</text>
+      </svg>
+      <div class="fig-cap">工具栏从左到右依次为：项目（新建/打开/保存工程）→ 几何数据编辑 → 恒定流/非恒定流/泥沙/水质数据编辑 → 各组件计算 → RAS Mapper 地图环境 → 结果（断面、纵剖面、水位过程线、3D 视图等）。</div>
+    </div>
+  </section>
+
+  <!-- ================= 04 核心概念 ================= -->
+  <section id="sec4" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">04 · Key Concepts</div>
+      <h2>建模前必须理解的核心概念</h2>
+      <p>HEC-RAS 的术语体系贯穿所有组件。先建立"几何（Geometry）— 水流（Flow）— 方案（Plan）"三段式数据模型，再掌握河网与断面要素。</p>
+    </div>
+
+    <div class="sec-tag">三段式数据模型</div>
+    <div class="cards">
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M4 20V8l6 4 4-6 6 4v10"/></svg></span>几何数据 Geometry</h3><p>描述河道系统的物理形状：河网结构、断面坐标与高程、桥梁涵洞等建筑物、蓄水区、2D 流场网格、糙率等。文件扩展名 <code>.g01</code>。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-9 4 6 3-4 7 8M3 21h18"/></svg></span>水流数据 Flow</h3><p>描述水的作用：恒定流的各方案流量、非恒定流的水文过程线与边界条件、泥沙级配与输沙边界、水质初始浓度等。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg></span>方案 Plan</h3><p>把"某套几何 + 某套水流"组合起来运行一次的配置，含计算选项（流态、求解器、时间步长等）。每次计算对应一个 Plan，结果可多方案对比。</p></div>
+    </div>
+
+    <div class="sec-tag">河网与断面要素</div>
+    <div class="fig">
+      <div class="fig-title">河网示意：River / Reach / 断面 / 汇流节点<span class="fig-flag">示意</span></div>
+      <svg viewBox="0 0 900 320" role="img" aria-label="河网示意">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1D4E89"/></marker>
+        </defs>
+        <rect x="0" y="0" width="900" height="320" rx="10" fill="#FBFDFE" stroke="#D9E2EC"/>
+        <g stroke="#1D4E89" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M90 60 C 160 90, 200 140, 280 170 S 430 210, 520 190 S 700 140, 820 150"/>
+          <path d="M280 170 C 340 210, 420 250, 520 262"/>
+          <path d="M520 190 C 560 235, 600 262, 640 262"/>
+        </g>
+        <g stroke="#E9A23B" stroke-width="2" fill="none" stroke-dasharray="5 4">
+          <line x1="150" y1="58" x2="150" y2="120"/>
+          <line x1="280" y1="150" x2="280" y2="205"/>
+          <line x1="430" y1="196" x2="430" y2="248"/>
+          <line x1="640" y1="246" x2="640" y2="292"/>
+          <line x1="520" y1="174" x2="520" y2="228"/>
+        </g>
+        <g font-family="Consolas,monospace" font-size="12" fill="#0B2545">
+          <text x="84" y="44" font-weight="bold">上游端（最先绘制点）</text>
+          <text x="150" y="140" fill="#B97B12">XS 1</text>
+          <text x="280" y="222" fill="#B97B12">XS 2</text>
+          <text x="430" y="264" fill="#B97B12">XS 3</text>
+          <text x="520" y="246" fill="#B97B12">XS 4</text>
+          <text x="636" y="308" fill="#B97B12">XS 5</text>
+          <text x="796" y="138" font-weight="bold">下游端</text>
+        </g>
+        <circle cx="520" cy="190" r="9" fill="#00B4D8" stroke="#fff" stroke-width="2.5"/>
+        <text x="448" y="164" font-family="Consolas,monospace" font-size="12.5" fill="#0B7A96" font-weight="bold">汇流节点 Junction</text>
+        <text x="120" y="278" font-family="Consolas,monospace" font-size="12" fill="#5A6B7B">河名 River：一条水系（如 Merced River）</text>
+        <text x="120" y="294" font-family="Consolas,monospace" font-size="12" fill="#5A6B7B">河段 Reach：某条河内的子段（如 Yosemite Valley），有唯一名称</text>
+        <text x="120" y="310" font-family="Consolas,monospace" font-size="12" fill="#5A6B7B">断面 XS：垂直于流向的横截面，用河道桩号 River Station 定位</text>
+        <text x="560" y="326" font-family="Consolas,monospace" font-size="12" fill="#5A6B7B" marker-end="none">← 流向：上游 → 下游</text>
+      </svg>
+      <div class="fig-cap">绘制河段中心线时，<b>先画上游点、后画下游点</b>，双击结束。汇流点（Junction）自动连接各支流，并在节点处用动量方程计算能量损失。</div>
+    </div>
+
+    <div class="fig">
+      <div class="fig-title">一维断面要素：河道、滩地与岸滩位置<span class="fig-flag">示意</span></div>
+      <svg viewBox="0 0 900 300" role="img" aria-label="断面示意">
+        <rect x="0" y="0" width="900" height="300" rx="10" fill="#FBFDFE" stroke="#D9E2EC"/>
+        <g fill="#B8D8EA">
+          <path d="M0 150 L150 150 L220 200 L360 262 L540 262 L680 200 L750 150 L900 150 L900 300 L0 300 Z" fill="#CFE6F2"/>
+          <path d="M0 180 L120 180 L220 230 L360 275 L540 275 L680 230 L780 180 L900 180 L900 300 L0 300 Z" fill="#9BC8E0"/>
+          <rect x="0" y="150" width="900" height="26" fill="#8FB8D2"/>
+        </g>
+        <path d="M0 150 L150 150 L220 200 L360 262 L540 262 L680 200 L750 150 L900 150" fill="none" stroke="#0B2545" stroke-width="3"/>
+        <line x1="360" y1="275" x2="360" y2="262" stroke="#E9A23B" stroke-width="2.5" stroke-dasharray="4 3"/>
+        <line x1="540" y1="275" x2="540" y2="262" stroke="#E9A23B" stroke-width="2.5" stroke-dasharray="4 3"/>
+        <g font-family="Consolas,monospace" font-size="12" fill="#0B2545">
+          <text x="20" y="140">左岸滩地 Left Overbank</text>
+          <text x="380" y="300">主槽 Channel（两 Bank Station 之间）</text>
+          <text x="640" y="140">右岸滩地 Right Overbank</text>
+          <text x="322" y="256" fill="#B97B12" font-weight="bold">左岸位置</text>
+          <text x="548" y="256" fill="#B97B12" font-weight="bold">右岸位置</text>
+        </g>
+        <g stroke="#00B4D8" stroke-width="2.5" fill="none">
+          <path d="M30 128 C 160 122, 300 150, 360 150 S 540 150, 870 126" stroke-dasharray="7 4"/>
+        </g>
+        <text x="660" y="112" font-family="Consolas,monospace" font-size="12" fill="#0B7A96">水面线 WS（各 Profile）</text>
+        <text x="30" y="80" font-family="Consolas,monospace" font-size="12" fill="#5A6B7B">每个断面需输入：断面线坐标、左右岸位置、主槽/滩地曼宁 n 值、上下游相邻断面距离（Reach Lengths）</text>
+      </svg>
+      <div class="fig-cap">HEC-RAS 把断面分为主槽与左右滩地三个子断面分别计算流量分配；岸滩位置（Bank Stations）与河道桩号（River Station）共同定义几何。无效流动区（Ineffective Flow Area）等概念在洪水研究中经常用到。</div>
+    </div>
+
+    <div class="sec-tag">边界条件类型（恒定流）</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:22%"><col style="width:42%"><col style="width:36%"></colgroup>
+      <caption>恒定流分析常用边界条件</caption>
+      <thead><tr><th>类型</th><th>含义</th><th>适用位置</th></tr></thead>
+      <tbody>
+        <tr><td><b>正常水深 Normal Depth</b></td><td>用能量坡度（通常取河道纵坡）计算下游均匀流水深</td><td>下游边界（最常用、最简单）</td></tr>
+        <tr><td><b>临界水深 Critical Depth</b></td><td>按临界水深确定边界水位</td><td>上/下游边界（陡坡、控制断面）</td></tr>
+        <tr><td><b>已知水位 Known WS</b></td><td>直接给定断面水位（如实测水位）</td><td>上/下游边界</td></tr>
+        <tr><td><b>水位-流量关系 Rating Curve</b></td><td>用 Q–H 关系曲线（如堰、水文站率定曲线）定义边界</td><td>下游边界</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>关于正常水深坡度的选择：</b>官方教程中的问答提示——边界处应取<i>河道实际纵坡</i>（可用 RAS Mapper 测量工具量取）。边界条件只会影响其上游一小段，但选错坡度会导致边界附近水位明显偏差，因此下游断面通常要延伸出研究区足够远。</div></div>
+  </section>
+
+  <!-- ================= 05 建模总流程 ================= -->
+  <section id="sec5" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">05 · Workflow</div>
+      <h2>一次建模的完整流程</h2>
+      <p>无论 1D 还是 2D，HEC-RAS 建模都遵循"建项目 → 建几何 → 输入水流 → 组方案 → 计算 → 看结果 → 校准"的闭环。流程图数据为示意，展示标准建模路径。</p>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">HEC-RAS 标准建模工作流<span class="chart-flag">流程示意</span></div>
+      <div id="chartFlow"></div>
+      <div class="chart-cap">流程走向：新建项目 → RAS Mapper 设置投影并准备地形 → 创建几何（中心线/断面/网格/建筑物）→ 输入水流与边界 → 创建方案 → 计算 → 结果查看与淹没制图 → 对照实测数据校准 → 回到几何/水流迭代细化。校准不满足即循环迭代。</div>
+    </div>
+  </section>
+
+  </div>
+
+  <div class="view" id="view-practical">
+    <div class="view-head">
+      <a class="back-home" href="#home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m6-6l-6 6 6 6"/></svg>返回教程目录</a>
+      <div class="vh-kicker">Practical Tutorials</div>
+      <h2>官方教程实战</h2>
+      <p>照 HEC 官方分步教程动手做，每个教程都配官方示例数据集与步骤截图：先做 1D 恒定流建立基础，再进入非恒定流与 2D。</p>
+    </div>
+    <div class="seg-nav" aria-label="官方教程实战目录">
+      <button class="seg-btn active" data-target="p-sec1">1D 恒定流</button>
+      <button class="seg-btn" data-target="p-sec2">1D 非恒定流</button>
+      <button class="seg-btn" data-target="p-sec3">2D 建模</button>
+      <button class="seg-btn" data-target="p-sec4">RAS Mapper</button>
+    </div>
+
+  <!-- ================= 官方教程实战 01：1D 恒定流 ================= -->
+  <section id="p-sec1" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">01 · Tutorial 1 · 1D Steady Flow</div>
+      <h2>官方教程一：1D 恒定流建模（Merced 河）</h2>
+      <p>本节改编自 HEC 官方 Guides &amp; Tutorials 的《Steady Flow Modeling with HEC-RAS》，案例为美国加州约塞米蒂（Yosemite）的 Merced River 河段：以实测地形为基础，从零创建 1D 模型、输入 6 个流量方案、运行计算，并用地物覆盖数据与实测高水位标记进行模型细化与校准。</p>
+    </div>
+
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本教程能回答的问题：</b>水会流向哪里、洪泛区范围多大？河道流速多大？哪里流动发生急变？是什么在控制水的流向、是否存在明显阻水物？——先用"粗糙模型"回答这些问题，再逐步细化。</div></div>
+
+    <div class="dl-card">
+      <div class="dl-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></div>
+      <div class="dl-info"><b>官方示例数据集：Steady Flow Modeling with HEC-RAS.zip</b><span>约塞米蒂 Merced River 教程的完整工程数据（GIS_Data 投影与河流 shapefile、Terrain 地形、NLCD 地物覆盖、Channel_Polygon 等）。官方原包直链，需联网下载。</span></div>
+      <a class="dl-btn" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/files/latest/308223637/308223644/1/1754493257068/Steady+Flow+Modeling+with+HEC-RAS.zip" target="_blank" rel="noopener">下载数据包</a>
+    </div>
+
+    <div class="sec-tag">阶段 A · 项目与地形准备</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>创建新项目并设置投影</h4>
+        <p>启动 HEC-RAS，选择 <code>File | New Project…</code>，进入工作目录，填写 <b>Title</b> 与 <b>File Name</b> 后保存。</p>
+        <p>启动 <b>RAS Mapper</b>，选择 <code>Project | Set Projection</code>，加载提供的投影文件（如 <code>River.prj</code>）。投影定义了整个项目所有空间数据的坐标系统，后续地形、几何、结果全部以它为准。</p>
+        <p>把河流 shapefile（<code>river.shp</code>）拖入 RAS Mapper 地图窗口，右键图层选择 <b>Zoom to Layer</b> 定位研究区。</p>
+<div class="fig">
+      <div class="fig-title">设置投影（RAS Mapper Options）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_01_projection.jpg" alt="设置投影（RAS Mapper Options）" loading="lazy">
+      <div class="fig-cap">在 <code>Project | Set Projection</code> 中加载 <code>River.prj</code> 投影文件，定义整个项目的坐标系统。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>下载地形数据（可选在线获取）</h4>
+        <p>选择 <code>Project | Download Data | USGS Terrain</code>，数据范围选 <b>Current View</b>，点击 <b>Query Products</b> 查询 USGS 服务；在数据筛选中勾选 <b>Original</b>（原始分辨率）并 Apply；用图形选择工具选中覆盖河谷洪泛区的瓦片，点 <b>Add Selected</b> 加入下载列表，再点 <b>Start Download</b>。无网络时可直接使用教程附带的 <code>Terrain\USGS_Data</code> 地形数据。</p>
+<div class="fig">
+      <div class="fig-title">下载 USGS 地形菜单<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_02_download_menu.jpg" alt="下载 USGS 地形菜单" loading="lazy">
+      <img src="assets/official/sf_03_select_tiles.jpg" alt="选择地形瓦片" loading="lazy">
+      <div class="fig-cap">Project 菜单下的 Download Data | USGS Terrain 入口。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>创建地形模型（Terrain）</h4>
+        <p>选择 <code>Project | Create New RAS Terrain</code>，点 <b>Add Files</b> 选中下载的所有地形文件（Ctrl+A 全选）；勾选 <b>Merge Inputs to Single Raster</b> 合并为单一栅格；点 <b>Create</b> 开始处理。处理完成后关闭窗口并打开 Terrain 图层。</p>
+        <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>为什么先建地形？</b>地形（Terrain）是 1D 断面提取高程、2D 网格生成与淹没制图的共同底图。它把多幅 DEM 合并、重投影、统一精度为一份 <code>.hdf</code> 地形文件。</div></div>
+<div class="fig">
+      <div class="fig-title">创建地形（New Terrain Layer）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_04_terrain_dialog.jpg" alt="创建地形（New Terrain Layer）" loading="lazy">
+      <img src="assets/official/sf_05_terrain_result.jpg" alt="地形建成后的样子与边界位置" loading="lazy">
+      <div class="fig-cap">勾选 <b>Merge Inputs to Single Raster</b> 把多幅瓦片合并为单一栅格，点 Create 生成 Terrain.hdf。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 创建 1D 几何</div>
+    <ol class="steps" start="4">
+      <li class="step"><div class="step-body"><h4>新建几何并绘制河中心线</h4>
+        <p>选择 <code>Project | Create New Geometry</code>，命名 <code>Base</code>。选中几何图层点 <b>Edit</b> 进入编辑。将 River shapefile 的河流中心线复制粘贴到 <b>River</b> 图层（也可用 shapefile 导入器或手工绘制）。</p>
+        <p>用编辑工具右键河流线，选择 <b>Rename River Reach</b>，将河段命名为 <b>Merced River / Yosemite Valley</b>。</p>
+<div class="fig">
+      <div class="fig-title">重命名河段（Provide River and Reach Name）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_06_rename_reach.jpg" alt="重命名河段（Provide River and Reach Name）" loading="lazy">
+      <div class="fig-cap">River Name 填 Merced River，Reach Name 填 Yosemite Valley。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>布置断面（Cross Sections）</h4>
+        <p>选择 Cross Sections 图层，沿河道布置断面，注意断面应垂直于流向、充分覆盖洪泛区、在地形与流态变化处加密。布置完成后 <b>Stop Editing</b> 并关闭 RAS Mapper。</p>
+        <p>打开主界面的 <b>几何示意图（Geometric Schematic）</b>，打开刚创建的几何文件 <code>Base</code>，确认断面与中心线正确后 <b>Stop Editing 保存</b>。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>输入曼宁 n 值</h4>
+        <p>选择 <code>Tables | Manning's n or k values</code>（横向变化），先统一把全部 n 值设为 <b>0.04</b> 作为初值。</p>
+        <p>再打开 <code>Tables | Reach Lengths</code> 查看左/主槽/右三段河段长度。</p>
+        <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>官方教程思考题：为什么 Left、Channel、Right 三段长度相同？</b>因为当前还没布置流径线（Flowpaths）——HEC-RAS 默认按几何中心线距离近似三段长度相等。若要精确区分主槽与滩地的实际流动路径，需要在 RAS Mapper 中创建 Flowpaths 图层（见阶段 D）。</div></div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · 输入水流数据并运行</div>
+    <ol class="steps" start="7">
+      <li class="step"><div class="step-body"><h4>输入恒定流数据</h4>
+        <p>打开 <b>Steady Flow Data Editor</b>：输入 <b>6</b> 个方案（Profiles），流量分别为 <b>100、500、1000、2000、5000、10000 cfs</b>（立方英尺/秒）。</p>
+        <p>选择 <code>Options | Edit Profile Names</code> 为每个流量命名（如 100cfs、500cfs、1k、2k、5k、10k，最多 16 字符）。</p>
+        <p>在下游边界处选择 <b>Normal Depth</b> 边界条件。思考：<i>坡度应取多少？影响大吗？</i>——取河道实际纵坡，边界只影响其上游一段。</p>
+        <p>保存恒定流数据，命名 <code>Steady Flows</code>。</p>
+<div class="fig">
+      <div class="fig-title">编辑方案名称（Edit Profile Names）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_07_profile_names.jpg" alt="编辑方案名称（Edit Profile Names）" loading="lazy">
+      <div class="fig-cap">为 6 个流量方案命名：100cfs、500cfs、1k、2k、5k、10k（最多 16 字符）。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>创建方案并计算</h4>
+        <p>打开 <b>Steady Flow Analysis</b> 窗口：Plan 命名 <code>Base</code>，几何选 <code>Base</code>，水流文件选 <code>Steady Flows</code>，保存方案。</p>
+        <p>点击 <b>Compute</b> 运行计算。完成后在 RAS Mapper 查看淹没结果，用 <b>XS Plot</b> 绘制单个断面。</p>
+<div class="fig">
+      <div class="fig-title">创建方案（Steady Flow Analysis）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_08_plan_base.jpg" alt="创建方案（Steady Flow Analysis）" loading="lazy">
+      <div class="fig-cap">Plan 命名为 Base，几何选 Base、水流文件选 Steady Flows。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 D · 基础运行后处理</div>
+    <ol class="steps" start="9">
+      <li class="step"><div class="step-body"><h4>利用基础运行设置岸滩位置（Bank Stations）</h4>
+        <p>先观察各断面（XS Plot）判断哪个流量方案的水面刚好在岸滩附近（如本案例选 100cfs 或 500cfs）。打开 <b>Geometric Data Editor</b>，选择 <code>Tools | Channel Bank Station Locations</code>，选择你判断的 <b>Profile</b>，再选择岸滩位置的插入方式（建议"在水面处插入站点/高程"）。HEC-RAS 会按该水位的岸边位置自动调整所有断面的 Bank Stations。</p>
+<div class="fig">
+      <div class="fig-title">设置岸滩位置插入方式<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_09_bank_stations.jpg" alt="设置岸滩位置插入方式" loading="lazy">
+      <div class="fig-cap">官方推荐选择"Insert station/elevation at the water surface"（在水面处插入站点/高程）。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>建立流径线 Flowpaths（可选）</h4>
+        <p>在 RAS Mapper 中编辑 Base 几何，选择 <b>Flowpaths</b> 图层，在左右滩地各创建一条流径线，用于精确计算主槽与滩地的实际流动距离。完成后 Stop Editing。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>重新运行并评估结果</h4>
+        <p>重新 Compute <code>Base</code> 方案，对比设置岸滩前后水面线的变化。</p>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div><b>为何要保留旧几何？</b>细化前先把 <code>Base</code> 几何另存为副本（RAS Mapper 中右键几何 → <b>Save Geometry As</b>，命名 <code>Refined</code>）。你永远不知道什么时候要回退对比——但一定会需要对比前后方案的进步。</div></div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 模型细化：空间变化糙率</div>
+    <ol class="steps" start="12">
+      <li class="step"><div class="step-body"><h4>创建土地覆盖（Land Cover）图层</h4>
+        <p>选择 <code>Project | Create New RAS Layer | Land Cover Layer</code>，导入 2019 NLCD 栅格（<code>NLCD_2019.tif</code>），按 NLCD 分类建立 RAS 分类表，点 <b>Create</b> 生成 LandCover 图层。HEC-RAS 会弹出图层关联对话框，把 LandCover 关联到几何的 Manning's n 属性上。</p>
+<div class="fig">
+      <div class="fig-title">创建土地覆盖图层（Create a New Land Cover Layer）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_10_landcover_layer.jpg" alt="创建土地覆盖图层（Create a New Land Cover Layer）" loading="lazy">
+      <img src="assets/official/sf_11_association.jpg" alt="图层关联对话框" loading="lazy">
+      <div class="fig-cap">导入 NLCD_2019.tif，按 NLCD 分类建立 RAS 分类表后点 Create。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>为各地类设置曼宁 n 值</h4>
+        <p>右键 LandCover 图层选择 <b>Edit Land Cover Data Table</b>，在分类参数表中为每种地类填入曼宁 n 值。官方教程给出的示例值：</p>
+        <div class="tbl-wrap"><table>
+          <colgroup><col style="width:14%"><col style="width:46%"><col style="width:20%"><col style="width:20%"></colgroup>
+          <caption>NLCD 地类 → 曼宁 n 值（官方教程示例）</caption>
+          <thead><tr><th>ID</th><th>地类名称</th><th class="num">Manning's n</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>11</td><td>Open Water（水面）</td><td class="num">0.035</td><td>水面糙率小</td></tr>
+            <tr><td>21</td><td>Developed, Open Space（开发空地）</td><td class="num">0.04</td><td></td></tr>
+            <tr><td>22</td><td>Developed, Low Intensity（低密度开发）</td><td class="num">0.08</td><td></td></tr>
+            <tr><td>23</td><td>Developed, Medium Intensity（中密度开发）</td><td class="num">0.12</td><td></td></tr>
+            <tr><td>24</td><td>Developed, High Intensity（高密度开发）</td><td class="num">0.16</td><td>不透水/建筑</td></tr>
+            <tr><td>31</td><td>Barren Land（裸地）</td><td class="num">0.026</td><td></td></tr>
+            <tr><td>41</td><td>Deciduous Forest（落叶林）</td><td class="num">0.15</td><td></td></tr>
+            <tr><td>42</td><td>Evergreen Forest（常绿林）</td><td class="num">0.12</td><td></td></tr>
+            <tr><td>43</td><td>Mixed Forest（混交林）</td><td class="num">0.14</td><td></td></tr>
+            <tr><td>52</td><td>Shrub-Scrub（灌木）</td><td class="num">0.12</td><td></td></tr>
+            <tr><td>71</td><td>Grassland-Herbaceous（草地）</td><td class="num">0.04</td><td></td></tr>
+          </tbody>
+        </table></div>
+<div class="fig">
+      <div class="fig-title">官方教程的 Classification Parameters 窗口<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_12_manning_table.jpg" alt="官方教程的 Classification Parameters 窗口" loading="lazy">
+      <div class="fig-cap">在 ID/Name 分类表上为每种地类填入 Manning's n；截图即官方教程给出的示例值。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>        <p>表中数值仅用于跟随官方教程练习；实际项目应根据植被、河道条件与文献经验选取并做敏感性分析。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>更新断面糙率并运行细化方案</h4>
+        <p>在 RAS Mapper 中编辑 <code>Refined</code> 几何：选中 Cross Sections 图层 → <code>Update Cross Sections | Manning's n Values</code>，把地类 n 值写入全部 104 个断面。打开 <b>Layer Plot Option | Manning's n Values</b> 可检查是否生效。Stop Editing 保存。</p>
+        <p>在 <b>Steady Flow Analysis</b> 中用 <code>File | Save Plan As</code> 创建新方案 <code>RefinedXS</code>（几何选 Refined XS），Compute 运行。</p>
+<div class="fig">
+      <div class="fig-title">更新断面属性（Update Cross Sections 右键菜单）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_13_update_xs.jpg" alt="更新断面属性（Update Cross Sections 右键菜单）" loading="lazy">
+      <div class="fig-cap">右键 Cross Sections 图层 → Update Cross Sections | Manning's n Values，把地类糙率写入全部断面。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>对比两个方案的结果</h4>
+        <p><b>方法一（Profile Plot）：</b>打开纵剖面图，<code>Options | Plans</code> 同时勾选 Base 与 RefinedXS 两个方案对比。官方案例结论：细化方案的水面线总体略高（因空间变化糙率更贴近实际）。</p>
+        <p><b>方法二（RAS Mapper）：</b>右键河流中心线 <b>Save as Profile Line</b> 保存为剖面线；打开两个方案的 WSE（水面高程）图层并开启动画，在 Profile Lines 标签页右键河流线 → <code>Mapping Results | Profile | Fast | WSE</code> 生成沿程水面线对比。</p>
+<div class="fig">
+      <div class="fig-title">官方教程的纵剖面对比图（Profile Plot）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_14_profile_compare.jpg" alt="官方教程的纵剖面对比图（Profile Plot）" loading="lazy">
+      <div class="fig-cap">同时勾选 Base 与 RefinedXS 两个方案：细化方案（RefinedXS）的水面线总体略高于 Base——空间变化糙率更贴近实际。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 F · 用实测数据校准模型</div>
+    <ol class="steps" start="16">
+      <li class="step"><div class="step-body"><h4>加入实测高水位（Observed WS）</h4>
+        <p>打开 <b>Steady Flow Data Editor</b> → <code>Options | Observed WS</code>，选择河道桩号 2.88（约在桥位附近），点 <b>Add an Obs. WS Location</b>，为 10000cfs 方案输入实测水位 <b>3966 ft</b>。保存并重新运行。</p>
+<div class="fig">
+      <div class="fig-title">添加实测水位位置（Add an Obs. WS Location）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_15_observed_ws.jpg" alt="添加实测水位位置（Add an Obs. WS Location）" loading="lazy">
+      <div class="fig-cap">River Sta. 2.88（约在桥位附近），为 10000cfs 方案输入 3966 ft。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div><b>官方案例结论：</b>对比 XS Plot 可见，模拟水面比实测高水位约低 2 英尺。可能原因有三类：几何不准确、边界条件不合理、曼宁 n 值不正确——逐一复查。改善糙率通常最有希望。</div></div>
+<div class="fig">
+      <div class="fig-title">官方案例：模拟水面比实测低约 2 英尺（XS Plot）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_16_xs_2ft.jpg" alt="官方案例：模拟水面比实测低约 2 英尺（XS Plot）" loading="lazy">
+      <div class="fig-cap">红色 OWS 10k 为实测高水位点，蓝色 WS 10k 为模拟水面——两者相差约 2 英尺，说明模型仍需改进。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>改进曼宁数据：叠加主槽多边形</h4>
+        <p>选择 LandCover 的 <b>Classification Polygons</b> 图层 → Start Editing → 右键 <b>Import Features from Shapefile</b>，导入 <code>Channel_Polygon.shp</code>（主槽范围）；右键新导入的主槽多边形 → <b>Edit Classification Value</b>，新增分类 <code>Channel</code> 并设 Manning's n = <b>0.04</b>。Stop Editing 保存。</p>
+        <p>重新 <b>Update Cross Sections | Manning's n Values</b>，重跑并对比结果。官方案例结论：结果有所改善，但仍不理想——研究区还存在未建模的高地（实际应起堤防作用）和一座未入模的桥梁，这些都会抬高水位。</p>
+<div class="fig">
+      <div class="fig-title">为主槽新增分类并设糙率（Classifications）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sf_17_channel_n.jpg" alt="为主槽新增分类并设糙率（Classifications）" loading="lazy">
+      <div class="fig-cap">新增 Channel 分类，Manning's n 设为 0.04，用于改进主槽糙率。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>敏感性分析（Bonus）</h4>
+        <p>回答两个问题：① 模型对下游边界条件有多敏感？② 增大/减小曼宁 n 值会如何改变水面线？——用对照方案定量回答，理解模型对各参数的响应是校准的基础。</p>
+      </div></li>
+    </ol>
+
+    <div class="chart-box">
+      <div class="chart-title">1D 恒定流教程 · 纵剖面结果示意<span class="chart-flag">示意图数据</span></div>
+      <div id="chartProfile"></div>
+      <div class="chart-cap">示意曲线（非真实计算结果）：Ground 为河道纵坡地面线，WS 10k（Base）与 WS 10k（RefinedXS）为 10000 cfs 方案水面线；细化后糙率更贴近实际，水面线整体略高。真实项目中请以 HEC-RAS 输出的 Profile Plot 为准。</div>
+    </div>
+  </section>
+
+  <!-- ================= 官方教程实战 02：1D 非恒定流 ================= -->
+  <section id="p-sec2" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">02 · Tutorial 2 · 1D Unsteady Flow</div>
+      <h2>官方教程二：1D 非恒定流建模</h2>
+      <p>非恒定流模拟的是"流量和水位随时间变化"的过程：给模型一个入流过程线（hydrograph），观察洪水波如何沿河道演进、水位如何涨落。官方 Guides &amp; Tutorials 的《Creating a Combined 1D/2D Model》给出了从 1D 恒定流升级到非恒定流的完整路径，本节按官方流程整理为五个阶段。</p>
+    </div>
+
+    <div class="sec-tag">阶段 A · 从恒定流升级到非恒定流</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:20%"><col style="width:40%"><col style="width:40%"></colgroup>
+      <caption>恒定流 vs 非恒定流</caption>
+      <thead><tr><th>维度</th><th>恒定流 Steady</th><th>非恒定流 Unsteady</th></tr></thead>
+      <tbody>
+        <tr><td><b>流量输入</b></td><td>各断面固定流量（每个 Profile 一个值）</td><td>随时间变化的流量过程线/水位过程线</td></tr>
+        <tr><td><b>方程</b></td><td>一维能量方程（标准步进法）</td><td>圣维南方程组（连续 + 动量），有限差分/有限体积求解</td></tr>
+        <tr><td><b>初始条件</b></td><td>不需要（由边界向上游/下游递推）</td><td>需要（初始流量分布、蓄水区初始水位）</td></tr>
+        <tr><td><b>结果</b></td><td>各 Profile 的水面线</td><td>各断面的水位/流量过程线、最大淹没</td></tr>
+        <tr><td><b>适用</b></td><td>设计洪水、恒定工况</td><td>洪水演进、溃坝、调度、感潮河段</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>非恒定流模型三件套：</b>几何（与恒定流共用）+ 边界过程线（入流/出流）+ 初始条件。官方惯例是先用 1D 恒定流模型打底，再在同一套几何上升级——文件后缀上，几何为 <code>.g01</code>、恒定流数据为 <code>.f01</code>、非恒定流数据为 <code>.u01</code>、对应方案为 <code>.p02</code>。</div></div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>先建 1D 恒定流模型打底</h4>
+        <p>官方 Combined 1D/2D 教程建议：任何非恒定流建模前，先创建稳态 1D 模型理解水系行为——用低流量（如 2 年一遇）确认主槽与岸滩位置，用高流量确认洪泛区与断面范围。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>量取下游坡降并延伸一维河段</h4>
+        <p>为下游延伸足够长的强一维河段（远离关注区），并在 RAS Mapper 用 <b>Measure Tool</b> 沿河数字化一段河道量取纵坡，作为 Normal Depth 下游边界的坡度。官方提示：正常水深（Normal Depth）是快速设置下游边界的最简方式。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 边界条件与入流过程线</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:24%"><col style="width:44%"><col style="width:32%"></colgroup>
+      <caption>非恒定流常用边界条件</caption>
+      <thead><tr><th>类型</th><th>含义</th><th>典型位置</th></tr></thead>
+      <tbody>
+        <tr><td><b>流量过程线 Flow Hydrograph</b></td><td>输入 Q–t 序列（可手工录入、从 HEC-DSS 读取或来自 HEC-HMS），最常见的上游边界</td><td>上游边界 / 支流</td></tr>
+        <tr><td><b>水位过程线 Stage Hydrograph</b></td><td>输入 Z–t 序列，用于有实测水位的边界或感潮河口（潮位过程）</td><td>上/下游边界</td></tr>
+        <tr><td><b>水位-流量关系 Rating Curve</b></td><td>用 Q–H 曲线定义边界，适合有稳定率定关系的下游</td><td>下游边界</td></tr>
+        <tr><td><b>正常水深 Normal Depth</b></td><td>给定能量坡度，快速设定下游边界</td><td>下游边界</td></tr>
+        <tr><td><b>侧向入流 Lateral Inflow</b></td><td>沿程分布式入流过程线（支流、区间汇流）</td><td>河道内部（Internal）</td></tr>
+        <tr><td><b>均匀侧向入流 Uniform Lateral Inflow</b></td><td>沿整段河道均匀分配的入流</td><td>河道内部（Internal）</td></tr>
+      </tbody>
+    </table></div>
+    <div class="chart-box">
+      <div class="chart-title">典型入流过程线示意<span class="chart-flag">示意图数据</span></div>
+      <div id="chartHydro"></div>
+      <div class="chart-cap">洪水过程线示意：从基流起涨 → 陡涨 → 峰值 → 退水。官方建议过程线覆盖"起涨前基流 → 洪峰 → 回落至基流"的完整时段（至少 2 倍洪水历时）。水文模型（HEC-HMS）可导出 DSS 格式直接供 HEC-RAS 读取。</div>
+    </div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>输入非恒定流边界条件</h4>
+        <p>打开 <b>Unsteady Flow Data Editor</b>：在边界条件表中为最上游断面选 <b>Flow Hydrograph</b>（录入过程线或读取 DSS），为最下游断面选 Normal Depth / Stage Hydrograph / Rating Curve。需要时在内部断面"Add Boundary Condition Location"加侧向入流。</p>
+        <p>录入后务必点 <b>Plot Data</b> 检查过程线形状是否正确。过程线支持 <b>Min Flow</b>（最小流量下限）与 <b>Multiplier</b>（整体缩放系数）两个便捷选项。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · 初始条件与断面水力表</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>设置初始条件</h4>
+        <p>在 Initial Conditions 页输入初始流量分布（常用方式：输入最上游初始流量，程序自动做一次恒定流计算得到各断面初始水位）；也可用上一次运行的 <b>Restart File</b> 续算。蓄水区需给初始水位。</p>
+        <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>稳定性经验：</b>以低基流（baseflow）启动并设置足够的预热期（warm-up），让模型自动达到稳定初态；过程线变化过陡容易导致振荡，可用"Critical Boundary Condition"选项在流量突增时自动减半时间步长。</div></div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>设置断面水力表参数（常见遗漏！）</h4>
+        <p>官方特别强调：从恒定流升级到非恒定流时最常犯的错误是<b>忘记设置断面水力表参数（Hydraulic Table Parameters）</b>——若不设置，模拟一开始 HEC-RAS 就会报数据缺失。在 <b>Geometric Data Editor</b> 中点击 <b>Hydraulic Table Parameters</b>：把渠底高程（invert）复制到 Starting Elevation 列，再加一个增量（官方默认 0.5 ft）；设置足够的计算点数，使其覆盖全部预期流量产生的水位范围——可逐个断面看右侧竖向切片确认水位范围。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 D · 计算设置：时间窗与步长</div>
+    <div class="chart-box" style="padding:18px">
+      $$C_n = \frac{V\,\Delta t}{\Delta x} \le 1$$
+      <div class="chart-cap">Courant 条件：时间步长 Δt 应满足一个时间步内水流移动不超过一个断面间距——步长选择取决于断面间距与流速。官方做法：先设短时间窗试算，评估时间步长满足 Courant 条件后再跑长模拟。</div>
+    </div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>设置模拟时间窗与计算步长并运行</h4>
+        <p>创建非恒定流方案：设定 <b>Simulation Time Window</b>（起止日期时间）、<b>Computational Time Step</b>（如 1–5 分钟起步，2D 单元通常需要更小步长）。先用短时间窗试算，评估一个时间步（见学习参考 · 常见问题）后再跑长模拟。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>计算选项与公差（Computation Options and Tolerances）</h4>
+        <div class="tbl-wrap"><table>
+          <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+          <caption>关键计算选项</caption>
+          <tbody>
+            <tr><td><b>Advanced Time Step Control</b></td><td>让 HEC-RAS 按 Courant 准则自动计算时间步长，免去手工试算。</td></tr>
+            <tr><td><b>Time Slices 时间分片</b></td><td>当 2D 域需要比 1D 更小的时间步时使用：基步长保持不变，2D 域内部按分片再细分，平衡稳定性与运行时间。</td></tr>
+            <tr><td><b>Theta 隐式权重因子</b></td><td>默认 1.0 最稳定（动量方程压差项只用当前步信息）；调到 0.6 更精确但牺牲稳定性。</td></tr>
+            <tr><td><b>Lateral Structure Flow Stability Factor</b></td><td>抑制侧向结构（堰/路堤）流量突变：1.0 最准确，3.0 明显提高稳定性（模型稳定后可调回）。</td></tr>
+            <tr><td><b>Output Interval 输出间隔</b></td><td>结果输出的时间间隔，影响过程线分辨率与结果文件大小。</td></tr>
+          </tbody>
+        </table></div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 运行、结果与稳定性调试</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>运行并查看结果</h4>
+        <p>结果包括：各断面 <b>水位/流量过程线</b>（Stage/Flow Hydrograph Plot）、最大淹没范围（RAS Mapper）、溃坝过程线（Breach Hydrograph）、沿程水面纵剖面动画等。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>稳定性排查（官方经验清单）</h4>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>
+          <p><b>一开始就不稳定</b>（计算输出显示迭代到最大次数 / NaN / 振荡）→ 多半是初始条件或边界条件问题，先复查这两项。</p>
+          <p><b>支流汇入主河处持续振荡</b>→ 常见于"较陡支流 + 主河计算出的很低初始水位"的组合，本质是交汇处几何数据不一致。官方对策：junction 处默认强制各断面同一水面，可改用<b>能量平衡法</b>求解交汇水面以稳定模型。</p>
+          <p><b>减小时间步长</b>→ 若结果显著改变，说明步长过大，应采用更小步长重跑。</p>
+          <p><b>Volume Accounting 误差大</b>→ 检查堰流设置（Weir Flow Submergence Decay Exponent 等）、减小时间步长；确认高地是否真的起堤防作用。</p>
+          <p><b>敏感性对比</b>：把方案另存为新名重跑，逐个评估时间步长、Theta、糙率等参数对水面线/流速的影响。</p>
+        </div></div>
+      </div></li>
+    </ol>
+  </section>
+
+
+  <!-- ================= 官方教程实战 03：2D 建模 ================= -->
+  <section id="p-sec3" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">03 · Tutorial 3 · 2D Modeling</div>
+      <h2>官方教程三：2D 建模入门</h2>
+      <p>2D 建模把洪泛区离散为计算网格，在每个网格单元上求解浅水方程，能真实刻画漫滩水流、回流、堤防绕流等二维现象。官方 2D 教程包括《Creating a Simple 2D Model》与《Mesh Generation and Refinement》等。</p>
+    </div>
+
+    <div class="dl-card">
+      <div class="dl-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></div>
+      <div class="dl-info"><b>官方示例数据集：Creating a Simple 2D Model.zip</b><span>宾州 Bald Eagle Creek（Lock Haven 附近）教程的完整工程数据：多个地形（BEC_10ft.tif、DEM.tif）、GIS_Data 与 DSS 流量过程线等。官方原包直链，需联网下载。</span></div>
+      <a class="dl-btn" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/files/latest/213685242/213685260/1/1728427351910/Creating+a+Simple+2D+Model.zip" target="_blank" rel="noopener">下载数据包</a>
+    </div>
+<div class="fig">
+      <div class="fig-title">研究区：Bald Eagle Creek 及支流<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/td_01_map.jpg" alt="研究区：Bald Eagle Creek 及支流" loading="lazy">
+      <img src="assets/official/td_02_terrain_result.jpg" alt="地形建成后的样子与边界位置" loading="lazy">
+      <div class="fig-cap">官方 2D 教程研究区（宾州 Lock Haven 附近）：从 Sayers Dam 下游到与 West Branch Susquehanna River 汇流口，含 Marsh、Beech、Fishing 三条支流入流。<b>来源：</b>HEC 官方《Creating a Simple 2D Model》</div>
+    </div>
+
+    <div class="sec-tag">阶段 A · 网格三要素与流场规划</div>
+    <div class="cards">
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>单元中心 Cell Center</h3><p>每个网格单元的计算中心，水面高程在此求解。单元中心不一定是几何形心。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3M3 17l6-3 6 3 6-3M3 12l6-3 6 3 6-3"/></svg></span>单元面 Cell Faces</h3><p>单元之间的边界面，流量跨面交换。面必须沿堤防、路堤等线性阻水物对齐，否则水流会"泄漏"。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M4 4l8 8 8-8M4 20l8-8 8 8"/></svg></span>面端点 Face Points</h3><p>单元面端点（FP），外边界上的 FP 用于连接 1D 元素、边界条件线与 2D 流场。</p></div>
+    </div>
+
+    <div class="fig">
+      <div class="fig-title">2D 计算网格示意<span class="fig-flag">示意</span></div>
+      <svg viewBox="0 0 900 340" role="img" aria-label="2D 网格示意">
+        <rect x="0" y="0" width="900" height="340" rx="10" fill="#FBFDFE" stroke="#D9E2EC"/>
+        <g stroke="#B9D7E6" stroke-width="1.2" fill="#EFF7FB">
+          <path d="M150 60 L250 70 L280 150 L220 250 L120 240 L90 140 Z" />
+          <path d="M250 70 L380 80 L420 160 L280 150 Z"/>
+          <path d="M420 160 L520 180 L470 270 L220 250 Z"/>
+          <path d="M120 240 L220 250 L470 270 L430 320 L90 300 Z"/>
+          <path d="M150 60 L120 240 M90 140 L90 300 M380 80 L520 180 M520 180 L700 210 M700 210 L660 320 M470 270 L660 320"/>
+        </g>
+        <path d="M280 150 L420 160 L520 180" fill="none" stroke="#00B4D8" stroke-width="3"/>
+        <path d="M150 60 L250 70 L380 80" fill="none" stroke="#00B4D8" stroke-width="3"/>
+        <g font-family="Consolas,monospace" font-size="12">
+          <text x="300" y="200" fill="#0B7A96" font-weight="bold">河道方向（加密区）</text>
+          <text x="500" y="240" fill="#5A6B7B">洪泛区单元（粗网格）</text>
+          <text x="120" y="60" fill="#5A6B7B">2D Flow Area 边界</text>
+          <text x="620" y="250" fill="#B97B12">Breakline（堤防线）</text>
+          <line x1="640" y1="300" x2="660" y2="320" stroke="#E9A23B" stroke-width="2"/>
+        </g>
+        <rect x="640" y="60" width="200" height="120" rx="8" fill="#F2F7FB" stroke="#D9E2EC"/>
+        <text x="656" y="84" font-family="Consolas,monospace" font-size="11.5" fill="#0B2545" font-weight="bold">网格生成要点</text>
+        <text x="656" y="106" font-family="Consolas,monospace" font-size="11" fill="#33475B">DX/DY：单元间距</text>
+        <text x="656" y="126" font-family="Consolas,monospace" font-size="11" fill="#33475B">Breakline：强制面沿</text>
+        <text x="656" y="146" font-family="Consolas,monospace" font-size="11" fill="#33475B">Refinement Region：局部加密</text>
+        <text x="656" y="166" font-family="Consolas,monospace" font-size="11" fill="#33475B">每个单元中心一个计算点</text>
+      </svg>
+      <div class="fig-cap">2D 工作流：画 2D Flow Area 多边形 → 在 2D Flow Area Editor 设置 DX/DY 点距 → Generate Computation Points 生成网格 → 检查计算点（每个单元只能有一个点，错误点显示为红色）→ 用 Breaklines 与 Refinement Regions 细化。</div>
+    </div>
+
+    <div class="sec-tag">阶段 B · 网格生成与检查</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>生成计算网格</h4>
+        <p>在 <b>Edit 2D Area Properties</b> 中输入 DX/DY 点距（官方简单模型示例用 500；官方《Mesh Generation and Refinement》教程用 200 起步、熟悉后再细化到 100），点 <b>Generate Computation Points</b> 生成非结构化网格；设置默认 Manning's n（如 0.04）。关闭编辑器，打开 Computation Points 图层检查网格边界，每个单元只能有一个计算点，出错用编辑工具增删移动点修正。Stop Editing 保存几何。</p>
+<div class="fig">
+      <div class="fig-title">2D Flow Area Editor<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/td_03_flow_area_editor.jpg" alt="2D Flow Area Editor" loading="lazy">
+      <img src="assets/official/td_04_mesh_errors.jpg" alt="网格错误与修正对比" loading="lazy">
+      <div class="fig-cap">DX/DY 点距 500 ft（官方简单模型示例）、Generate Computation Points 生成 2222 个单元、默认 Manning's n = 0.04；右图为单元/计算点错误（红色）与修正。<b>来源：</b>HEC 官方《Creating a Simple 2D Model》与《Mesh Generation and Refinement》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>计算水力表并检查单元属性</h4>
+        <p>右键 <b>2D Flow Areas</b> 图层 → <b>Compute 2D Flow Areas Hydraulic Tables</b>，为网格计算水力特性表（左下角有处理进度）。选中该图层（选中后变为洋红色），用鼠标点选 <b>Cell</b> 或 <b>Cell Face</b>，右键 <b>Plot Property Table</b> 即可查看单元的属性表——检查单元高程、面积、与周边面的连接是否合理。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>复制几何做网格细化对比</h4>
+        <p>右键几何 → <b>Save Geometry As</b> 复制出一份（如 Initial Mesh → Refined Mesh），编辑副本并把 2D Area 重命名（如 2DArea_2）以区分；在 2D Flow Area Editor 中把点距改小（官方示例 200 → 100 ft）并重新 <b>Generate Computation Points</b>（会提示删除旧点）。对比粗细两套网格的水力结果，判断细化是否改变结论。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · 边界条件与计算设置</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>绘制边界条件线（BC Lines）</h4>
+        <p>在 RAS Mapper 中编辑几何，选择 <b>Boundary Condition Lines</b> 图层，在入流、支流、出流位置各画一条边界线（迎向下游时从左到右绘制），并命名。边界线必须画在网格外部。回到主界面打开几何示意图核对。</p>
+<div class="fig">
+      <div class="fig-title">边界条件线（Boundary Condition Lines）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/td_05_bc_lines.jpg" alt="边界条件线（Boundary Condition Lines）" loading="lazy">
+      <div class="fig-cap">在入流（Sayers Dam）、三条支流与下游位置各画一条边界线，标注为 Inflow、Marsh Creek、Beech Creek、Fishing Creek、Downstream。<b>来源：</b>HEC 官方《Creating a Simple 2D Model》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>输入非恒定流边界并运行</h4>
+        <p>在 <b>Unsteady Flow Data Editor</b> 中为边界线指定边界条件：上游/支流用 Flow Hydrograph（官方示例从 <code>Simple2DModel_Flows.dss</code> 读取），下游用 Normal Depth（Slope = 0.001）。创建非恒定流方案，设置模拟时间窗与时间步长，Compute 运行。</p>
+<div class="fig">
+      <div class="fig-title">非恒定流数据编辑器的边界条件表<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/td_06_bc_table.jpg" alt="非恒定流数据编辑器的边界条件表" loading="lazy">
+      <img src="assets/official/td_07_dss.jpg" alt="DSS 流量过程线选择" loading="lazy">
+      <div class="fig-cap">上游与支流用 Flow Hydrograph，下游用 Normal Depth（Slope = 0.001）；流量过程线从 Simple2DModel_Flows.dss 读取。<b>来源：</b>HEC 官方《Creating a Simple 2D Model》</div>
+    </div>      </div></li>
+    </ol>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:26%"><col style="width:74%"></colgroup>
+      <caption>2D 边界线常用边界条件类型</caption>
+      <tbody>
+        <tr><td><b>Flow Hydrograph 流量过程线</b></td><td>最常用的入流边界：流量随时间变化，可来自实测、水文模型或 DSS。</td></tr>
+        <tr><td><b>Stage Hydrograph 水位过程线</b></td><td>水位随时间变化，用于感潮河口、有实测水位的出流边界。</td></tr>
+        <tr><td><b>Normal Depth 正常水深</b></td><td>给定能量坡度，快速设定出流边界（官方简单模型下游用 Slope = 0.001）。</td></tr>
+        <tr><td><b>Precipitation 降雨</b></td><td>对 2D 域施加降雨（可含入渗），用于城市内涝、分布式降雨场景。</td></tr>
+        <tr><td><b>Zero Depth / Outlet</b></td><td>自由出流 / 出流口边界，用于出水口与排水场景。</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>2D 时间步长：</b>2D 单元通常比 1D 断面间距小得多，因此需要更小的时间步长（官方提示：2D 单元小时应减小时间步）。先设短时间窗试算、保证满足 Courant 条件；若 2D 域需要比 1D 更小的步长，用 <b>Time Slices</b> 选项让 2D 域内部按更小步长细分。</div></div>
+
+    <div class="sec-tag">阶段 D · 网格细化与求解器选型</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>网格细化：Refinement Regions</h4>
+        <p>用 <b>Refinement Regions</b> 在关键区（主槽、地形突变、建筑物周边）局部加密：复制几何 → 新建 Refinement Region 多边形并设单元间距 → 右键 <b>Enforce Region</b> 强制执行。策略：只对 10–20% 的关键区域加密——全流域单元减半会让单元数增加约 4 倍、计算时间增长约 4 倍。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>Breaklines：强制面沿高地</h4>
+        <p>单元面（Cell Faces）控制单元间的流量交换，必须沿堤防、路堤、高地等线性阻水物对齐，否则水流会"泄漏"。选择 <b>Breaklines</b> 图层沿高地画线，右键 <b>Enforce Breakline</b> 强制执行。</p>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div><b>官方要点：</b>只点 Enforce Breakline 只会在<b>当前已有计算点</b>上生效；正确流程是打开 <b>2D Flow Area Editor</b>，勾选 <b>Generate Computation Points with Enforce Breaklines / Refinement Regions</b> 重新生成计算点，程序会按设定间距重新布点并强制 Breakline 生效。</div></div>
+      </div></li>
+    </ol>
+    <div class="sec-tag">求解器</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <caption>2D 求解器选型</caption>
+      <tbody>
+        <tr><td><b>扩散波 Diffusion Wave（SWE-EM）</b></td><td>忽略对流加速度的简化浅水方程，稳定性好、允许较大时间步，适合大多数漫滩与城市洪涝场景；对动量效应显著的场景（弯道、急流）精度受限。</td></tr>
+        <tr><td><b>完整浅水方程 SWE（Full Saint-Venant）</b></td><td>完整求解动量守恒，适合需要精确刻画回流、弯道环流、桥墩绕流的场景；对时间步长更敏感。</td></tr>
+        <tr><td><b>显式浅水求解器（6.0 新增）</b></td><td>动量守恒更好的显式求解器，需要更小时间步长、运行更久，用于对动量精度要求最高的场景。</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-tag">阶段 E · 结果检查与常见问题</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>查看结果图层与动画</h4>
+        <p>运行后在 RAS Mapper 中勾选 <b>WSE / Depth / Velocity</b> 结果图层查看淹没范围，用动画控制条（Max 按钮）查看最大淹没；<b>Profile Lines</b> 可沿任意剖面提取水面线，<b>Reference Polygon</b> 统计区域水量。完整的制图流程见 官方教程实战 · 04 RAS Mapper。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>常见 2D 错误排查</h4>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>
+          <p><b>计算点错误</b>：每个单元只能有一个计算点，生成后务必打开 Computation Points 图层检查，红色错误点用增删移动修正。</p>
+          <p><b>水流沿线性阻水物"泄漏"</b>：单元面未与堤防/路堤对齐——用 Breaklines 强制对齐（见阶段 D）。</p>
+          <p><b>Terrain 空洞</b>：DEM 有 NoData 时地形出现空洞，会影响单元高程提取——先补洞再建地形。</p>
+          <p><b>边界线画在网格内部或方向错误</b>：BC Lines 必须画在网格外部，且按迎流方向从左到右绘制。</p>
+        </div></div>
+      </div></li>
+    </ol>
+  </section>
+
+  <!-- ================= 官方教程实战 04：RAS Mapper ================= -->
+    <section id="p-sec4" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">04 · RAS Mapper</div>
+      <h2>RAS Mapper 与淹没制图</h2>
+      <p>RAS Mapper 是 HEC-RAS 内置的 GIS 环境：准备地形、绘制河网与断面、生成 2D 网格、映射并动画化计算结果，是 1D/2D 建模与洪水制图的统一工作台。本节按 HEC 官方教程《Developing 1D Geometric Data with RAS Mapper》与《RAS Mapper User's Manual》整理，从界面认识讲到端到端淹没制图。</p>
+    </div>
+
+    <div class="sec-tag">阶段 A · 认识界面与图层体系</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>启动 RAS Mapper</h4>
+        <p>在主界面通过 <code>GIS Tools | RAS Mapper</code> 菜单，或直接点击工具栏上的 <b>RAS Mapper</b> 按钮启动。RAS Mapper 是独立窗口，顶部为菜单与工具栏（选择、平移、缩放、识别），左侧为图层面板，中间为地图窗口，底部为状态与工具标签页。</p>
+<div class="fig">
+      <div class="fig-title">主界面入口（GIS Tools | RAS Mapper）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/rm_01_main_button.jpg" alt="HEC-RAS 主界面与 RAS Mapper 入口" loading="lazy">
+      <div class="fig-cap">GIS Tools 菜单与工具栏上的 RAS Mapper 按钮。<b>来源：</b>HEC《RAS Mapper User's Manual》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>认识主界面布局</h4>
+        <p>左侧 <b>Layers</b> 面板把所有数据按组组织：<b>Geometries</b>（几何）、<b>Results</b>（结果）、<b>Terrains</b>（地形）与 <b>Map Layers</b>（底图/参考）等；右上角显示当前选中图层与渲染模式（如 Max 最大淹没）；右下角为水深/高程比例尺；底部 <b>Messages / Views / Profile Lines / Active Features / Layer Values</b> 标签分别提供消息、视图管理、剖面线、交互查询与图层值读取。</p>
+<div class="fig">
+      <div class="fig-title">RAS Mapper 界面（显示 Depth 水深图层）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/rm_02_mapper_ui.jpg" alt="RAS Mapper 界面与图层列表面板" loading="lazy">
+      <div class="fig-cap">图层按组管理，结果按方案（Plan Short ID）分组显示。<b>来源：</b>HEC《RAS Mapper User's Manual》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>图层体系</h4>
+        <p>RAS Mapper 的图层按用途分为五组：模拟结果按 <b>Plan Short ID</b> 分组且自包含（事件条件 + 几何 + 结果图）。</p>
+<div class="tbl-wrap"><table>
+      <colgroup><col style="width:26%"><col style="width:74%"></colgroup>
+      <caption>RAS Mapper 主要图层</caption>
+      <thead><tr><th>图层</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><b>Features</b></td><td>河流中心线、剖面线、参考点/线/多边形（用于聚合统计区域结果）</td></tr>
+        <tr><td><b>Geometries</b></td><td>几何数据：River、Cross Sections、Storage、2D Flow Areas、Bridges、Inline/Lateral Structures、Pump Stations 等</td></tr>
+        <tr><td><b>Event Conditions</b></td><td>水流数据、边界条件位置</td></tr>
+        <tr><td><b>Results</b></td><td>计算结果图层：水面高程 WSE、水深 Depth、流速 Velocity 等，可做动画播放</td></tr>
+        <tr><td><b>Map Layers</b></td><td>地形 Terrain、土地覆盖 Land Cover、入渗、土壤、栅格计算器（RASter Calculator）等</td></tr>
+      </tbody>
+    </table></div>      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 地形与投影准备</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>新建项目并设置投影</h4>
+        <p>选择 <code>File | New Project…</code>，进入工作目录，填写 <b>Title</b> 与 <b>File Name</b> 后保存（官方示例命名 GeometryDevelopment.prj）。</p>
+        <p>打开 RAS Mapper，选择 <code>Tools | Set Projection for Project</code>（旧版本位于 Project 菜单），浏览到 GISData 文件夹选择 <code>projection.prj</code> 并确定。<b>投影定义了整个项目所有空间数据（地形、几何、结果）的坐标系统</b>，必须在导入任何空间数据前设置，否则后续图层会错位。</p>
+<div class="fig">
+      <div class="fig-title">新建项目（New Project）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/rm_00_new_project.png" alt="新建项目对话框" loading="lazy">
+      <div class="fig-cap">填写 Title 与 File Name（自动带 .prj 后缀），选择项目文件夹。<b>来源：</b>HEC 官方《Developing 1D Geometric Data with RAS Mapper》</div>
+    </div>
+<div class="fig">
+      <div class="fig-title">设置投影（RAS Mapper Options）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/rm_03_projection.jpg" alt="RAS Mapper Options 投影设置" loading="lazy">
+      <div class="fig-cap">加载 projection.prj 后，Definition 区显示完整 PROJCS 坐标系定义。<b>来源：</b>HEC 官方《Developing 1D Geometric Data with RAS Mapper》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>下载地形数据（可选在线获取）</h4>
+        <p>选择 <code>Project | Download Data | USGS Terrain</code>（或 GRID Terrain），数据范围选 <b>Current View</b>，点击 <b>Query Products</b> 查询 USGS 服务；在数据筛选中勾选 <b>Original</b>（原始分辨率）并 Apply；用图形选择工具选中覆盖河谷洪泛区的瓦片，点 <b>Add Selected</b> 加入下载列表，再点 <b>Start Download</b>。无网络时可直接使用教程附带的 <code>Terrain</code> 文件夹中的地形文件。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>创建地形模型（Terrain）</h4>
+        <p>选择 <code>Project | Create New RAS Terrain</code>，点 <b>+</b> 添加地形文件（官方示例为 5 个 <code>.flt</code> 瓦片，也可选 <code>.tif</code>/DEM）；把 <b>Rounding (Precision)</b> 设为 1/32；按需勾选 <b>Create Stitches</b>（缝合）与 <b>Merge Inputs to Single Raster</b>（合并为单一栅格）；点 <b>Create</b> 生成 <code>Terrain.hdf</code>。</p>
+        <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>为什么先建地形？</b>地形是所有几何与结果的共同底图：1D 断面提取高程、2D 网格提取单元高程、淹没制图比较水位都依赖它。它把多幅 DEM 合并、重投影、统一精度为一份 <code>.hdf</code> 文件。</div></div>
+<div class="fig">
+      <div class="fig-title">创建地形（New Terrain Layer）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/rm_04_new_terrain.jpg" alt="New Terrain Layer 对话框" loading="lazy">
+      <div class="fig-cap">添加 5 个地形瓦片，Rounding 1/32、勾选 Merge Inputs to Single Raster 后点 Create。<b>来源：</b>HEC 官方《Developing 1D Geometric Data with RAS Mapper》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>检查地形显示</h4>
+        <p>创建完成后<b>双击 Terrain 图层</b>打开 Layer Properties，按需开启：<b>Update Legend with View</b>（图例随视野更新）、<b>Plot Contour</b>（显示等高线并可调间隔）、<b>Plot Surface</b>（显示地表）、<b>Plot raster file outlines / names</b>（栅格文件边界与名称）。借此检查地形覆盖范围是否完整、是否存在 NoData 空洞——空洞会影响后续断面/网格的高程提取，发现后应补充数据或先做修补再建地形。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · 创建几何与图层关联</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>新建几何并绘制河网</h4>
+        <p>在 RAS Mapper 中右键 <b>Geometries</b> 节点，选择 <b>Add New Geometry</b> 并命名（官方示例 Existing）；选中几何后点铅笔图标进入编辑。</p>
+        <p>点击 <b>Rivers</b> 节点开始绘制河网：河流/河段<b>从上游画到下游（正流向）</b>，左键单击加点、双击结束一条线；右键可重新定位地图中心，<b>Shift 拖拽平移</b>、滚轮缩放。画完一条河段会弹出 <b>Provide River and Reach Name</b> 命名窗口（官方示例：Baxter River / Main）。支流画到主流上时，程序会提示创建 junction——依次确认拆分主流、为下游河段命名（如 Main-Lower）、命名 junction 即可。河段名默认显示在河段起点。</p>
+<div class="fig">
+      <div class="fig-title">官方教程研究区河网（Baxter 河与 Tule 支流）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/rm_15_baxter_map.jpg" alt="Baxter 河与 Tule 支流河网" loading="lazy">
+      <div class="fig-cap">两支流在 Junction 汇合，主流分 Upper / Lower 两段。<b>来源：</b>HEC 官方《Developing 1D Geometric Data with RAS Mapper》</div>
+    </div>      </div></li>
+      <li class="step"><div class="step-body"><h4>布置断面（Cross Sections）</h4>
+        <p>选择 <b>Tools | Options</b> 可把 <b>XS River Stations</b> 单位改为 Miles（可选）。点击 <b>Cross Sections</b> 节点，沿每条河段布置断面（官方示例每条河段约一打断面），以合理表达 1D 河槽-洪泛区水流。<b>断面必须面向下游从左到右绘制</b>！</p>
+        <p>每条断面绘制后自动获得 <b>River Station</b>（按中心线距离计算，默认英尺）。画完点击工具栏的 <b>Plot</b> 按钮可弹出 <b>RASMapper Plot</b> 查看高程剖面：绿线为从地形提取的断面（Terrain），红色为当前断面（Profile），圆点为岸滩点（Bank Points）——新增断面时两者一致；再画下一条，剖面图会自动更新。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>编辑断面与从地形更新</h4>
+        <p>选中断层面，<b>双击断面</b>进入编辑，拖动端点可加宽断面、改变其跨越洪泛区的方式；观察剖面图变化。注意：已存在的断面被视为"已有断面"，程序<b>不会</b>自动用地形覆盖其数据（防止误覆盖人工编辑）。需要重新贴合地形时，右键断面选择 <b>Update Cross Section | Elevation Profile from Terrain</b>，再 Plot 核对剖面与地形线是否一致。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>Auto Update Geometry 与图层关联</h4>
+        <p>编辑状态下右键几何图层选择 <b>Auto Update Geometry</b>，点 <b>Check All Properties</b> 勾选全部属性（River Stations、Bank Stations、Reach Lengths、Elevations – Channel / Overbanks、Ineffective Areas、Blocked Obstructions、Manning's n Values 等）。此后在 RAS Mapper 中移动断面、改动中心线，保存时这些属性会<b>自动从地形与几何重新计算</b>。</p>
+        <p>再用 <code>Project | Manage Geometry Associations</code>（或 RAS Geometry Properties 里的 Manage Associations）把 <b>Terrain</b>、<b>Land Cover</b> 等图层关联到几何——这是断面提取高程、按土地覆盖提取糙率的前提。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 D · 结果映射与动画</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>添加结果图层</h4>
+        <p>运行方案后，RAS Mapper 的 <b>Results</b> 组会按 <b>Plan Short ID</b> 列出方案。右键方案节点选择 <b>Add Results Map</b>（或右键 Results 组添加）：选择 <b>Map Type</b>（WSE 水面高程、Depth 水深、Velocity 流速等）、<b>Unsteady Profile</b>（非恒定流的某个时刻 / Max / Min）与 <b>Map Output Mode</b>（动态或存储），点 <b>Add Map</b> 生成结果图层。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>动画与最大值查看</h4>
+        <p>勾选结果图层后，用地图窗口顶部的<b>动画控制条</b>播放/步进非恒定流各时刻；点 <b>Max</b> 按钮切换到最大淹没（Depth (Max)、Velocity (Max) 等），快速定位最不利时刻。</p>
+        <p>动态图实时渲染，适合交互浏览；需要批量处理或加速大模型显示时，可右键 Results 组打开 <b>Manage Results Maps</b> 对话框，选中图层点 <b>Compute/Update Stored Maps</b> 预计算<b>存储图</b>（状态变为 Map files up to date），可一次处理多个方案，并支持复制、删除结果图。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>剖面与区域统计</h4>
+        <p>底部 <b>Profile Lines</b> 标签页可沿任意剖面线提取水面线与河床纵剖面，用于对比沿程水位；<b>Active Features</b> 允许点击单元/断面交互查询属性；<b>Layer Values</b> 显示鼠标位置图层值。添加 <b>Reference Point / Line / Polygon</b> 后可聚合区域内单元结果，计算总水量、平均流速、净冲淤等（对水库蓄量、淹没体积分析很有用）。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 端到端淹没制图与导出</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>准备地形</h4><p><code>Project | Create New RAS Terrain</code>：导入 DEM/栅格（可多幅合并），生成 <code>.hdf</code> 地形文件，并用 <code>Tools | Set Projection for Project</code> 设置坐标系统。</p></div></li>
+      <li class="step"><div class="step-body"><h4>布置几何并关联图层</h4><p>创建几何（河网、断面、2D 网格）后，在 <b>Manage Layer Associations</b> 中把 Terrain 与 Land Cover 关联到对应几何，2D 网格会从地形提取单元高程、断面按土地覆盖取糙率。</p></div></li>
+      <li class="step"><div class="step-body"><h4>运行计算</h4><p>在主界面运行恒定流或非恒定流方案，结果自动写入 RAS Mapper 的 Results 图层。</p></div></li>
+      <li class="step"><div class="step-body"><h4>映射与动画</h4><p>勾选 WSE / Depth / Velocity 图层查看淹没范围；选中 Results 组图层，用动画控制条的 <b>Max</b> 按钮显示最大淹没；<b>Profile Lines</b> 标签页可沿任意剖面线提取水面线。</p></div></li>
+      <li class="step"><div class="step-body"><h4>参考区域统计</h4><p>添加 Reference Polygon 后可聚合区域内单元结果，计算总水量、平均流速、净冲淤等（对水库蓄量、淹没体积分析很有用）。</p></div></li>
+      <li class="step"><div class="step-body"><h4>导出与发布</h4><p>右键结果图层可 <b>Export</b> 为 Shapefile / GeoTIFF 等格式，供 GIS 软件继续处理；<code>File | Export Map Image</code> 导出当前视图图片用于报告；需要网页/地图服务展示时可导出 Google Earth KML/KMZ。</p>
+        <p><b>RASter Calculator</b>（栅格计算器，Map Layers 下）可对栅格图层做代数运算：例如 Cut/Fill 挖填方分析、两个方案的淹没深度差（100 年 vs 50 年）、淹没范围布尔提取等，是方案对比与工程分析的有力工具。</p>
+      </div></li>
+    </ol>
+
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>在线数据下载：</b>RAS Mapper 可直接从 <b>USGS Terrain</b> 与 <b>GRiD Terrain</b> 服务查询并下载高程瓦片，无需离开软件即可获取建模地形。</div></div>
+  </section>
+  </div>
+
+  <div class="view" id="view-advanced">
+    <div class="view-head">
+      <a class="back-home" href="#home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m6-6l-6 6 6 6"/></svg>返回教程目录</a>
+      <div class="vh-kicker">Advanced Topics</div>
+      <h2>进阶专题</h2>
+      <p>面向建模进阶的专题模块：泥沙输移与水质模拟，更多专题持续扩充中。</p>
+    </div>
+
+  <!-- ================= 进阶专题 01：泥沙输移 ================= -->
+  <section id="a-sec1" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">01 · Sediment Transport</div>
+      <h2>泥沙输移模拟</h2>
+      <p>以水动力结果为基础，模拟"床沙在动"的长期过程：冲刷、淤积、河床粗化与水库淤积，用于中长期河床演变研究。</p>
+    </div>
+
+    <div class="sec-tag">泥沙输移 / 动床计算</div>
+    <div class="cards">
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M3 14h18M6 10V6h12v4M6 14v4h12v-4"/></svg></span>按粒径分级计算</h3><p>输沙能力按粒径组分（grain size fraction）计算，可模拟水力分选（sorting）与河床粗化（armoring），更真实地反映床沙级配演变。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span>两种计算模式</h3><p>准非恒定流（Quasi-Unsteady）：把过程线离散为一系列恒定时段，计算快，适合多年尺度；全非恒定流（Fully Unsteady）：1D 与 2D 均可，适合洪水过程内的冲淤响应。</p></div>
+      <div class="card"><h3><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l6-12 6 12"/></svg></span>配套工具</h3><p>SIAM（泥沙影响分析）快速评估方案影响；BSTEM 岸坡稳定性分析；2D 泥沙支持 Capacity Only / Concentration Only 等固定床简化分析；泥石流（非牛顿流体）1D/2D 模拟。</p></div>
+    </div>
+    <p>官方教程目录中的泥沙案例包括：<i>1D Sediment Transport、2D Sediment Transport、Mud and Debris Flow</i>，每个案例都附有示例数据集，可逐步跟做。</p>
+
+  </section>
+
+  <!-- ================= 进阶专题 02：水质模拟 ================= -->
+  <section id="a-sec2" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">02 · Water Quality</div>
+      <h2>水质与水温模拟</h2>
+      <p>模拟"水质在变"的过程：水温沿程变化与营养盐、溶解氧等组分的迁移转化，用于河流环境研究。</p>
+    </div>
+
+    <div class="sec-tag">水质 / 水温模拟</div>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+      <caption>当前版本支持的水质组分</caption>
+      <tbody>
+        <tr><td><b>水温 Water Temperature</b></td><td>一维对流-扩散（QUICKEST-ULTIMATE 格式），完整热平衡（太阳辐射、蒸发、对流等）</td></tr>
+        <tr><td><b>藻类 Algae</b></td><td>藻类生物量与营养盐摄取的耦合模拟</td></tr>
+        <tr><td><b>溶解氧 DO</b></td><td>复氧、耗氧、光合呼吸等过程</td></tr>
+        <tr><td><b>碳质生化需氧量 CBOD</b></td><td>有机污染物耗氧衰减</td></tr>
+        <tr><td><b>氮</b></td><td>有机氮、氨氮 NH₄-N、亚硝氮 NO₂-N、硝氮 NO₃-N 的迁移转化</td></tr>
+        <tr><td><b>磷</b></td><td>溶解有机磷 Org-P、溶解正磷酸盐 PO₄-P</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+  </div>
+
+  <div class="view" id="view-reference">
+    <div class="view-head">
+      <a class="back-home" href="#home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m6-6l-6 6 6 6"/></svg>返回教程目录</a>
+      <div class="vh-kicker">References</div>
+      <h2>学习参考</h2>
+      <p>理论基础、常见问题排查与官方学习资源——查理论、查报错、找官方入口，随查随用。</p>
+    </div>
+
+  <!-- ================= 学习参考 01：理论基础 ================= -->
+  <section id="r-sec1" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">01 · Theory</div>
+      <h2>必须知道的理论基础</h2>
+      <p>理解 HEC-RAS 的计算原理，才能正确地布置模型、解释结果、判断异常。以下为官方 Hydraulic Reference Manual 的核心内容摘编。</p>
+    </div>
+
+    <div class="sec-tag">主题 01 · 水力学基础：三大方程体系</div>
+    <p>HEC-RAS 的一维水动力计算基于水力学三大方程：<b>连续性方程</b>（质量守恒）、<b>能量方程</b>（伯努利方程的工程扩展）与<b>动量方程</b>（牛顿第二定律）。三者适用于不同场景——渐变流用能量方程，急变流（水跃、桥梁、汇流节点）用动量方程，连续性方程则贯穿始终。</p>
+    <div class="chart-box" style="padding:18px">
+      $$Q = A_1 V_1 = A_2 V_2 \qquad F = \rho Q\,(V_2 - V_1)$$
+      <div class="chart-cap">左：恒定流连续性方程，Q 为流量，A 为过水断面面积，V 为断面平均流速；右：动量方程，F 为水流对结构物/控制体的合力，ρ 为水的密度。HEC-RAS 在能量方程不适用处自动切换动量方程。</div>
+    </div>
+
+    <div class="sec-tag">主题 02 · 恒定流：能量方程（标准步进法）</div>
+    <p>恒定渐变流的基本计算基于一维能量方程：断面 2 的总水头等于断面 1 的总水头减去两断面间的能量损失：</p>
+    <div class="chart-box" style="padding:18px">
+      $$Z_2 + Y_2 + \frac{\alpha_2 V_2^2}{2g} = Z_1 + Y_1 + \frac{\alpha_1 V_1^2}{2g} + h_e$$
+      <div class="chart-cap">其中 Z 为渠底高程，Y 为水深，α 为流速分布系数（动能修正系数），V 为断面平均流速，g 为重力加速度，h<sub>e</sub> 为断面间能量损失。</div>
+    </div>
+    <p>能量损失由两部分组成：摩阻损失 h<sub>f</sub>（用曼宁公式计算）与收缩/扩张损失 h<sub>c</sub>（等于流速水头变化乘以收缩/扩张系数 C）：</p>
+    <div class="chart-box" style="padding:18px">
+      $$h_e = h_f + h_c, \qquad h_c = C\left|\frac{\alpha_2 V_2^2}{2g} - \frac{\alpha_1 V_1^2}{2g}\right|$$
+      <div class="chart-cap">h<sub>f</sub> = 两断面间加权平均摩阻坡度 × 断面间距；收缩（converging）与扩张（expanding）系数 C 的取值（如收缩 0.1、扩张 0.3）可在几何数据中设置。</div>
+    </div>
+    <p>在急变流场景——混合流态（水跃）、桥梁水力、汇流节点——能量方程不适用，改用<b>动量方程</b>求解。</p>
+
+    <div class="sec-tag">主题 03 · 曼宁公式与糙率选择</div>
+    <div class="chart-box" style="padding:18px">
+      $$V = \frac{1}{n} R^{2/3} S_f^{1/2} \quad \text{（SI 单位）}\qquad V = \frac{1.49}{n} R^{2/3} S_f^{1/2} \quad \text{（US 单位）}$$
+      <div class="chart-cap">n 为曼宁糙率系数，R 为水力半径，S<sub>f</sub> 为摩阻坡度。HEC-RAS 用它计算断面各子断面（主槽/左右滩地）的流量分配与摩阻损失。</div>
+    </div>
+    <p>n 值是模型中最敏感的参数之一，参考范围（数值见官方《Hydraulic Reference Manual》）：</p>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:34%"><col style="width:30%"><col style="width:36%"></colgroup>
+      <caption>常见曼宁糙率 n 参考范围</caption>
+      <thead><tr><th>表面类型</th><th>n 值范围</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><b>人工顺直渠道（混凝土）</b></td><td>0.012 – 0.017</td><td>光滑、规则，变化小</td></tr>
+        <tr><td><b>人工渠道（土质/砌石）</b></td><td>0.020 – 0.035</td><td>视植被与糙度而定</td></tr>
+        <tr><td><b>天然河道（清洁）</b></td><td>0.030 – 0.050</td><td>一般山区/平原河流主槽</td></tr>
+        <tr><td><b>天然河道（弯曲/多石/杂草）</b></td><td>0.050 – 0.080</td><td>深潭、倒树、大块石</td></tr>
+        <tr><td><b>洪泛区（草地/农田）</b></td><td>0.035 – 0.070</td><td>滩地低植被</td></tr>
+        <tr><td><b>洪泛区（灌木/树林）</b></td><td>0.080 – 0.150</td><td>高植被阻水显著</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-tag">主题 04 · 流态判断：弗劳德数与比能</div>
+    <p>弗劳德数（Froude number）是判断明渠流态的核心无量纲数：Fr &lt; 1 为<b>亚临界（缓流）</b>，扰动向上游传播、水流受下游控制；Fr = 1 为临界流；Fr &gt; 1 为<b>超临界（急流）</b>，水流受上游控制。HEC-RAS 恒定流计算据此自动选择计算方向。</p>
+    <div class="chart-box" style="padding:18px">
+      $$Fr = \frac{V}{\sqrt{g\,y}} \qquad y_c = \sqrt[3]{\frac{q^2}{g}} \qquad E = y + \frac{Q^2}{2g A^2}$$
+      <div class="chart-cap">左：弗劳德数（y 为水深，矩形断面取平均水深）；中：矩形断面临界水深 y<sub>c</sub>（q = Q/b 为单宽流量）；右：比能 E = 水深 + 流速水头。临界流时比能最小，水面线计算中的"临界深度控制"即基于此。</div>
+    </div>
+
+    <div class="sec-tag">主题 05 · 水面线分类（M / S / C / H / A 型）</div>
+    <p>明渠渐变流水面线按<b>床坡类型</b>（缓坡 M、陡坡 S、临界坡 C、水平 H、逆坡 A）与水深相对正常水深 y<sub>n</sub>、临界水深 y<sub>c</sub> 的区域组合分类，共 12 类（如 M1/M2/M3、S1/S2/S3 等）。判断水面线类型可帮助验证计算结果是否物理合理：</p>
+    <div class="tbl-wrap"><table>
+      <colgroup><col style="width:22%"><col style="width:78%"></colgroup>
+      <caption>常见水面线类型与特征</caption>
+      <thead><tr><th>类型</th><th>特征与工程含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>M1（回水曲线）</b></td><td>缓坡上 y&gt;y<sub>n</sub>&gt;y<sub>c</sub>，上游受下游堰坝、水库、干流顶托形成的壅水曲线，向上游渐进趋于正常水深</td></tr>
+        <tr><td><b>M2（降水曲线）</b></td><td>缓坡上 y<sub>n</sub>&gt;y&gt;y<sub>c</sub>，下游跌落（如陡坎、入汇大河），水面线向下游降低</td></tr>
+        <tr><td><b>M3（水跃前段）</b></td><td>缓坡上 y&lt;y<sub>c</sub>&lt;y<sub>n</sub>，急流进入缓流段时先跌后跃</td></tr>
+        <tr><td><b>S2</b></td><td>陡坡上 y<sub>c</sub>&gt;y&gt;y<sub>n</sub>，急流降水曲线</td></tr>
+        <tr><td><b>S3</b></td><td>陡坡上 y&lt;y<sub>n</sub>&lt;y<sub>c</sub>，水跃下游的急流段</td></tr>
+        <tr><td><b>H2 / A2 / A3</b></td><td>水平坡/逆坡上的降水与壅水曲线，常见于坝下消能段与逆向坡度河段</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="sec-tag">主题 06 · 动量方程的应用：水跃与桥梁</div>
+    <p>能量方程假定能量守恒（含损失项），在<b>急变流</b>区域不成立——水跃、桥梁/涵洞上下游、闸堰、汇流节点等场景 HEC-RAS 使用动量方程。水跃的共轭水深关系是判断跃前跃后水位的经典公式：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{y_2}{y_1} = \frac{1}{2}\left(\sqrt{1 + 8\,Fr_1^2} - 1\right)$$
+      <div class="chart-cap">y<sub>1</sub>、Fr<sub>1</sub> 为跃前水深与弗劳德数，y<sub>2</sub> 为跃后共轭水深。当 Fr<sub>1</sub> &gt; 1 且下游水深介于 y<sub>1</sub> 与 y<sub>2</sub> 之间时发生水跃。</div>
+    </div>
+
+    <div class="sec-tag">主题 07 · 非恒定流：一维圣维南方程组</div>
+    <p>1D 非恒定流求解器（改编自 UNET）数值求解一维圣维南方程组。连续方程：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{\partial A}{\partial t} + \frac{\partial Q}{\partial x} = q_l$$
+      <div class="chart-cap">A 为过水面积，Q 为流量，q<sub>l</sub> 为单位长度侧向入流。</div>
+    </div>
+    <p>动量方程：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{\partial Q}{\partial t} + \frac{\partial (Q V)}{\partial x} + gA\left(\frac{\partial z}{\partial x} + S_f\right) = 0$$
+      <div class="chart-cap">z 为水面高程，S<sub>f</sub> 为摩阻坡度。方程组由程序按有限差分格式离散求解，因此对时间步长与断面布置有稳定性要求。</div>
+    </div>
+
+    <div class="sec-tag">主题 08 · 数值格式：Preissmann 四点隐式与 Theta 权重</div>
+    <p>HEC-RAS 一维非恒定流求解器在时空网格上采用<b>Preissmann 四点隐式格式</b>离散圣维南方程组：每个计算时段内，未知量同时以当前时刻与下一时刻的加权平均参与求解，从而允许较大的时间步长而不失稳。时间权重 θ 决定格式性质：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{f^{n+1}_i - f^n_i}{\Delta t} = \theta\left(\frac{\partial f}{\partial t}\right)^{n+1} + (1-\theta)\left(\frac{\partial f}{\partial t}\right)^{n}$$
+      <div class="chart-cap">θ = 1.0 为全隐式（无条件稳定、数值耗散较大）；θ = 0.5 为 Crank-Nicolson（精度最高但易振荡）；HEC-RAS 默认 0.6，为稳定与精度折中。官方稳定性调试时可调整该权重。</div>
+    </div>
+
+    <div class="sec-tag">主题 09 · 数值稳定性：Courant 条件与时间步</div>
+    <p>显式数值格式要求信息传播在一个时间步内不越过一个空间步长，即 Courant 条件；隐式格式理论上无条件稳定，但为控制数值耗散与振荡，仍建议满足 Courant 数接近 1：</p>
+    <div class="chart-box" style="padding:18px">
+      $$C_n = \frac{V\,\Delta t}{\Delta x} \le 1 \qquad c = \sqrt{\frac{gA}{B}} \approx \sqrt{g\,y}$$
+      <div class="chart-cap">C<sub>n</sub> 为 Courant 数（V 流速、Δt 时间步、Δx 空间步）；右式为长波波速 c（B 为水面宽度）。经验上 1D 洪水波时间步取 1–5 分钟、2D 单元更小需更短步长；断面/单元越密、流速越快，时间步越要减小。</div>
+    </div>
+
+    <div class="sec-tag">主题 10 · 二维浅水方程</div>
+    <p>2D 求解器在非结构化网格上求解二维浅水方程（连续性 + x/y 方向动量，含底坡、摩阻、涡粘、风应力等项），扩散波求解器则忽略对流加速度项以换取更好的稳定性与更大时间步。连续性方程：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{\partial H}{\partial t} + \frac{\partial (h u)}{\partial x} + \frac{\partial (h v)}{\partial y} = 0$$
+      <div class="chart-cap">H 为水面高程，h 为水深，u、v 为 x、y 方向流速。</div>
+    </div>
+    <p>x 方向动量方程（示意，完整含风应力与科氏力项）：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = -g\frac{\partial H}{\partial x} + \nu_t\left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2}\right) - g S_{fx}$$
+      <div class="chart-cap">ν<sub>t</sub> 为涡粘系数（湍流扩散项），S<sub>fx</sub> 为 x 方向摩阻坡度（曼宁公式给出）。完整公式（含风应力、科氏力）见官方《Hydraulic Reference Manual》与《2D User's Manual》。</div>
+    </div>
+
+    <div class="sec-tag">主题 11 · 扩散波近似与有限体积</div>
+    <p><b>扩散波</b>忽略圣维南方程组中的惯性项（对流加速度与当地加速度），保留压力项与摩阻项，稳定、可大步长，是 HEC-RAS 2D 默认求解器（SWE-EM）的理论基础，适合大多数漫滩与城市洪涝：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{\partial h}{\partial t} = \frac{\partial}{\partial x}\left(D \frac{\partial h}{\partial x}\right), \qquad D \approx \frac{h^{5/3}}{n^2\,|\partial H / \partial x|}$$
+      <div class="chart-cap">D 为扩散系数（示意形式），h 为水深，n 为曼宁糙率。忽略惯性项后方程退化为抛物型，数值上更稳定。</div>
+    </div>
+    <p>2D 求解器采用<b>有限体积法</b>：在每一个网格单元（cell）上积分守恒形式的方程，通过单元面（face）计算相邻单元间的流量通量——这正是实战章节中"单元中心 / 单元面 / 面端点"三个概念的数值理论来源；单元面必须沿堤防等线性阻水物对齐，否则通量会"泄漏"。</p>
+
+    <div class="sec-tag">主题 12 · 泥沙输移基础：Exner 方程与输沙率</div>
+    <p>动床模拟把河床变形与水流输沙耦合起来：河床高程变化由输沙量沿程梯度决定（Exner 方程），而输沙率由水动力条件（剪应力）与床沙粒径决定。HEC-RAS 泥沙模块支持多种输沙率公式（Meyer-Peter Müller 推移质、Engelund-Hansen 全沙、Toffaleti 等），按粒径分级计算。</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{\partial z_b}{\partial t} = -\frac{1}{1-\lambda_p}\frac{\partial q_b}{\partial x} \qquad \tau_* = \frac{\tau_0}{(\rho_s - \rho)\,g\,d}$$
+      <div class="chart-cap">左：Exner 方程，z<sub>b</sub> 为河床高程，λ<sub>p</sub> 为床沙孔隙率，q<sub>b</sub> 为单位宽度输沙率——输沙量沿程增加（∂q<sub>b</sub>/∂x &gt; 0）则冲刷（河床降低）；右：Shields 无量纲剪应力（希尔兹数），τ<sub>0</sub> 为床面剪应力，ρ<sub>s</sub> 为泥沙密度，d 为粒径——用于判断起动条件。</div>
+    </div>
+
+    <div class="sec-tag">主题 13 · 水质模拟基础：对流扩散方程</div>
+    <p>水质组分（温度、溶解氧、藻类、营养盐、CBOD 等）在水体中的迁移由<b>对流</b>与<b>扩散/弥散</b>控制，并叠加反应源汇项。HEC-RAS 一维水质输运采用 QUICKEST-ULTIMATE 格式求解：</p>
+    <div class="chart-box" style="padding:18px">
+      $$\frac{\partial C}{\partial t} + u\frac{\partial C}{\partial x} = D_x \frac{\partial^2 C}{\partial x^2} + \sum S$$
+      <div class="chart-cap">C 为组分浓度，u 为流速，D<sub>x</sub> 为纵向弥散系数，ΣS 为源汇项（复氧、耗氧、光合/呼吸、水温热交换等）。水温还叠加完整热平衡方程（太阳短波辐射、大气长波、蒸发、对流等）。</div>
+    </div>
+
+  </section>
+
+  <!-- ================= 学习参考 02：常见问题 ================= -->
+  <section id="r-sec2" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">02 · Troubleshooting</div>
+      <h2>常见问题与经验技巧</h2>
+      <p>官方手册专设《Troubleshooting With HEC-RAS》章节；以下为教程与工程实践中最高频的问题清单。</p>
+    </div>
+
+    <details class="acc"><summary><span class="q">Q1</span>模型计算不稳定/发散（振荡、NaN）怎么办？</summary><div class="acc-body">
+      <p><b>非恒定流：</b>① 减小计算时间步长（先试 1–5 分钟）；② 增加预热期，以低基流启动；③ 检查几何是否有突变断面、负河段长度、重叠断面；④ 过程线过陡时开启 Critical Boundary Condition 或对过程线做平滑；⑤ 使用 Min Flow 保证最低流量；⑥ 检查初始条件是否与边界一致（先用恒定流初始化）。</p>
+      <p><b>恒定流：</b>① 检查断面间距是否过大导致水面线剧烈变化；② 检查是否有"无效流动区"未被定义；③ 检查流态设置（亚临界/超临界/混合）是否与实际一致；④ 检查边界条件坡度是否合理。</p>
+    </div></details>
+
+    <details class="acc"><summary><span class="q">Q2</span>断面需要多少个？怎么布置？</summary><div class="acc-body">
+      <p>没有固定数量，原则是：<b>沿程地形与流态变化处加密</b>。在桥梁、涵洞、堰上下游、汇流口、坡度突变处必须加密断面；尽量保证相邻断面间的过流能力过渡平缓，避免流量分配剧烈跳变。低流量断面用于确认主槽与岸滩，高流量断面用于确认洪泛区范围。</p>
+    </div></details>
+
+    <details class="acc"><summary><span class="q">Q3</span>Normal Depth 边界的坡度怎么取？</summary><div class="acc-body">
+      <p>取边界断面附近的<b>河道实际纵坡</b>（床底坡度）。可用 RAS Mapper 的测量工具沿河段量取，或用地形数据计算。选错坡度会使边界附近水位明显偏高或偏低，因此下游断面一般要延伸到研究区下游足够远，让边界条件的影响衰减。</p>
+    </div></details>
+
+    <details class="acc"><summary><span class="q">Q4</span>2D 网格单元取多大合适？</summary><div class="acc-body">
+      <p>经验参考：单元尺寸取 <b>DEM 分辨率的 2–5 倍</b>；单元不能小于 DEM 分辨率（更小不会更准，只会更慢）。大面积平缓区用大单元，主槽、堤防、建筑物周边用 Refinement Regions 局部加密。单元数翻倍会带来约 4 倍的单元量与计算时间，因此优先局部加密。</p>
+    </div></details>
+
+    <details class="acc"><summary><span class="q">Q5</span>DEM 有 NoData 空洞怎么办？</summary><div class="acc-body">
+      <p>建模前先用 GIS 工具填补水流路径上的 NoData（水体区域常见）。2D 网格生成与计算在 NoData 单元上会产生数值不稳定甚至报错。RAS Mapper 创建地形后应目视检查研究区是否有空洞。</p>
+    </div></details>
+
+    <details class="acc"><summary><span class="q">Q6</span>计算水位与实测水位差很多？</summary><div class="acc-body">
+      <p>按官方教程的三板斧排查：<b>几何是否准确</b>（断面、建筑物、高地/堤防是否入模）、<b>边界条件是否合理</b>（坡度、水位/流量关系）、<b>曼宁 n 值是否正确</b>。多数情况下先做糙率敏感性分析，再结合实测高水位（Observed WS）逐步校准。</p>
+    </div></details>
+
+    <details class="acc"><summary><span class="q">Q7</span>计算时间步长怎么选？</summary><div class="acc-body">
+      <p>官方指南：先设一个较短的模拟时间窗，运行后用计算日志评估一个时间步（比如观察解是否收敛、Courant 条件）。2D 扩散波求解器允许较大步长（数分钟），显式浅水求解器需要更小步长（秒级）。经验上从 1–5 分钟起步，按稳定性与精度要求调整。</p>
+    </div></details>
+
+    <details class="acc"><summary><span class="q">Q8</span>1D 和 2D 怎么选？</summary><div class="acc-body">
+      <p>河道单一、水流近似一维（如深窄河谷）时 1D 高效且足够；河道出槽漫滩、城区复杂下垫面、需要刻画二维流向（回流、绕流、漫滩路径）时用 2D 或 1D/2D 耦合——河道用 1D（效率），滩区/城区用 2D（精度）。官方提供了专门的《Creating an Combined 1D/2D Model》指南。</p>
+    </div></details>
+  </section>
+
+  <!-- ================= 学习参考 03：学习资源 ================= -->
+  <section id="r-sec3" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">03 · Resources</div>
+      <h2>官方学习资源</h2>
+      <p>HEC 官网提供免费、完整且持续更新的文档、教程与培训材料——本文所有内容均可在以下资源中找到权威原文。</p>
+    </div>
+    <a class="res-link" href="https://www.hec.usace.army.mil/software/hec-ras/" target="_blank" rel="noopener">
+      <span class="r-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></span>
+      <span><b>软件下载页</b><span>免费下载安装包与 Release Notes，含 6.x、7.0.x 与 HEC-RAS 2025 Beta。</span><span class="r-en">hec.usace.army.mil/software/hec-ras/</span></span>
+    </a>
+    <a class="res-link" href="https://www.hec.usace.army.mil/software/hec-ras/documentation.aspx" target="_blank" rel="noopener">
+      <span class="r-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></span>
+      <span><b>文档首页 Documentation Home</b><span>用户手册、技术参考、应用指南、Release Notes 的总入口，软件内 Help 菜单也指向这里。</span><span class="r-en">hec.usace.army.mil/software/hec-ras/documentation.aspx</span></span>
+    </a>
+    <a class="res-link" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" rel="noopener">
+      <span class="r-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/></svg></span>
+      <span><b>Guides &amp; Tutorials 指南与教程</b><span>本教程的主要来源：1D 恒定流、1D/2D 非恒定流、泥沙、泥石流、管网等分步教程 + 示例数据集。</span><span class="r-en">hec.usace.army.mil/confluence/rasdocs/hgt/latest</span></span>
+    </a>
+    <a class="res-link" href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">
+      <span class="r-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg></span>
+      <span><b>User's Manual 用户手册</b><span>从安装、入门到各组件详解与排错，最完整的操作手册。</span><span class="r-en">confluence/rasdocs/rasum/latest</span></span>
+    </a>
+    <a class="res-link" href="https://www.hec.usace.army.mil/confluence/rasdocs/ras1dtechref/latest" target="_blank" rel="noopener">
+      <span class="r-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M4 20V8l6 4 4-6 6 4v10"/></svg></span>
+      <span><b>Hydraulic Reference Manual 技术参考</b><span>能量/动量方程、曼宁公式、圣维南方程组、数值方法的完整推导与参数选取指南。</span><span class="r-en">confluence/rasdocs/ras1dtechref/latest</span></span>
+    </a>
+    <a class="res-link" href="https://www.hec.usace.army.mil/software/hec-ras/training.aspx" target="_blank" rel="noopener">
+      <span class="r-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg></span>
+      <span><b>Training 培训视频</b><span>官方讲座与网络研讨会的视频录像，以及培训班讲义材料。</span><span class="r-en">hec.usace.army.mil/software/hec-ras/training.aspx</span></span>
+    </a>
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>给中文用户的建议：</b>官方文档目前以英文为主。建议先用本教程建立操作框架，再回到官方原文核对术语与参数细节；将单位制（英制/公制）习惯与官方保持一致（如流量 cfs 或 m³/s），可减少大量单位换算错误。</div></div>
+  </section>
+  </div>
+
+  <footer class="footer">
+    <div class="f-inner">
+      <h4>HEC-RAS 从入门到精通 · 完整中文教程</h4>
+      <p>本页面为非官方的学习资料整理，内容依据美国陆军工程兵团水文工程中心（HEC）公开的官方文档与教程编译，仅供学习参考。HEC-RAS 软件与官方文档的版权归美国陆军工程兵团所有。</p>
+      <div class="f-src">
+        <b>主要参考来源：</b>
+        <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/1d-steady-flow/steady-flow-modeling-with-hec-ras" target="_blank" rel="noopener">HEC Guides &amp; Tutorials · Steady Flow Modeling with HEC-RAS</a> ·
+        <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/guides/creating-an-combined-1d-2d-model" target="_blank" rel="noopener">Creating a Combined 1D/2D Model</a> ·
+        <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-unsteady-flow/creating-a-simple-2d-model" target="_blank" rel="noopener">Creating a Simple 2D Model</a> ·
+        <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-unsteady-flow/mesh-generation-and-refinement" target="_blank" rel="noopener">Mesh Generation and Refinement</a> ·
+        <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">HEC-RAS User's Manual</a> ·
+        <a href="https://www.hec.usace.army.mil/confluence/rasdocs/ras1dtechref/latest" target="_blank" rel="noopener">Hydraulic Reference Manual</a> ·
+        <a href="https://www.hec.usace.army.mil/software/hec-ras/features.aspx" target="_blank" rel="noopener">HEC-RAS Features</a> ·
+        <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasrn/6.6/new-features" target="_blank" rel="noopener">Release Notes 6.6</a>
+        <br><br>页面中的流程图、示意图、示例曲线均为教学示意，非真实计算结果；实际建模请以官方文档与您自己的计算输出为准。教程截图来自 HEC 官方文档（美国联邦政府作品，公有领域）。最后更新：2026-09。
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+/* ============ 移动端目录 ============ */
+const burger = document.getElementById('burger');
+const scrim = document.getElementById('scrim');
+burger.addEventListener('click', () => {
+  const open = document.body.classList.toggle('nav-open');
+  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+scrim.addEventListener('click', () => {
+  document.body.classList.remove('nav-open');
+  burger.setAttribute('aria-expanded', 'false');
+});
+document.querySelectorAll('#sideNav a').forEach(a => a.addEventListener('click', () => {
+  document.body.classList.remove('nav-open');
+  burger.setAttribute('aria-expanded', 'false');
+}));
+
+/* ============ 三视图路由 ============ */
+const viewNames = ['home', 'practical', 'advanced', 'reference'];
+const chartJobs = [];
+function bootChart(id, fn){
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.offsetWidth > 0) fn();
+  else chartJobs.push({el, fn});
+}
+function flushCharts(){
+  for (let i = chartJobs.length - 1; i >= 0; i--){
+    const j = chartJobs[i];
+    if (j.el.offsetWidth > 0){ j.fn(); chartJobs.splice(i, 1); }
+  }
+}
+function parseHash(){
+  const h = (location.hash || '#home').replace(/^#/, '');
+  const parts = h.split('/');
+  return {view: viewNames.includes(parts[0]) ? parts[0] : 'home', target: parts[1] || ''};
+}
+function activateView(view, target){
+  document.body.dataset.view = view;
+  viewNames.forEach(v => {
+    document.getElementById('view-' + v).classList.toggle('active', v === view);
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  document.querySelectorAll('.nav-group').forEach(g => g.classList.toggle('active', g.dataset.view === view));
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.target === target));
+  flushCharts();
+  window.dispatchEvent(new Event('resize'));
+  window.scrollTo({top: 0, behavior: 'auto'});
+  onScroll();
+  if (target){
+    const el = document.getElementById(target);
+    if (el) setTimeout(() => el.scrollIntoView({behavior: 'smooth', block: 'start'}), 30);
+  }
+}
+function route(){
+  const {view, target} = parseHash();
+  activateView(view, target);
+}
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => { location.hash = '#' + b.dataset.view; }));
+document.querySelectorAll('.nav-group').forEach(g => g.addEventListener('click', () => { location.hash = '#' + g.dataset.view; }));
+document.querySelectorAll('.seg-btn').forEach(b => b.addEventListener('click', () => { location.hash = '#' + parseHash().view + '/' + b.dataset.target; }));
+document.querySelector('.brand').addEventListener('click', () => { location.hash = '#home'; });
+document.querySelector('.topbar-title').addEventListener('click', () => { location.hash = '#home'; });
+window.addEventListener('hashchange', route);
+
+/* ============ 章节内两级导航（TOC） · 脚本 ============ */
+function scrollToToc(panel, el){
+  let offset;
+  if (window.innerWidth >= 1001) {
+    offset = 32;
+  } else {
+    const r = panel.getBoundingClientRect();
+    offset = r.top + r.height + 16;
+  }
+  window.scrollTo({top: window.scrollY + el.getBoundingClientRect().top - offset, behavior: 'smooth'});
+}
+function buildSectionToc(secId){
+  const sec = document.getElementById(secId);
+  if (!sec) return;
+  const secHead = sec.querySelector(':scope > .sec-head');
+  if (!secHead) return;
+  const children = Array.from(sec.children).filter(el => el !== secHead);
+  if (!children.length) return;
+  const layout = document.createElement('div');
+  layout.className = 'toc-layout';
+  const main = document.createElement('div');
+  main.className = 'toc-main';
+  const rail = document.createElement('div');
+  rail.className = 'toc-rail';
+  children.forEach(c => main.appendChild(c));
+  const groups = [];
+  let cur = null;
+  main.querySelectorAll(':scope > .sec-tag, :scope > ol.steps > li.step').forEach(el => {
+    if (el.classList.contains('sec-tag')) {
+      cur = {tag: el, steps: []};
+      groups.push(cur);
+    } else if (cur && el.classList.contains('step')) {
+      const h4 = el.querySelector('.step-body h4');
+      if (h4) cur.steps.push({li: el, title: h4.textContent.trim()});
+    }
+  });
+  if (!groups.length) { secHead.after(layout); layout.appendChild(main); return; }
+  const nSteps = groups.reduce((n, g) => n + g.steps.length, 0);
+  const panel = document.createElement('div');
+  panel.className = 'toc-panel';
+  panel.innerHTML =
+    '<div class="toc-head" role="button" tabindex="0" aria-expanded="true">' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>' +
+      '<span>本教程导航</span><span class="toc-count">' + (nSteps > 0 ? groups.length + ' 阶段 · ' + nSteps + ' 步' : groups.length + ' 个主题') + '</span>' +
+      '<svg class="toc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' +
+    '</div><div class="toc-body"></div>';
+  const body = panel.querySelector('.toc-body');
+  groups.forEach((g, i) => {
+    let name = g.tag.textContent.trim();
+    let badge = '';
+    const m = name.match(/^阶段\s*([A-F])\s*[·.、]?\s*(.*)$/) || name.match(/^主题\s*(\d{1,2})\s*[·.、]?\s*(.*)$/);
+    if (m) { badge = m[1]; name = m[2] || name; }
+    const gd = document.createElement('div');
+    gd.className = 'toc-group' + (i === 0 ? ' active' : '');
+    const l1 = document.createElement('button');
+    l1.type = 'button';
+    l1.className = 'toc-l1';
+    l1.innerHTML = (badge ? '<span class="toc-badge">' + badge + '</span>' : '') + '<span>' + name + '</span>';
+    const sd = document.createElement('div');
+    sd.className = 'toc-steps';
+    g.steps.forEach(st => {
+      const l2 = document.createElement('button');
+      l2.type = 'button';
+      l2.className = 'toc-l2';
+      l2.textContent = st.title;
+      l2.addEventListener('click', () => scrollToToc(panel, st.li));
+      sd.appendChild(l2);
+    });
+    if (!g.steps.length) sd.style.display = 'none';
+    gd.appendChild(l1);
+    gd.appendChild(sd);
+    body.appendChild(gd);
+    l1.addEventListener('click', () => scrollToToc(panel, g.tag));
+  });
+  rail.appendChild(panel);
+  layout.appendChild(main);
+  layout.appendChild(rail);
+  sec.classList.add('toc-on');
+  secHead.after(layout);
+  const tocHead = panel.querySelector('.toc-head');
+  function setCollapsed(c){
+    panel.classList.toggle('collapsed', c);
+    tocHead.setAttribute('aria-expanded', String(!c));
+  }
+  tocHead.addEventListener('click', () => setCollapsed(!panel.classList.contains('collapsed')));
+  tocHead.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCollapsed(!panel.classList.contains('collapsed')); }
+  });
+  if (window.innerWidth < 1000) setCollapsed(true);
+  const gds = body.querySelectorAll('.toc-group');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const idx = groups.findIndex(g => g.tag === en.target);
+      gds.forEach((gd2, k) => gd2.classList.toggle('active', k === idx));
+    });
+  }, {rootMargin: '-15% 0px -70% 0px', threshold: 0});
+  groups.forEach(g => io.observe(g.tag));
+}
+['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'r-sec1'].forEach(buildSectionToc);
+
+
+
+/* ============ 阅读进度条 ============ */
+const progressBar = document.getElementById('progressBar');
+const onScroll = () => {
+  const h = document.documentElement;
+  const max = h.scrollHeight - h.clientHeight;
+  progressBar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+};
+document.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+/* ============ 侧边栏高亮（滚动监听） ============ */
+const navItems = document.querySelectorAll('#sideNav .nav-item');
+const secs = document.querySelectorAll('main section[id]');
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.toggle('active', n.getAttribute('data-target') === e.target.id));
+    }
+  });
+}, {rootMargin: '-20% 0px -65% 0px'});
+secs.forEach(s => spy.observe(s));
+
+/* ============ 复制按钮 ============ */
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const text = btn.dataset.copy || '';
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove();
+    }
+    const old = btn.textContent;
+    btn.textContent = '已复制';
+    setTimeout(() => { btn.textContent = old; }, 1400);
+  });
+});
+
+/* ============ KaTeX 公式渲染 + 公式复制（可粘贴到 Word） ============ */
+function renderMath(){
+  if (typeof renderMathInElement !== 'function') return;
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+}
+function copyText(text){
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  return new Promise((res, rej) => {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); res(); } catch (e) { rej(e); }
+    ta.remove();
+  });
+}
+function initFormulaCopy(){
+  document.querySelectorAll('.chart-box').forEach(box => {
+    if (box.querySelector('.copy-fx')) return;
+    const ann = box.querySelector('annotation[encoding="application/x-tex"]');
+    if (!ann) return; // 无公式的图表容器跳过
+    const latex = ann.textContent.trim();
+    if (!latex) return;
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'copy-fx';
+    btn.title = '复制公式（在 Word 中按 Alt+= 后粘贴可转为公式）';
+    btn.setAttribute('aria-label', '复制公式');
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      try { await copyText(latex); }
+      catch (err) { return; }
+      btn.classList.add('done');
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+      setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>'; }, 1400);
+    });
+    box.appendChild(btn);
+  });
+}
+if (document.readyState === 'complete'){ renderMath(); initFormulaCopy(); }
+else window.addEventListener('load', () => { renderMath(); initFormulaCopy(); });
+
+/* ============ ECharts：建模工作流 ============ */
+const PAL = {navy:'#0B2545', blue:'#1D4E89', cyan:'#00B4D8', sand:'#E9A23B', gray:'#5A6B7B'};
+function initFlow(){
+  const el = document.getElementById('chartFlow');
+  if (!el || typeof echarts === 'undefined') return;
+  const w = el.clientWidth, h = 430;
+  const x = p => w * p;
+  const nodes = [
+    {name:'① 新建项目', x:x(.08), y:120},
+    {name:'② 投影与地形', x:x(.30), y:120},
+    {name:'③ 几何数据', x:x(.52), y:120},
+    {name:'④ 水流与边界', x:x(.74), y:120},
+    {name:'⑤ 创建方案', x:x(.74), y:320},
+    {name:'⑥ 计算', x:x(.52), y:320},
+    {name:'⑦ 结果与制图', x:x(.30), y:320},
+    {name:'⑧ 校准迭代', x:x(.08), y:320}
+  ];
+  const edges = [
+    {source:0, target:1}, {source:1, target:2}, {source:2, target:3},
+    {source:3, target:4, lineStyle:{curveness:.18}},
+    {source:4, target:5}, {source:5, target:6}, {source:6, target:7},
+    {source:7, target:2, lineStyle:{curveness:-.32, color:PAL.sand, type:'dashed', width:2}, label:{show:true, formatter:'不满足则迭代', color:PAL.sand, fontSize:11, position:'left'}}
+  ];
+  const chart = echarts.init(el);
+  chart.setOption({
+    tooltip: {show:false},
+    animationDuration: 600,
+    series: [{
+      type:'graph', layout:'none', roam:false,
+      symbolSize: 74,
+      edgeSymbol:['none','arrow'], edgeSymbolSize:9,
+      label:{show:true, fontSize:13, color:'#fff', fontFamily:'Noto Sans SC'},
+      itemStyle:{color:PAL.navy, borderColor:'#fff', borderWidth:2, shadowBlur:10, shadowColor:'rgba(11,37,69,.25)'},
+      lineStyle:{color:PAL.blue, width:2, curveness:0},
+      data: nodes,
+      links: edges
+    }],
+    graphic: [
+      {type:'text', left:'center', top:6, style:{text:'A  项目与数据准备', fill:PAL.gray, fontSize:12, fontFamily:'Noto Sans SC'}},
+      {type:'text', left:'center', bottom:8, style:{text:'B  方案 · 计算 · 结果 · 校准（回到 ③ 形成闭环）', fill:PAL.gray, fontSize:12, fontFamily:'Noto Sans SC'}}
+    ]
+  });
+  window.addEventListener('resize', () => chart.resize());
+}
+bootChart('chartFlow', initFlow);
+
+/* ============ ECharts：纵剖面示意图 ============ */
+function initProfile(){
+  const el = document.getElementById('chartProfile');
+  if (!el || typeof echarts === 'undefined') return;
+  const dist = [0, 2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 30000];
+  const ground = [3968.5, 3965.2, 3962.4, 3959.8, 3957.6, 3956.2, 3955.1, 3954.3, 3953.7, 3953.1, 3952.5, 3951.9, 3951.3, 3950.7, 3950];
+  const wsBase = [3967.5, 3966.3, 3965.2, 3964.4, 3963.6, 3962.8, 3962.1, 3961.4, 3960.8, 3960.2, 3959.6, 3959.0, 3958.4, 3957.8, 3957.2];
+  const wsRef  = [3968.6, 3967.7, 3966.8, 3966.1, 3965.4, 3964.7, 3964.0, 3963.4, 3962.8, 3962.2, 3961.6, 3961.0, 3960.4, 3959.8, 3959.2];
+  const chart = echarts.init(el);
+  chart.setOption({
+    color:[PAL.navy, PAL.cyan, PAL.sand],
+    tooltip:{trigger:'axis', confine:true, valueFormatter: v => v + ' ft'},
+    legend:{top:4, textStyle:{color:PAL.gray, fontSize:12}},
+    grid:{left:56, right:18, top:38, bottom:34},
+    xAxis:{type:'category', data:dist, name:'主槽距离 (ft)', nameLocation:'middle', nameGap:28, nameTextStyle:{color:PAL.gray}, axisLabel:{color:'#7E93A6', fontFamily:'Consolas,monospace'}, axisLine:{lineStyle:{color:'#B9C7D4'}}, splitLine:{show:false}},
+    yAxis:{type:'value', name:'高程 (ft)', nameTextStyle:{color:PAL.gray}, min:3946, max:3972, axisLabel:{color:'#7E93A6', fontFamily:'Consolas,monospace'}, splitLine:{lineStyle:{color:'#EDF1F5'}}},
+    series:[
+      {name:'Ground 地面线', type:'line', data:ground, symbol:'none', smooth:.3, lineStyle:{width:2.5, color:PAL.navy}, areaStyle:{color:'rgba(11,37,69,.06)'}},
+      {name:'WS 10k · Base 方案', type:'line', data:wsBase, symbol:'none', smooth:.3, lineStyle:{width:2.5, color:PAL.cyan}},
+      {name:'WS 10k · RefinedXS 方案', type:'line', data:wsRef, symbol:'none', smooth:.3, lineStyle:{width:2.5, color:PAL.sand}}
+    ]
+  });
+  window.addEventListener('resize', () => chart.resize());
+}
+bootChart('chartProfile', initProfile);
+
+/* ============ ECharts：入流过程线示意 ============ */
+function initHydro(){
+  const el = document.getElementById('chartHydro');
+  if (!el || typeof echarts === 'undefined') return;
+  const t = [], q = [];
+  for (let i = 0; i <= 72; i++) {
+    t.push(i + 'h');
+    let v = 200;
+    if (i >= 12 && i <= 30) v = 200 + (10000 - 200) * Math.pow((i - 12) / 18, 1.6);
+    else if (i > 30 && i <= 60) v = 10000 - (10000 - 400) * Math.pow((i - 30) / 30, 1.4);
+    q.push(Math.round(v));
+  }
+  const chart = echarts.init(el);
+  chart.setOption({
+    color:[PAL.cyan],
+    tooltip:{trigger:'axis', confine:true, valueFormatter: v => v + ' cfs'},
+    grid:{left:56, right:22, top:40, bottom:34},
+    xAxis:{type:'category', data:t, name:'时间', nameLocation:'middle', nameGap:28, nameTextStyle:{color:PAL.gray}, axisLabel:{color:'#7E93A6', interval:8, fontFamily:'Consolas,monospace'}, axisLine:{lineStyle:{color:'#B9C7D4'}}, splitLine:{show:false}},
+    yAxis:{type:'value', name:'流量 (cfs)', nameTextStyle:{color:PAL.gray}, axisLabel:{color:'#7E93A6', fontFamily:'Consolas,monospace'}, splitLine:{lineStyle:{color:'#EDF1F5'}}},
+    series:[{
+      name:'入流 Q(t)', type:'line', data:q, symbol:'none', smooth:.35,
+      lineStyle:{width:3, color:PAL.cyan},
+      areaStyle:{color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(0,180,216,.35)'},{offset:1,color:'rgba(0,180,216,.02)'}])},
+      markPoint:{data:[{name:'洪峰', coord:['30h', 10000], value:'洪峰 ~10000 cfs'}], symbolSize:0, label:{color:PAL.sand, fontSize:12, fontWeight:600}}
+    }]
+  });
+  window.addEventListener('resize', () => chart.resize());
+}
+bootChart('chartHydro', initHydro);
+route();
+</script>
+</body>
+</html>
