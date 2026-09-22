@@ -1531,6 +1531,11 @@ section.wrap.toc-on{max-width:1180px}
       <li class="step"><div class="step-body"><h4>打开 Sediment Data 编辑器</h4>
         <p>在主界面选择 <code>Edit | Sediment Data…</code>（或几何编辑器中的泥沙数据入口），新建/打开泥沙数据文件，按项目命名保存（如 <code>Sediment</code>）。</p>
         <p>先浏览左侧树上的 <b>Grain Classes（粒径分组）</b>、<b>Bed（床层）</b>、<b>Options</b> 菜单位置——后面几步都在这里填。</p>
+        <div class="fig">
+          <div class="fig-title">Sediment Data Editor 总界面<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_02b_seddata_main.jpg" alt="Sediment Data Editor 总界面" loading="lazy">
+          <div class="fig-cap">进入后先认界面：粒径分组、床层与 Options 菜单都在这个编辑器里。 <b>来源：</b>HEC 官方文档</div>
+        </div>
       </div></li>
       <li class="step"><div class="step-body"><h4>认识准非恒定流三层时间步（填时间参数前必懂）</h4>
         <p>官方将准非恒定流拆成三层，后面在 Quasi-Unsteady Flow 编辑器里会分别填：</p>
@@ -1549,11 +1554,21 @@ section.wrap.toc-on{max-width:1180px}
         <p>在 Sediment Data 中选择 <b>Grain Classes</b>，点 <b>Add</b> 新增分组。河床质取样常拆成 3–6 组，例如：</p>
         <p><code>0.1 mm</code>（细砂）· <code>0.5 mm</code>（中砂）· <code>2 mm</code>（砾）· <code>8 mm</code>（卵石）</p>
         <p>为每组填写代表粒径；若做分选/粗化，组数不要只设一组全沙。</p>
+        <div class="fig">
+          <div class="fig-title">定义粒径分组（Grain Classes）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_04a_grain_classes.jpg" alt="粒径分组定义界面" loading="lazy">
+          <div class="fig-cap">点 Add 新增分组，填写代表粒径；建议 3–6 组以覆盖砂–卵石。 <b>来源：</b>HEC 官方文档</div>
+        </div>
       </div></li>
       <li class="step"><div class="step-body"><h4>设置各粒径组重量百分比</h4>
         <p>在级配表中填写各组 <b>百分比</b>，合计 100%。上游来沙与床面级配尽量都按同一套分组给出。</p>
         <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>取样优先：</b>用河床质筛分曲线落到这几组上。没有实测时，可从相邻河段资料或经验级配起步，但率定时必须回头核对。</div></div>
-      </div></li>
+      </div>
+        <div class="fig">
+          <div class="fig-title">粒径组属性与百分比<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_05a_grain_props.jpg" alt="粒径组属性与重量百分比" loading="lazy">
+          <div class="fig-cap">各组百分比合计 100%；与河床质筛分曲线对应。 <b>来源：</b>HEC 官方文档</div>
+        </div></li>
       <li class="step"><div class="step-body"><h4>初始化床层（表层 + 基质）</h4>
         <p>选择 <b>Bed</b> / 初始床沙组成，把表层（active/surface layer）配成与河床质一致的级配；需要模拟粗化时再配置下层基质。</p>
         <p>设置初始床面高程来源：通常直接用几何断面河床点；固定床诊断（Capacity Only）也要填级配，用来按粒径拆分输沙能力。</p>
@@ -1564,6 +1579,11 @@ section.wrap.toc-on{max-width:1180px}
     <ol class="steps" start="7">
       <li class="step"><div class="step-body"><h4>打开 Transport Methods 并选主公式</h4>
         <p>选择 <code>Options | Transport Methods…</code>。按河床组成选起点公式：</p>
+        <div class="fig">
+          <div class="fig-title">Transport Methods 对话框<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_07a_transport_methods.jpg" alt="输沙方法选择对话框" loading="lazy">
+          <div class="fig-cap">在 Options → Transport Methods 中选主公式并检查适用粒径。 <b>来源：</b>HEC 官方文档</div>
+        </div>
         <ul>
           <li><b>Engelund-Hansen</b> — 沙质、全沙，常用起点。</li>
           <li><b>Meyer-Peter Müller</b> — 卵石/砾石推移质。</li>
@@ -1577,13 +1597,18 @@ section.wrap.toc-on{max-width:1180px}
         <p>勾选 <b>Hiding and Exposure</b>，方法优先 <b>Wu</b>，系数用默认值起步（细颗粒更易被"藏"，总输沙会下降、模型更稳）。</p>
         <p>设置 <b>Active Layer</b> 厚度：沙床不要用"1×d90"默认过薄值，加一个最小厚度（约 0.1–0.3&nbsp;m）或放大 d90 倍数，否则容易振荡。</p>
         <div class="fig">
-          <div class="fig-title">Sediment Data → Options 中的 2D/床层相关选项<span class="fig-flag">官方截图</span></div>
-          <img src="assets/official/sed_03_2d_bed_options.jpg" alt="泥沙选项对话框" loading="lazy">
-          <div class="fig-cap">输沙方法、床层混合与 2D 选项分散在 Options 菜单中，按本阶段顺序设置。<b>来源：</b>HEC 官方 2D Sediment Parameters 文档</div>
+          <div class="fig-title">Bed Mixing Options（隐藏暴露与活动层）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_08a_bed_mixing.jpg" alt="Bed Mixing Options 对话框" loading="lazy">
+          <div class="fig-cap">勾选 Hiding and Exposure（Wu 起步），并检查 Active Layer 厚度（沙床加最小厚度）。 <b>来源：</b>HEC 官方 2D Sediment Parameters 文档</div>
         </div>
       </div></li>
       <li class="step"><div class="step-body"><h4>（2D 额外）打开 2D Options 并确认浅水方程</h4>
-        <p>2D 动床必须使用完整 <b>Shallow Water Equations（SWE）</b>，不能用扩散波。在 Plan 的 <code>Unsteady Flow Analysis → Options → Computation Options and Tolerances → 2D Flow Options</code> 里把 Equation Set 设为 SWE。</p>
+        <p>2D 动床必须使用完整 <b>Shallow Water Equations（SWE）</b>，不能用扩散波。在 Plan 的 <code>Unsteady Flow Analysis → Options → Computation Options and Tolerances → 2D Flow Options</code> 里把 Equation Set 设为 SWE。
+        <div class="fig">
+          <div class="fig-title">2D 泥沙相关选项（示例）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_09a_2d_options.jpg" alt="2D 泥沙选项对话框" loading="lazy">
+          <div class="fig-cap">Equation Set 必须为 SWE；暖机步在 2D Flow Options 中设置。 <b>来源：</b>HEC 官方文档</div>
+        </div></p>
         <p>再回到 <code>Sediment Data → Options → 2D Computational Options</code>：求解器可用 <b>FGMRES-SOR</b> 试算，终算再换 PARADISO；紊动选 <b>Conservative</b> 默认。</p>
         <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div><b>必做 Warmup：</b>在 <code>2D Flow Options → Number of Warmup Time Steps</code> 填入暖机步数（可为 0=用模拟步长），让网格先湿润、水面平衡，再开始计泥沙。</div></div>
       </div></li>
@@ -1593,7 +1618,12 @@ section.wrap.toc-on{max-width:1180px}
     <ol class="steps" start="10">
       <li class="step"><div class="step-body"><h4>创建 Quasi-Unsteady Flow 数据</h4>
         <p>打开 <b>Quasi-Unsteady Flow Editor</b>（非恒定流数据中的准非恒定流类型）。按日或更细分辨率输入流量序列，形成一系列流量档（Duration）。</p>
-        <p>在编辑器中设置 <b>Computational Increment</b>（≤ Duration）与 Bed Mixing 相关步长；保存为独立的准非恒定流水流文件。</p>
+        <p>在编辑器中设置 <b>Computational Increment</b>（≤ Duration）与 Bed Mixing 相关步长；保存为独立的准非恒定流水流文件。
+        <div class="fig">
+          <div class="fig-title">Quasi-Unsteady / 混合流相关编辑器（示意）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_10a_quasi_editor.jpg" alt="准非恒定流相关编辑器" loading="lazy">
+          <div class="fig-cap">在此组织流量档与计算增量；温度在下一步单独设置。 <b>来源：</b>HEC 官方文档</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>点 Set Temperature… 填温度时间序列（必填）</h4>
         <p>在 Quasi-Unsteady Flow 编辑器底部点击 <b>Set Temperature…</b>，打开温度序列编辑器，填写水温（°C 或 °F，与工程单位一致）。</p>
@@ -1620,12 +1650,22 @@ section.wrap.toc-on{max-width:1180px}
           <li><b>给定输沙率过程线</b>：有实测或推求的输沙率时用这个。</li>
           <li><b>平衡来沙（Equilibrium / Capacity-based）</b>：按边界水力与床沙自动取输沙能力，需保证上游"虚拟断面"级配合理。</li>
         </ul>
-        <p>全非恒定流：温度在 <code>Unsteady Flow Editor → Options | Water Temperature (for Unsteady Sediment)</code> 中设置；不设则按 55&nbsp;°F。</p>
+        <p>全非恒定流：温度在 <code>Unsteady Flow Editor → Options | Water Temperature (for Unsteady Sediment)</code> 中设置；不设则按 55&nbsp;°F。
+        <div class="fig">
+          <div class="fig-title">泥沙边界条件设置（示意）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_12a_bc_load.jpg" alt="泥沙边界条件" loading="lazy">
+          <div class="fig-cap">上游选给定输沙率或平衡来沙；边界位置要落在主槽过水处。 <b>来源：</b>HEC 官方文档</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>在 Plan 中挂接泥沙计算选项</h4>
         <p>打开 <b>Unsteady Flow Analysis（Plan）</b>：几何选含泥沙的几何，水流选准非恒定流文件。</p>
         <p>选择 <code>Options | Sediment Computation Options and Tolerances…</code>：设泥沙时间相关倍增器（先 &lt;10，并做敏感性）、层厚（初始可取 1–2&nbsp;m 量级更稳）。</p>
-        <p>Plan 保存为有意义的名字，如 <code>Sed-Base</code>。</p>
+        <p>Plan 保存为有意义的名字，如 <code>Sed-Base</code>。
+        <div class="fig">
+          <div class="fig-title">Sediment Computation Options（示意）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sed_13a_plan_sed_opts.jpg" alt="泥沙计算选项" loading="lazy">
+          <div class="fig-cap">倍增器先 &lt;10 做敏感性；层厚可取 1–2 m 量级更稳。 <b>来源：</b>HEC 官方文档</div>
+        </div></p>
       </div></li>
     </ol>
 
@@ -1641,11 +1681,7 @@ section.wrap.toc-on{max-width:1180px}
           <li>沿程冲刷/淤积位置是否符合直觉（弯道、束窄、回水段）。</li>
           <li>分粒径输沙率与表层级配是否出现明显粗化。</li>
         </ul>
-        <div class="fig">
-          <div class="fig-title">Sediment Data Editor 界面<span class="fig-flag">官方截图</span></div>
-          <img src="assets/official/sed_08_sed_data_editor.jpg" alt="泥沙数据编辑器" loading="lazy">
-          <div class="fig-cap">级配、床层与方法都在 Sediment Data Editor 组织；结果则在 Mapper/Plot 中读。<b>来源：</b>HEC 官方 Fixed-bed 2D Sediment 文档</div>
-        </div>
+        
       </div></li>
       <li class="step"><div class="step-body"><h4>边界猛冲猛淤怎么查</h4>
         <p>若模型上、下边界附近出现夸张冲深或淤积，按官方《Common Errors in 2D Sediment Models》顺序排查：</p>
@@ -1663,7 +1699,12 @@ section.wrap.toc-on{max-width:1180px}
       <li class="step"><div class="step-body"><h4>滩地曼宁 n 不要乱加（泥沙陷阱）</h4>
         <p>水力对滩地 n 不敏感，但输沙对应力极敏感：综合起来输沙可近似随 n 的三次方增长。滩地 n 从 0.06 调到 0.12，水位几乎不动，输沙却可能差一个数量级。</p>
         <p>回到几何数据 <code>Tables | Manning's n</code>，把滩地 n 按植被/阻力重新估计，而不是按"水位不好看"去加糙。</p>
-      </div></li>
+      </div>
+        <div class="fig">
+          <div class="fig-title">Manning n 表（横向变化）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sf_12_manning_table.jpg" alt="曼宁 n 值表" loading="lazy">
+          <div class="fig-cap">滩地 n 对输沙极其敏感，需按植被/阻力估计。图示为 1D 教程中的 Manning's n 表界面。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
+        </div></li>
       <li class="step"><div class="step-body"><h4>（可选）Capacity Only / Concentration Only 快速诊断</h4>
         <p>要评估"加构筑物后能力是否变大"时，可用固定床简化：</p>
         <p>在 Sediment Data 中把 <b>Simulation Components</b> 设为 <b>Capacity Only</b>（或 Concentration Only），另存泥沙数据与 Plan，运行后在 Mapper 中展开 <b>Sediment Transport → Total-load Transport Capacity</b> 图层对比方案。</p>
@@ -1725,7 +1766,7 @@ section.wrap.toc-on{max-width:1180px}
         <div class="fig">
           <div class="fig-title">多层水柱热交换源汇示意<span class="fig-flag">官方截图</span></div>
           <img src="assets/official/wq_01_heat_schematic.jpg" alt="多层水柱热交换源汇示意图" loading="lazy">
-          <div class="fig-cap">短波、长波、潜热、感热与沉积物–水体热交换。<b>来源：</b>HEC 官方 Water Temperature Simulation Module</div>
+          <div class="fig-cap">本图解释「气象强迫如何进入热平衡」——与本步准备的辐射/气温/风速数据一一对应。短波、长波、潜热、感热与沉积物–水体热交换。<b>来源：</b>HEC 官方 Water Temperature Simulation Module</div>
         </div>
       </div></li>
       <li class="step"><div class="step-body"><h4>打开 Water Quality 数据入口</h4>
@@ -1773,7 +1814,12 @@ section.wrap.toc-on{max-width:1180px}
     <ol class="steps" start="7">
       <li class="step"><div class="step-body"><h4>设置上游与旁侧入流浓度</h4>
         <p>在边界条件编辑器中，为各组分指定 <b>浓度过程线</b>（与流量过程线同步）。点源排口用旁侧入流，在排口附近保证网格/断面分辨率足够。</p>
-        <p>先用 <b>保守示踪</b>（GCSM 近保守）跑一遍，看输运时间尺度是否合理，再上反应组分。</p>
+        <p>先用 <b>保守示踪</b>（GCSM 近保守）跑一遍，看输运时间尺度是否合理，再上反应组分。
+        <div class="fig">
+          <div class="fig-title">边界组分数据源选项<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/wq_07a_boundary_source.jpg" alt="Boundary Constituent Set Editor 数据源" loading="lazy">
+          <div class="fig-cap">浓度过程线可来自常数、DSS 或环境值；与流量过程线时间对齐。 <b>来源：</b>HEC 官方文档</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>填反应速率与温度系数</h4>
         <p>按 20&nbsp;°C 率定值填写 \(k(20)\) 与温度系数 \(\theta\)（常见 1.01–1.10），运行时自动换算 \(k(T_w)=k(20)\,\theta^{T_w-20}\)。</p>
