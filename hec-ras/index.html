@@ -1535,6 +1535,16 @@ section.wrap.toc-on{max-width:1180px}
       </tbody>
     </table></div>
     <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>温度不是可选项：</b>沉速与部分输沙公式依赖水的粘度，而粘度随水温变化。准非恒定流编辑器底部 <code>Set Temperature…</code> 必填温度序列；全非恒定流在 Unsteady Flow 的 <code>Options | Water Temperature (for Unsteady Sediment)</code> 中指定。缺省按 55&nbsp;°F 处理，细颗粒体系对温度更敏感。长期序列可用常数、年内高低温插值，或月平均（Duration≈730.48&nbsp;h）重复构造。</div></div>
+    <div class="fig">
+      <div class="fig-title">准非恒定流温度序列编辑器<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sed_01_temp_series_editor.jpg" alt="准非恒定流温度序列编辑器" loading="lazy">
+      <div class="fig-cap">在 Quasi-Unsteady Flow 编辑器中用 Set Temperature… 打开温度时间序列；沉速与输沙公式依赖水温（粘度）。 <b>来源：</b>HEC 官方文档</div>
+    </div>
+    <div class="fig">
+      <div class="fig-title">温度序列编辑器对话框<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sed_02_temp_dialog.png" alt="温度序列编辑器对话框" loading="lazy">
+      <div class="fig-cap">不规则时间序列编辑器：可填常数长历时、高低温插值，或按月平均重复。<b>来源：</b>HEC 官方文档</div>
+    </div>
 
     <div class="sec-tag">常用输沙能力公式（官方手册常用集）</div>
     <div class="tbl-wrap"><table>
@@ -1582,6 +1592,16 @@ section.wrap.toc-on{max-width:1180px}
         <tr><td><b>Tier 3</b></td><td>Subgrid 等</td><td>床面亚网格能改善细节但加机时，模型稳定后再试。</td></tr>
       </tbody>
     </table></div>
+    <div class="fig">
+      <div class="fig-title">Sediment Data → Options 中的 2D 泥沙选项<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sed_03_2d_bed_options.jpg" alt="2D 泥沙选项对话框" loading="lazy">
+      <div class="fig-cap">2D 泥沙方法分散在 Sediment Data 的 Transport Methods / 2D Options / Bed Mixing Options 与 Unsteady Analysis 的计算选项中；按上表优先级逐项设置。 <b>来源：</b>HEC 官方文档</div>
+    </div>
+    <div class="fig">
+      <div class="fig-title">泥沙数据编辑器（Sediment Data Editor）<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sed_08_sed_data_editor.jpg" alt="泥沙数据编辑器界面" loading="lazy">
+      <div class="fig-cap">级配分组、床层与输沙方法均在此配置；先保证水动力，再在此叠加动床参数。 <b>来源：</b>HEC 官方文档</div>
+    </div>
 
     <div class="sec-tag">常见病：边界猛冲猛淤与"糙率陷阱"</div>
     <div class="cards">
@@ -1589,7 +1609,22 @@ section.wrap.toc-on{max-width:1180px}
       <div class="card"><h3>滩地曼宁 n 过大</h3><p>水力对滩地 n 不敏感，但输沙对应力极敏感：曼宁关系下摩阻坡降 ∝ n²，输沙常再取剪力约 1.5 次方，综合可近似 n 的三次方。滩地 n 从 0.06 调到 0.12，水位几乎不动，输沙却可能差一个数量级——滩地糙率要按泥沙问题重新审视。</p></div>
       <div class="card"><h3>固定床快速诊断</h3><p><b>Capacity Only</b>：只算输沙能力场，看哪里能力大（冲刷风险）；<b>Concentration Only</b>：固定床示踪浓度。二者仍需完整泥沙数据（级配等），但对来沙边界不敏感，适合工程方案前后对比（如加构筑物后能力是否提高）。</p></div>
     </div>
+    <div class="fig">
+      <div class="fig-title">Capacity Only 模式设置<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sed_05_capacity_mode.jpg" alt="Capacity Only 计算模式设置" loading="lazy">
+      <div class="fig-cap">固定床 Capacity Only：只算输沙能力场，不改河床；仍需完整泥沙级配数据。 <b>来源：</b>HEC 官方文档</div>
+    </div>
+    <div class="fig">
+      <div class="fig-title">Capacity Only 输沙能力结果<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sed_06_capacity_result.jpg" alt="输沙能力结果图" loading="lazy">
+      <div class="fig-cap">在 Mapper 中查看 Total-load Transport Capacity 等结果图层，对比工程前后能力变化。 <b>来源：</b>HEC 官方文档</div>
+    </div>
 
+    <div class="fig">
+      <div class="fig-title">边界处剧烈冲淤示例<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/sed_07_boundary_issue.jpg" alt="模型边界剧烈冲淤问题示意" loading="lazy">
+      <div class="fig-cap">上游边界能力/来沙不匹配或能坡过陡时，边界附近会出现虚假冲刷与回淤；应检查平衡来沙、级配与 Tail Water 选项。 <b>来源：</b>HEC 官方文档</div>
+    </div>
     <div class="sec-tag">泥石流 / 高含沙（Mud and Debris）</div>
     <p>官方将高浓度流体按流变分层：<b>Bingham / 超浓度流</b>有屈服应力；泥流与颗粒流为二次"剪切增稠"型；泥石流颗粒持续接触，以摩擦为主，需 Mohr-Coulomb 类摩擦模型。可用非牛顿流体库模拟堆积范围、厚度与流速，典型步骤是：沿沟加密 2D 网格 → 设屈服应力/塑性粘度（及摩擦参数）→ 上游给流量与浓度过程线 → 分析堆积。调不通时优先查浓度–流变参数是否超出模型假定。</p>
 
@@ -1627,6 +1662,11 @@ section.wrap.toc-on{max-width:1180px}
       </tbody>
     </table></div>
     <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>气象强迫：</b>完整能量平衡至少需要太阳辐射、气压、气温、湿度、风速、云量。气温与辐射日变化大，官方建议使用<strong>逐时</strong>气象序列。河网水质单元沿纵向分段，水库则可垂向分层。</div></div>
+    <div class="fig">
+      <div class="fig-title">多层水柱热交换源汇示意<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/wq_01_heat_schematic.jpg" alt="多层水柱热交换源汇示意图" loading="lazy">
+      <div class="fig-cap">短波、大气长波、水面长波、潜热、感热与沉积物–水体热交换的正负向约定见官方水温模块说明。 <b>来源：</b>HEC 官方文档</div>
+    </div>
 
     <div class="sec-tag">水质组分库 · 三套模块</div>
     <div class="cards">
@@ -1638,6 +1678,21 @@ section.wrap.toc-on{max-width:1180px}
     <div class="chart-box" style="padding:18px">$$\frac{\partial C}{\partial t}= \text{输运} - k_0 - k_1 C + \frac{k_{sed}}{h} - \frac{v_s}{h}\,C$$</div>
     <p>动力学系数按修正 Arrhenius 从 20&nbsp;°C 率定值换算到当前水温：\(k(T_w)=k(20)\,\theta^{T_w-20}\)，\(\theta\) 常见 1.01–1.10。沉降：表层仅与表层浓度有关，内部层还与垂向梯度有关；底泥释放与接触床面的单元面积有关。</p>
 
+    <div class="fig">
+      <div class="fig-title">WQ Constituent Selector · Temperature 库<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/wq_03_selector_temp.png" alt="WQ Constituent Selector 温度库" loading="lazy">
+      <div class="fig-cap">组分选择器按库（Temperature / NSM1 / GCSM）勾选组分后 Apply 写入组分集。 <b>来源：</b>HEC 官方文档</div>
+    </div>
+    <div class="fig">
+      <div class="fig-title">WQ Constituent Selector · NSM1 库<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/wq_04_selector_nsm1.png" alt="WQ Constituent Selector NSM1 库" loading="lazy">
+      <div class="fig-cap">NSM 营养盐库常见组分：DO、氨氮、硝氮、无机磷、浮游植物等。 <b>来源：</b>HEC 官方文档</div>
+    </div>
+    <div class="fig">
+      <div class="fig-title">WQ Constituent Set Editor 示例<span class="fig-flag">官方截图</span></div>
+      <img src="assets/official/wq_02_constituent_set.png" alt="水质组分集编辑器示例" loading="lazy">
+      <div class="fig-cap">可建立多套组分集做方案对比；切换前记得 Apply/保存。 <b>来源：</b>HEC 官方文档</div>
+    </div>
     <div class="sec-tag">当前版本常见组分一览</div>
     <div class="tbl-wrap"><table>
       <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
