@@ -856,18 +856,28 @@ function loadFromStorage() {
 }
 
 // ─── API (cache-busting + retry + proxy fallback) ───
+function withPolitePool(url) {
+  // OpenAlex 礼貌池，降低限流/抽风概率
+  if (url.indexOf('api.openalex.org') === -1) return url;
+  return url + (url.indexOf('?') === -1 ? '?' : '&') + 'mailto=citeglow%40users.noreply.github.com';
+}
+
 async function apiGet(url, maxRetries) {
   maxRetries = maxRetries || 3;
-  const sep = url.indexOf('?') === -1 ? '?' : '&';
-  const bustUrl = url + sep + '_t=' + Date.now();
+  const target = withPolitePool(url);
+  const sep = target.indexOf('?') === -1 ? '?' : '&';
+  const bustUrl = target + sep + '_t=' + Date.now();
 
-  // Try direct first, then proxy fallback (relative + absolute)
-  async function doFetch(fetchUrl, proxyMode) {
+  async function doFetch(fetchUrl, mode) {
     let actualUrl = fetchUrl;
-    if (proxyMode === 'rel') actualUrl = `/api/proxy?url=${encodeURIComponent(fetchUrl)}`;
-    if (proxyMode === 'abs') actualUrl = `https://citeglow.com/api/proxy?url=${encodeURIComponent(fetchUrl)}`;
+    if (mode === 'rel') actualUrl = `/api/proxy?url=${encodeURIComponent(fetchUrl)}`;
+    if (mode === 'abs') actualUrl = `https://citeglow.com/api/proxy?url=${encodeURIComponent(fetchUrl)}`;
+    if (mode === 'allorigins') actualUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(fetchUrl)}`;
+    if (mode === 'corsproxy') actualUrl = `https://corsproxy.io/?${encodeURIComponent(fetchUrl)}`;
+    const isProxy = !!mode;
     const controller = new AbortController();
-    const tid = setTimeout(() => controller.abort(), proxyMode ? 20000 : 12000);
+    // 代理链路要给足时间：服务端 28s，这里必须更长，否则浏览器先 abort
+    const tid = setTimeout(() => controller.abort(), isProxy ? 35000 : 15000);
     try {
       const r = await fetch(actualUrl, {
         cache: 'no-store',
@@ -882,30 +892,32 @@ async function apiGet(url, maxRetries) {
     }
   }
 
-  // Try direct requests first
+  // 1) 直连
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await doFetch(bustUrl, null);
     } catch(e) {
       if (e.name === 'AbortError' || e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
-        // Likely blocked (GFW) — switch to proxy immediately
         break;
       }
-      if (attempt < maxRetries - 1) { await sleep(Math.pow(2, attempt) * 1000); }
+      if (attempt < maxRetries - 1) { await sleep(Math.pow(2, attempt) * 800); }
     }
   }
 
-  // Fallback: relative proxy, then absolute citeglow proxy（多次重试，代理偶发 504）
-  for (const mode of ['rel', 'abs', 'rel', 'abs']) {
+  // 2) 自有代理（相对 + 绝对），再 3) 公共 CORS 兜底
+  const chain = ['rel', 'abs', 'rel', 'abs', 'allorigins', 'corsproxy'];
+  let lastErr = null;
+  for (const mode of chain) {
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         return await doFetch(bustUrl, mode);
       } catch(e) {
-        if (attempt < 1) { await sleep(800); }
+        lastErr = e;
+        if (attempt < 1) await sleep(600);
       }
     }
   }
-  throw new Error('网络请求失败（直连与代理均不可用）');
+  throw new Error('网络请求失败（直连与代理均不可用）' + (lastErr && lastErr.message ? ' · ' + lastErr.message : ''));
 }
 
 async function fetchWorkByDOI(doi) {
@@ -1286,9 +1298,13 @@ async function loadCitations(index) {
     }
 
     if (!data) {
-      const hint = lastErr ? `（${String(lastErr.message || lastErr).slice(0, 60)}）` : '（网络或数据源延迟）';
+      const hint = lastErr ? `（${String(lastErr.message || lastErr).slice(0, 80)}）` : '（网络或数据源延迟）';
+      const oaLink = paper.openalex_id
+        ? `https://openalex.org/${String(paper.openalex_id).replace(/^https?:\/\/openalex\.org\//, '')}`
+        : (paper.doi ? `https://openalex.org/works/doi:${encodeURIComponent(paper.doi)}` : '');
+      const linkHtml = oaLink ? `<br><a href="${oaLink}" target="_blank" style="color:var(--pri2);font-size:.78rem">在 OpenAlex 查看引用文献 ↗</a>` : '';
       if (paper.doi || paper.openalex_id || paper.title) {
-        renderEmptyWithRetry(`⚠️ 引用数为 ${paper.cited_by_count || 0}，但引用列表暂未取到${hint}`);
+        renderEmptyWithRetry(`⚠️ 引用数为 ${paper.cited_by_count || 0}，但引用列表暂未取到${hint}${linkHtml}`);
         return;
       }
       renderEmptyWithRetry('📭 缺少 DOI / OpenAlex ID，无法查询引用');
