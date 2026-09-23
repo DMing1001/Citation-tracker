@@ -587,7 +587,8 @@ function mergePaperLists(localList, remoteList) {
     const ll = p.citation_list || [];
     const rl = r.citation_list || [];
     merged.citation_list = ll.length >= rl.length ? ll : rl;
-    merged.loaded = !!(p.loaded || r.loaded);
+    // 列表为空时不能算「已加载」，否则展开只看到空列表且不会自动重试
+    merged.loaded = !!(p.loaded || r.loaded) && merged.citation_list.length > 0;
     const tagSet = [];
     [...(r.tags || []), ...(p.tags || [])].forEach(t => { if (t && !tagSet.includes(t)) tagSet.push(t); });
     if (tagSet.length) merged.tags = tagSet.slice(0, 8);
@@ -914,7 +915,7 @@ async function fetchWorkByDOI(doi) {
 }
 
 async function fetchWorkByTitle(title) {
-  const url = `https://api.openalex.org/works?search=${encodeURIComponent(title)}&per_page=1`;
+  const url = `https://api.openalex.org/works?search=${encodeURIComponent(title)}&per-page=3`;
   const data = await apiGet(url);
   if (data.results && data.results.length > 0) return data.results[0];
   throw new Error('未找到匹配的论文');
@@ -1158,22 +1159,42 @@ async function loadCitations(index) {
     listEl.innerHTML = '<div class="cite-loading"><span class="spinner"></span>正在加载引用列表...</div>';
   }
 
-  // Helper: ensure we have a valid openalex_id (short form W...)
-  async function ensureOpenAlexId() {
-    if (paper.openalex_id) {
+  // 强制按 DOI 重新解析 OpenAlex ID（避免缓存了错误/过期 ID）
+  async function resolveOpenAlexId(force) {
+    if (force) paper.openalex_id = '';
+    if (!force && paper.openalex_id) {
       paper.openalex_id = String(paper.openalex_id).replace(/^https?:\/\/openalex\.org\//, '');
-      return true;
+      if (/^W\d+$/.test(paper.openalex_id)) return true;
+      paper.openalex_id = '';
     }
-    if (!paper.doi) return false;
-    try {
-      const work = await fetchWorkByDOI(paper.doi);
-      if (work && work.id) {
-        paper.openalex_id = work.id.replace('https://openalex.org/', '');
-        saveToStorage();
-        return true;
-      }
-    } catch(e) { /* DOI not found */ }
+    if (paper.doi) {
+      try {
+        const work = await fetchWorkByDOI(paper.doi);
+        if (work && work.id) {
+          paper.openalex_id = String(work.id).replace('https://openalex.org/', '');
+          saveToStorage();
+          return true;
+        }
+      } catch(e) { /* DOI not in OA */ }
+    }
+    if (paper.title) {
+      try {
+        const work = await fetchWorkByTitle(paper.title);
+        if (work && work.id) {
+          paper.openalex_id = String(work.id).replace('https://openalex.org/', '');
+          if (!paper.doi && work.doi) paper.doi = String(work.doi).replace('https://doi.org/', '');
+          saveToStorage();
+          return true;
+        }
+      } catch(e) { /* title search failed */ }
+    }
     return false;
+  }
+
+  function renderEmptyWithRetry(msg) {
+    if (listEl) {
+      listEl.innerHTML = `<div class="cite-empty">${msg}<br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>`;
+    }
   }
 
   try {
@@ -1181,35 +1202,46 @@ async function loadCitations(index) {
     let data = null;
     let lastErr = null;
 
-    // 1) OpenAlex (has who-cites-whom graph)
-    try {
-      if (await ensureOpenAlexId()) {
-        data = await fetchCitations(paper.openalex_id, page, 10);
-      }
-    } catch (e1) {
-      lastErr = e1;
-      // stale id → re-resolve once
+    // 1) OpenAlex（唯一能查「谁引用了谁」的主源）
+    for (let attempt = 0; attempt < 2 && !data; attempt++) {
       try {
-        paper.openalex_id = '';
-        if (await ensureOpenAlexId()) {
+        if (await resolveOpenAlexId(attempt > 0)) {
           data = await fetchCitations(paper.openalex_id, page, 10);
+          // 有引用数但列表为空 → 强制换 ID 再试一轮
+          if (attempt === 0 && (!data.results || !data.results.length) && (paper.cited_by_count || 0) > 0) {
+            data = null;
+          }
+        } else if (attempt === 0) {
+          // 没解析出 ID，下一轮强制重查
+          continue;
         }
-      } catch (e2) { lastErr = e2; }
+      } catch (e1) {
+        lastErr = e1;
+        data = null;
+      }
     }
 
-    // 2) Semantic Scholar fallback (citing papers by DOI)
-    if (!data || !data.results) {
+    // 2) Semantic Scholar 兜底
+    if (!data || !data.results || !data.results.length) {
       try {
         const offset = (page - 1) * 20;
-        data = await fetchCitationsSS(paper, offset, 20);
-        data._fromSS = true;
+        const ss = await fetchCitationsSS(paper, offset, 20);
+        if (ss && ss.results && ss.results.length) {
+          ss._fromSS = true;
+          data = ss;
+        }
       } catch (e3) {
         lastErr = e3 || lastErr;
       }
     }
 
     if (!data) {
-      throw lastErr || new Error('引用列表接口均不可用');
+      if (paper.doi || paper.openalex_id || paper.title) {
+        renderEmptyWithRetry(`⚠️ 引用数为 ${paper.cited_by_count || 0}，但引用列表暂未取到（网络或数据源延迟）`);
+        return;
+      }
+      renderEmptyWithRetry('📭 缺少 DOI / OpenAlex ID，无法查询引用');
+      return;
     }
 
     const results = data.results || [];
@@ -1223,10 +1255,7 @@ async function loadCitations(index) {
     }));
 
     if (citingPapers.length === 0 && page === 1 && (paper.cited_by_count || 0) > 0) {
-      // Count exists but list empty — do NOT mark as permanently loaded
-      if (listEl) {
-        listEl.innerHTML = `<div class="cite-empty">⚠️ 引用数为 ${paper.cited_by_count}，但暂未取到文献列表（网络或数据源限制）<br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>`;
-      }
+      renderEmptyWithRetry(`⚠️ 引用数为 ${paper.cited_by_count}，但暂未取到文献列表（数据源可能尚未同步）`);
       return;
     }
 
@@ -1245,9 +1274,8 @@ async function loadCitations(index) {
     renderCitations(index);
     updateStats();
   } catch(e) {
-    if (listEl) {
-      listEl.innerHTML = `<div class="cite-empty">❌ 加载失败: ${escHtml(e.message || '未知错误')}<br><span style="font-size:.78rem;opacity:.65;display:inline-block;margin-top:4px">可尝试刷新页面，或检查网络后重试</span><br><button onclick="loadCitations(${index})" style="margin-top:8px;background:none;border:1px solid var(--border);color:var(--pri2);padding:6px 16px;border-radius:8px;cursor:pointer;font-family:inherit">重试</button></div>`;
-    }
+    console.warn('loadCitations failed', index, e);
+    renderEmptyWithRetry(`❌ 加载失败: ${escHtml(e.message || '未知错误')}`);
   }
 }
 
