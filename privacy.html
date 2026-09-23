@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CiteGlow 隐私政策 — 数据使用、Cookie、第三方广告说明。">
+<meta name="robots" content="index,follow">
+<title>隐私政策 | CiteGlow</title>
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<script>
+!function(){var t=localStorage.getItem('citeglow-theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)}();
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e1a;--card:#111d33;--pri:#6366f1;--pri2:#818cf8;
+  --txt:#e2e8f0;--dim:#64748d;--bright:#f8fafc;
+  --border:rgba(99,102,241,.15);
+}
+[data-theme="light"]{
+  --bg:#f5f7fa;--card:#fff;--txt:#1e293b;--dim:#64748d;--bright:#0f172a;
+  --border:rgba(15,23,42,.1);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);line-height:1.75;font-size:14.5px;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:40px 20px 60px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:28px;text-decoration:none;color:var(--bright)}
+.brand img{width:36px;height:36px;border-radius:8px}
+.brand span{font-weight:700;font-size:1.1rem;letter-spacing:.5px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 28px 18px}
+h1{font-size:1.35rem;margin-bottom:8px;color:var(--bright)}
+.sub{color:var(--dim);font-size:.9rem;margin-bottom:22px}
+h2{font-size:1rem;margin:22px 0 8px;color:var(--pri2)}
+p,li{color:var(--txt);opacity:.92;margin-bottom:8px}
+ul{padding-left:20px;margin-bottom:8px}
+a{color:var(--pri2);text-decoration:none}
+a:hover{text-decoration:underline}
+.meta{margin-top:22px;padding-top:16px;border-top:1px solid var(--border);font-size:.85rem;color:var(--dim)}
+.back{display:inline-block;margin-top:24px;color:var(--dim);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="/"><img src="/logo.svg" alt=""><span>CiteGlow</span></a>
+  <article class="card">
+    <h1>隐私政策</h1>
+    <p class="sub">适用站点：citeglow.com（含水利工具集、HEC-RAS 教学、成果登记等相关页面）</p>
+
+    <h2>我们如何处理数据</h2>
+    <ul>
+      <li>查询与计算主要在您的浏览器本地完成；论文 DOI、工程参数等不会作为业务数据上传到我们的服务器用于分析。</li>
+      <li>若您使用云同步（Supabase），仅在您主动登录并同步时处理与账号相关的文献库数据；游客模式使用浏览器 localStorage。</li>
+      <li>我们不向第三方出售您的个人信息。</li>
+    </ul>
+
+    <h2>本地存储</h2>
+    <p>页面可能使用 localStorage 保存主题偏好、文献列表或算例，便于下次使用。清除浏览器数据即可删除。</p>
+
+    <h2>第三方数据源</h2>
+    <p>引用数据来自 OpenAlex 等开放学术接口；查询时会将论文标识（如 DOI）发送至相应服务以获取元数据。请查阅其自身隐私说明。</p>
+
+    <h2>Cookie 与第三方广告（Google AdSense）</h2>
+    <p>本站可能展示 Google 等第三方广告。广告商可能使用 Cookie 或类似技术衡量效果或展示相关广告。</p>
+    <ul>
+      <li>可前往 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google 广告设置</a> 管理个性化广告。</li>
+      <li>也可了解 <a href="https://www.aboutads.info/" target="_blank" rel="noopener noreferrer">aboutads.info</a> 提供的行业退出方式。</li>
+      <li>欧洲经济区、英国、瑞士访客可能看到同意管理消息（CMP），用于征求广告相关同意。</li>
+    </ul>
+
+    <h2>外链</h2>
+    <p>页面可能包含京东、GitHub、期刊官网等外部链接。外部站点的内容与隐私实践不受本站控制。</p>
+
+    <h2>儿童隐私</h2>
+    <p>本站不面向 13 岁以下儿童设计，也不会故意收集其个人信息。</p>
+
+    <h2>政策更新</h2>
+    <p>本政策可能不时更新，重大变更将在本页标注生效日期。</p>
+
+    <h2>联系我们</h2>
+    <p>如有疑问，请发送邮件至：<a href="mailto:1591048061@qq.com">1591048061@qq.com</a></p>
+
+    <p class="meta">生效日期：2026-09-13</p>
+  </article>
+  <a class="back" href="/">← 返回 CiteGlow</a>
+</div>
+</body>
+</html>
