@@ -37,7 +37,7 @@ export default async function handler(req, res) {
         'User-Agent': 'CiteGlow/1.0 (https://citeglow.com)',
         'Accept': 'application/json'
       },
-      signal: AbortSignal.timeout(15000)
+      signal: AbortSignal.timeout(28000)
     });
 
     const data = await response.text();
