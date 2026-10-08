@@ -643,7 +643,7 @@ async function pullLibraryFromCloud(opts) {
     let newFromLocal = 0;
     localKeys.forEach(k => { if (k && !remoteKeys.has(k)) newFromLocal++; });
 
-    papers = mergePaperLists(local, remote);
+    papers = dedupePapers(mergePaperLists(local, remote));
     saveToStorage();
     renderAll();
 
@@ -849,7 +849,7 @@ function loadFromStorage() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      papers = JSON.parse(saved);
+      papers = dedupePapers(JSON.parse(saved));
       renderAll();
     }
   } catch(e) {}
@@ -1182,6 +1182,7 @@ async function fetchAll() {
 function reloadCitations(index) {
   const paper = papers[index];
   if (!paper) return;
+  citeLoadGen[index] = (citeLoadGen[index] || 0) + 1; // 作废进行中的拉取
   paper.citation_list = [];
   paper.cite_page = 0;
   paper.loaded = false;
@@ -1227,6 +1228,7 @@ async function prefetchCitations(paper) {
 async function loadCitations(index) {
   const paper = papers[index];
   if (!paper) return;
+  const gen = (citeLoadGen[index] = (citeLoadGen[index] || 0) + 1);
 
   const listEl = document.getElementById(`cite-list-${index}`);
   if (listEl) {
@@ -1338,7 +1340,8 @@ async function loadCitations(index) {
       return;
     }
 
-    paper.citation_list = [...(paper.citation_list || []), ...citingPapers];
+    if (citeLoadGen[index] !== gen) return;
+    paper.citation_list = mergeCitingIntoList(paper.citation_list, citingPapers, page === 1);
     paper.cite_page = page;
     paper.loaded = true;
     if (data._fromSS) {
