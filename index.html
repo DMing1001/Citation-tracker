@@ -567,8 +567,54 @@ function paperKey(p) {
   if (!p) return '';
   const doi = (p.doi || '').toLowerCase().replace(/^https?:\/\/doi.org\//, '').trim();
   if (doi) return 'doi:' + doi;
+  const oid = String(p.openalex_id || '').replace(/^https?:\/\/openalex\.org\//, '').trim();
+  if (oid) return 'oa:' + oid;
   const t = (p.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
   return t ? 'title:' + t : '';
+}
+
+function dedupePapers(list) {
+  const map = new Map();
+  (list || []).forEach(p => {
+    if (!p) return;
+    const doi = (p.doi || '').toLowerCase().replace(/^https?:\/\/doi.org\//, '').trim();
+    const oid = String(p.openalex_id || '').replace(/^https?:\/\/openalex\.org\//, '').trim();
+    const t = (p.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const keys = [];
+    if (doi) keys.push('doi:' + doi);
+    if (oid) keys.push('oa:' + oid);
+    if (t) keys.push('title:' + t);
+    if (!keys.length) return;
+    let merged = null;
+    keys.forEach(k => {
+      const hit = map.get(k);
+      if (hit && hit !== merged) {
+        if (!merged) merged = Object.assign({}, hit);
+        merged.cited_by_count = Math.max(merged.cited_by_count || 0, hit.cited_by_count || 0);
+        const a = merged.citation_list || [], b = hit.citation_list || [];
+        merged.citation_list = a.length >= b.length ? a : b;
+        merged.tags = Array.from(new Set([...(merged.tags || []), ...(hit.tags || [])]));
+        merged.loaded = !!(merged.loaded || hit.loaded) && (merged.citation_list || []).length > 0;
+      }
+    });
+    if (!merged) merged = Object.assign({}, p);
+    else {
+      // 还要合并当前 p
+      merged.cited_by_count = Math.max(merged.cited_by_count || 0, p.cited_by_count || 0);
+      const a = merged.citation_list || [], b = p.citation_list || [];
+      merged.citation_list = a.length >= b.length ? a : b;
+      if (!merged.doi && p.doi) merged.doi = p.doi;
+      if (!merged.openalex_id && p.openalex_id) merged.openalex_id = p.openalex_id;
+      merged.loaded = !!(merged.loaded || p.loaded) && (merged.citation_list || []).length > 0;
+    }
+    keys.forEach(k => map.set(k, merged));
+  });
+  const seen = new Set();
+  const out = [];
+  map.forEach(v => {
+    if (v && !seen.has(v)) { seen.add(v); out.push(v); }
+  });
+  return out;
 }
 
 function mergePaperLists(localList, remoteList) {
@@ -1177,6 +1223,31 @@ async function fetchAll() {
   } else {
     toast('ℹ️ 这些论文已经在列表中了', 'info');
   }
+}
+
+const citeLoadGen = {};
+
+function mapCitingResult(w) {
+  return {
+    title: w.title || 'Untitled',
+    doi: (w.doi || '').replace('https://doi.org/', ''),
+    year: w.publication_year || '-',
+    authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + ((w.authorships || []).length > 3 ? ' et al.' : ''),
+    venue: w.primary_location?.source?.display_name || '',
+    cited_by: w.cited_by_count || 0
+  };
+}
+
+function mergeCitingIntoList(existing, incoming, replacePage1) {
+  if (replacePage1) return incoming;
+  const seen = new Set((existing || []).map(c => ((c.doi || c.title || '') + '|' + (c.year || '')).toLowerCase()));
+  const add = (incoming || []).filter(c => {
+    const k = ((c.doi || c.title || '') + '|' + (c.year || '')).toLowerCase();
+    if (!k || k === '|' || seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  return [...(existing || []), ...add];
 }
 
 function reloadCitations(index) {
