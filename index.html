@@ -1179,6 +1179,18 @@ async function fetchAll() {
   }
 }
 
+function reloadCitations(index) {
+  const paper = papers[index];
+  if (!paper) return;
+  paper.citation_list = [];
+  paper.cite_page = 0;
+  paper.loaded = false;
+  paper.has_more = false;
+  saveToStorage();
+  renderCitations(index);
+  loadCitations(index);
+}
+
 // ─── Load citations for a paper ───
 async function prefetchCitations(paper) {
   if (!paper || paper.loaded || (paper.citation_list || []).length) return;
@@ -1450,6 +1462,7 @@ function renderCiteItems(paper, index) {
   if (paper.has_more) {
     html += `<div class="cite-more"><button onclick="loadCitations(${index})">加载更多引用</button></div>`;
   }
+  html += `<div class="cite-more" style="margin-top:6px"><button onclick="reloadCitations(${index})" style="opacity:.85">🔄 刷新列表</button></div>`;
 
   return html;
 }
@@ -1575,6 +1588,7 @@ async function autoRefresh() {
   btn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span>正在刷新最新数据...';
 
   let updated = 0, failed = 0;
+  const countGrew = [];
   for (let i = 0; i < papers.length; i++) {
     const p = papers[i];
     if (!p.doi && !p.openalex_id) continue;
@@ -1618,6 +1632,7 @@ async function autoRefresh() {
       if (p.cited_by_count !== oldCount) {
         p.cite_delta = p.cited_by_count - oldCount;
         updated++;
+        if (p.cited_by_count > (oldCount || 0)) countGrew.push(i);
       }
     } catch(e) {
       console.error('Auto-refresh failed for:', p.title, e);
@@ -1633,23 +1648,35 @@ async function autoRefresh() {
   if (btnRefresh) btnRefresh.disabled = false;
   btn.innerHTML = '🔍 查询引用';
 
-  if (updated > 0) {
-    // 增量检测
+  // 引用数变多的论文：自动重拉引用列表，避免列表落后于计数
+  if (countGrew.length) {
+    toast(`🔄 已刷新！${updated} 篇引用数有更新，正在同步引用列表…`, 'success');
+    for (let k = 0; k < countGrew.length; k++) {
+      const idx = countGrew[k];
+      setTimeout(() => reloadCitations(idx), 500 * (k + 1));
+    }
+    // 增量鼓励
     let anyIncrement = false;
     papers.forEach(p => {
       if (p.openalex_id && lastCiteSnapshot[p.openalex_id] !== undefined) {
         if (p.cited_by_count > lastCiteSnapshot[p.openalex_id]) anyIncrement = true;
       }
     });
-
     const totalCites = papers.reduce((sum, p) => sum + (p.cited_by_count || 0), 0);
-
-    // 优先：里程碑（10+/20+）
     if (anyIncrement && !showMilestone(totalCites)) {
-      // 非里程碑但有增量 → 增量鼓励
-      if (anyIncrement) showIncrementEncouragement();
+      showIncrementEncouragement();
     }
-
+  } else if (updated > 0) {
+    let anyIncrement = false;
+    papers.forEach(p => {
+      if (p.openalex_id && lastCiteSnapshot[p.openalex_id] !== undefined) {
+        if (p.cited_by_count > lastCiteSnapshot[p.openalex_id]) anyIncrement = true;
+      }
+    });
+    const totalCites = papers.reduce((sum, p) => sum + (p.cited_by_count || 0), 0);
+    if (anyIncrement && !showMilestone(totalCites)) {
+      showIncrementEncouragement();
+    }
     toast(`🔄 已刷新！${updated} 篇论文引用数有更新` + (failed > 0 ? `，${failed}篇获取失败` : ''), 'success');
   } else if (failed > 0) {
     toast(`⚠️ 刷新失败，${failed}篇数据获取失败，请检查网络后重试`, 'error');
