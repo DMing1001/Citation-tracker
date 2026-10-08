@@ -567,8 +567,54 @@ function paperKey(p) {
   if (!p) return '';
   const doi = (p.doi || '').toLowerCase().replace(/^https?:\/\/doi.org\//, '').trim();
   if (doi) return 'doi:' + doi;
+  const oid = String(p.openalex_id || '').replace(/^https?:\/\/openalex\.org\//, '').trim();
+  if (oid) return 'oa:' + oid;
   const t = (p.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
   return t ? 'title:' + t : '';
+}
+
+function dedupePapers(list) {
+  const map = new Map();
+  (list || []).forEach(p => {
+    if (!p) return;
+    const doi = (p.doi || '').toLowerCase().replace(/^https?:\/\/doi.org\//, '').trim();
+    const oid = String(p.openalex_id || '').replace(/^https?:\/\/openalex\.org\//, '').trim();
+    const t = (p.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const keys = [];
+    if (doi) keys.push('doi:' + doi);
+    if (oid) keys.push('oa:' + oid);
+    if (t) keys.push('title:' + t);
+    if (!keys.length) return;
+    let merged = null;
+    keys.forEach(k => {
+      const hit = map.get(k);
+      if (hit && hit !== merged) {
+        if (!merged) merged = Object.assign({}, hit);
+        merged.cited_by_count = Math.max(merged.cited_by_count || 0, hit.cited_by_count || 0);
+        const a = merged.citation_list || [], b = hit.citation_list || [];
+        merged.citation_list = a.length >= b.length ? a : b;
+        merged.tags = Array.from(new Set([...(merged.tags || []), ...(hit.tags || [])]));
+        merged.loaded = !!(merged.loaded || hit.loaded) && (merged.citation_list || []).length > 0;
+      }
+    });
+    if (!merged) merged = Object.assign({}, p);
+    else {
+      // 还要合并当前 p
+      merged.cited_by_count = Math.max(merged.cited_by_count || 0, p.cited_by_count || 0);
+      const a = merged.citation_list || [], b = p.citation_list || [];
+      merged.citation_list = a.length >= b.length ? a : b;
+      if (!merged.doi && p.doi) merged.doi = p.doi;
+      if (!merged.openalex_id && p.openalex_id) merged.openalex_id = p.openalex_id;
+      merged.loaded = !!(merged.loaded || p.loaded) && (merged.citation_list || []).length > 0;
+    }
+    keys.forEach(k => map.set(k, merged));
+  });
+  const seen = new Set();
+  const out = [];
+  map.forEach(v => {
+    if (v && !seen.has(v)) { seen.add(v); out.push(v); }
+  });
+  return out;
 }
 
 function mergePaperLists(localList, remoteList) {
@@ -643,7 +689,7 @@ async function pullLibraryFromCloud(opts) {
     let newFromLocal = 0;
     localKeys.forEach(k => { if (k && !remoteKeys.has(k)) newFromLocal++; });
 
-    papers = mergePaperLists(local, remote);
+    papers = dedupePapers(mergePaperLists(local, remote));
     saveToStorage();
     renderAll();
 
@@ -849,7 +895,7 @@ function loadFromStorage() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      papers = JSON.parse(saved);
+      papers = dedupePapers(JSON.parse(saved));
       renderAll();
     }
   } catch(e) {}
@@ -1182,6 +1228,7 @@ async function fetchAll() {
 function reloadCitations(index) {
   const paper = papers[index];
   if (!paper) return;
+  citeLoadGen[index] = (citeLoadGen[index] || 0) + 1; // 作废进行中的拉取
   paper.citation_list = [];
   paper.cite_page = 0;
   paper.loaded = false;
@@ -1191,9 +1238,36 @@ function reloadCitations(index) {
   loadCitations(index);
 }
 
+const citeLoadGen = {};
+
+function mapCitingResult(w) {
+  return {
+    title: w.title || 'Untitled',
+    doi: (w.doi || '').replace('https://doi.org/', ''),
+    year: w.publication_year || '-',
+    authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + ((w.authorships || []).length > 3 ? ' et al.' : ''),
+    venue: w.primary_location?.source?.display_name || '',
+    cited_by: w.cited_by_count || 0
+  };
+}
+
+function mergeCitingIntoList(existing, incoming, replacePage1) {
+  if (replacePage1) return incoming;
+  const seen = new Set((existing || []).map(c => ((c.doi || c.title || '') + '|' + (c.year || '')).toLowerCase()));
+  const add = (incoming || []).filter(c => {
+    const k = ((c.doi || c.title || '') + '|' + (c.year || '')).toLowerCase();
+    if (!k || k === '|' || seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  return [...(existing || []), ...add];
+}
+
 // ─── Load citations for a paper ───
 async function prefetchCitations(paper) {
   if (!paper || paper.loaded || (paper.citation_list || []).length) return;
+  const index = papers.indexOf(paper);
+  const gen = index >= 0 ? (citeLoadGen[index] = (citeLoadGen[index] || 0) + 1) : 0;
   try {
     if (!paper.openalex_id && paper.doi) {
       const work = await fetchWorkByDOI(paper.doi);
@@ -1205,14 +1279,8 @@ async function prefetchCitations(paper) {
     const data = await fetchCitations(paper.openalex_id, 1, 10);
     const results = (data && data.results) || [];
     if (!results.length) return;
-    paper.citation_list = results.map(w => ({
-      title: w.title || 'Untitled',
-      doi: (w.doi || '').replace('https://doi.org/', ''),
-      year: w.publication_year || '-',
-      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', '),
-      venue: w.primary_location?.source?.display_name || '',
-      cited_by: w.cited_by_count || 0
-    }));
+    if (index >= 0 && citeLoadGen[index] !== gen) return; // 已有更新的拉取
+    paper.citation_list = mergeCitingIntoList(paper.citation_list, results.map(mapCitingResult), true);
     paper.cite_page = 1;
     paper.loaded = true;
     paper.has_more = results.length >= 10;
@@ -1227,6 +1295,7 @@ async function prefetchCitations(paper) {
 async function loadCitations(index) {
   const paper = papers[index];
   if (!paper) return;
+  const gen = (citeLoadGen[index] = (citeLoadGen[index] || 0) + 1);
 
   const listEl = document.getElementById(`cite-list-${index}`);
   if (listEl) {
@@ -1324,21 +1393,16 @@ async function loadCitations(index) {
     }
 
     const results = data.results || [];
-    const citingPapers = results.map(w => ({
-      title: w.title || 'Untitled',
-      doi: (w.doi || '').replace('https://doi.org/', ''),
-      year: w.publication_year || '-',
-      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + ((w.authorships || []).length > 3 ? ' et al.' : ''),
-      venue: w.primary_location?.source?.display_name || '',
-      cited_by: w.cited_by_count || 0
-    }));
+    const citingPapers = results.map(mapCitingResult);
 
     if (citingPapers.length === 0 && page === 1 && (paper.cited_by_count || 0) > 0) {
       renderEmptyWithRetry(`⚠️ 引用数为 ${paper.cited_by_count}，但暂未取到文献列表（数据源可能尚未同步）`);
       return;
     }
 
-    paper.citation_list = [...(paper.citation_list || []), ...citingPapers];
+    // 只有最新一次拉取才能写入，避免并发重复
+    if (citeLoadGen[index] !== gen) return;
+    paper.citation_list = mergeCitingIntoList(paper.citation_list, citingPapers, page === 1);
     paper.cite_page = page;
     paper.loaded = true;
     if (data._fromSS) {
@@ -1353,6 +1417,7 @@ async function loadCitations(index) {
     renderCitations(index);
     updateStats();
   } catch(e) {
+    if (citeLoadGen[index] !== gen) return;
     console.warn('loadCitations failed', index, e);
     renderEmptyWithRetry(`❌ 加载失败: ${escHtml(e.message || '未知错误')}`);
   }
