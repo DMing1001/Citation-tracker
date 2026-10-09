@@ -8,7 +8,7 @@
 - 用户提供新期刊的 PDF（Guide for Authors）或仅告诉期刊名
 - GitHub 凭据见本地 `CREDENTIALS.local.md`（勿提交、勿分享）
 
-## 当前已收录期刊（17 个，2026-09-10）
+## 当前已收录期刊（18 个，2026-10-09）
 
 | 期刊 | slug | 配色 | IF | 分区 | APC | OA |
 |------|------|------|-----|------|-----|-----|
@@ -29,8 +29,10 @@
 | J. Flood Risk Management | journal-of-flood-risk-management | 蓝 #2563eb | 3.7 | Q2 | 见官网 | Hybrid |
 | J. Hydraulic Engineering | journal-of-hydraulic-engineering | 深蓝 #1d4ed8 | ~2.5 | Q2 | 见 ASCE | Hybrid |
 | Geomorphology | geomorphology | 琥珀 #d97706 | 3.8 | Q1 | ~$3,500 | Hybrid |
+| Earth Science Informatics | earth-science-informatics | 青 #0e7490 | 4.2 | Q1 | Hybrid 见 Springer | Hybrid |
 
 > 2026-09-11 浏览器核验：LDD/Wiley/Springer 已更新。ScienceDirect/ASCE 反爬 403，Elsevier 刊指标待 PDF 或人工确认。LDD 在线 ISSN 为 **1099-145X**（勿用 1099-081X）。HP 印刷 ISSN 为 **0885-6087**。
+> ESIN（2026-10-09）：Springer `12145`，IF 4.2，首轮中位约 7 天，封面走 Springer CDN。
 
 ## 共享资源（优先复用，勿再整页内嵌 CSS）
 

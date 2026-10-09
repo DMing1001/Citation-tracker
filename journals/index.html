@@ -593,7 +593,8 @@ function coverSrc(slug) {
     'international-journal-of-sediment-research': 'jpg',
     'journal-of-environmental-management': 'jpg',
     'journal-of-cleaner-production': 'jpg',
-    'geomorphology': 'jpg'
+    'geomorphology': 'jpg',
+    'earth-science-informatics': 'jpg'
   };
   const ext = real[slug] || 'svg';
   return 'covers/' + slug + '.' + ext;
@@ -671,45 +672,24 @@ function toggleCompareCard(card) {
   if (willSelect && compareSet.size >= MAX_COMPARE) {
     alert(`最多同时对比 ${MAX_COMPARE} 本期刊`);
     return;
+  {
+    slug: 'earth-science-informatics',
+    name: 'Earth Science Informatics',
+    icon: '🛰️',
+    publisher: 'Springer',
+    publisherKey: 'springer',
+    issn: '1865-0473',
+    partition: 'Q1',
+    oa: 'hybrid',
+    apc: 'Hybrid，见 Springer',
+    reviewType: '单盲',
+    updated: '2026-10-09',
+    badges: ['SCI Q1', 'Springer'],
+    badgesClass: ['jbadge-q1', 'jbadge-pub'],
+    stats: { if: '4.2', partition: 'JCR Q1', review: '首轮约 7 天' },
+    keywords: 'earth science informatics geoinformatics GIS remote sensing machine learning spatial database computational earth science ESIN'
   }
-  if (willSelect) compareSet.add(slug);
-  else compareSet.delete(slug);
-  applySelectionToCard(card, willSelect);
-  updateCompareBar();
-}
-
-function onGridClick(e) {
-  if (!compareMode) return;
-  const card = e.target.closest('.journal-card');
-  if (!card) return;
-  e.preventDefault();
-  e.stopPropagation();
-  toggleCompareCard(card);
-}
-
-function updateCompareBar() {
-  const bar = document.getElementById('compareBar');
-  const n = compareSet.size;
-  document.getElementById('compareCount').textContent = `已选 ${n} 本${n ? ' / 最多 4' : ''}`;
-  document.getElementById('compareOpen').disabled = n < 2;
-  bar.classList.toggle('show', compareMode && n > 0);
-}
-
-function openCompareModal() {
-  const selected = journals.filter(j => compareSet.has(j.slug));
-  if (selected.length < 2) return;
-  const rows = [
-    ['期刊', j => `<a href="${j.slug}.html">${j.icon} ${j.name}</a>`],
-    ['出版商', j => j.publisher],
-    ['ISSN', j => j.issn],
-    ['影响因子', j => j.stats.if],
-    ['分区', j => j.partition],
-    ['审稿周期', j => j.stats.review],
-    ['OA 类型', j => oaLabel(j.oa)],
-    ['APC', j => j.apc || '—'],
-    ['审稿制度', j => j.reviewType || '—'],
-    ['资料整理', j => j.updated || '—'],
-  ];
+];
   document.getElementById('compareTableWrap').innerHTML = `
     <table class="compare-table">
       <thead><tr><th></th>${selected.map(j => `<th>${j.icon} ${j.name}<span>${j.publisher}</span></th>`).join('')}</tr></thead>

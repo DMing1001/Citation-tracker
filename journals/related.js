@@ -18,6 +18,7 @@
     'land-degradation-development': { name: 'Land Degradation & Dev.', icon: '🏜️', if: '4.0', partition: 'Q2' },
     'hydrology-and-earth-system-sciences': { name: 'HESS', icon: '🌊', if: '5.8', partition: 'Q1' },
     'journal-of-hydrodynamics': { name: 'J. Hydrodynamics', icon: '💧', if: '4.0', partition: 'Q1' },
+    'earth-science-informatics': { name: 'Earth Science Informatics', icon: '🛰️', if: '4.2', partition: 'Q1' },
     'hydrological-processes': { name: 'Hydrological Processes', icon: '💧', if: '3.1', partition: 'Q1' },
     'journal-of-flood-risk-management': { name: 'J. Flood Risk Management', icon: '🌊', if: '3.7', partition: 'Q2' },
     'journal-of-hydraulic-engineering': { name: 'J. Hydraulic Engineering', icon: '⚙️', if: '2.5', partition: 'Q2' },
@@ -44,6 +45,7 @@
       ['international-journal-of-sediment-research', '泥沙输移与侵蚀']
     ],
     'environmental-modelling-software': [
+      ['earth-science-informatics', '地学信息学与数据系统'],
       ['journal-of-hydrology', '水文模型与率定应用'],
       ['hydrology-and-earth-system-sciences', '可复现建模与地球系统'],
       ['water-resources-management', '决策支持与优化调度'],
@@ -92,6 +94,7 @@
       ['journal-of-cleaner-production', '可持续生产转型']
     ],
     'hydrology-and-earth-system-sciences': [
+      ['earth-science-informatics', '地学信息学与数据'],
       ['journal-of-hydrology', '经典水文研究'],
       ['hydrological-processes', '过程水文与观测'],
       ['water-resources-management', '管理与适应性'],
@@ -126,6 +129,12 @@
       ['international-journal-of-sediment-research', '河流/海岸泥沙地貌'],
       ['land-degradation-development', '退化与修复的管理向'],
       ['journal-of-hydrology', '水文驱动的地貌过程']
+    ],
+    'earth-science-informatics': [
+      ['environmental-modelling-software', '环境建模与软件系统'],
+      ['hydrology-and-earth-system-sciences', '地球系统水文与数据'],
+      ['journal-of-hydrology', '水文应用背景'],
+      ['geomorphology', '地貌/空间分析交叉']
     ]
   };
 

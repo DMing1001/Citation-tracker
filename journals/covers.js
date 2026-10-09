@@ -19,7 +19,8 @@
     'international-journal-of-sediment-research': 'jpg',
     'journal-of-environmental-management': 'jpg',
     'journal-of-cleaner-production': 'jpg',
-    'geomorphology': 'jpg'
+    'geomorphology': 'jpg',
+    'earth-science-informatics': 'jpg'
   };
   var ext = real[slug] || 'svg';
   var src = 'covers/' + slug + '.' + ext;
