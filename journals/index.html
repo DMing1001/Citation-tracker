@@ -662,6 +662,23 @@ function oaLabel(oa) {
   return ({ gold: 'Gold OA', hybrid: 'Hybrid', subscription: '非 OA / 订阅' })[oa] || '—';
 }
 
+function updateCompareBar() {
+  const bar = document.getElementById('compareBar');
+  const n = compareSet.size;
+  document.getElementById('compareCount').textContent = `已选 ${n} 本${n ? ' / 最多 4' : ''}`;
+  document.getElementById('compareOpen').disabled = n < 2;
+  bar.classList.toggle('show', compareMode && n > 0);
+}
+
+function onGridClick(e) {
+  if (!compareMode) return;
+  const card = e.target.closest('.journal-card');
+  if (!card) return;
+  e.preventDefault();
+  e.stopPropagation();
+  toggleCompareCard(card);
+}
+
 function setCompareMode(on) {
   compareMode = on;
   document.body.classList.toggle('compare-mode', on);
