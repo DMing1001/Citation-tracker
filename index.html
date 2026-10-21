@@ -1225,19 +1225,6 @@ async function fetchAll() {
   }
 }
 
-function reloadCitations(index) {
-  const paper = papers[index];
-  if (!paper) return;
-  citeLoadGen[index] = (citeLoadGen[index] || 0) + 1; // 作废进行中的拉取
-  paper.citation_list = [];
-  paper.cite_page = 0;
-  paper.loaded = false;
-  paper.has_more = false;
-  saveToStorage();
-  renderCitations(index);
-  loadCitations(index);
-}
-
 const citeLoadGen = {};
 
 function mapCitingResult(w) {
@@ -1263,11 +1250,22 @@ function mergeCitingIntoList(existing, incoming, replacePage1) {
   return [...(existing || []), ...add];
 }
 
+function reloadCitations(index) {
+  const paper = papers[index];
+  if (!paper) return;
+  citeLoadGen[index] = (citeLoadGen[index] || 0) + 1; // 作废进行中的拉取
+  paper.citation_list = [];
+  paper.cite_page = 0;
+  paper.loaded = false;
+  paper.has_more = false;
+  saveToStorage();
+  renderCitations(index);
+  loadCitations(index);
+}
+
 // ─── Load citations for a paper ───
 async function prefetchCitations(paper) {
   if (!paper || paper.loaded || (paper.citation_list || []).length) return;
-  const index = papers.indexOf(paper);
-  const gen = index >= 0 ? (citeLoadGen[index] = (citeLoadGen[index] || 0) + 1) : 0;
   try {
     if (!paper.openalex_id && paper.doi) {
       const work = await fetchWorkByDOI(paper.doi);
@@ -1279,8 +1277,14 @@ async function prefetchCitations(paper) {
     const data = await fetchCitations(paper.openalex_id, 1, 10);
     const results = (data && data.results) || [];
     if (!results.length) return;
-    if (index >= 0 && citeLoadGen[index] !== gen) return; // 已有更新的拉取
-    paper.citation_list = mergeCitingIntoList(paper.citation_list, results.map(mapCitingResult), true);
+    paper.citation_list = results.map(w => ({
+      title: w.title || 'Untitled',
+      doi: (w.doi || '').replace('https://doi.org/', ''),
+      year: w.publication_year || '-',
+      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', '),
+      venue: w.primary_location?.source?.display_name || '',
+      cited_by: w.cited_by_count || 0
+    }));
     paper.cite_page = 1;
     paper.loaded = true;
     paper.has_more = results.length >= 10;
@@ -1393,14 +1397,20 @@ async function loadCitations(index) {
     }
 
     const results = data.results || [];
-    const citingPapers = results.map(mapCitingResult);
+    const citingPapers = results.map(w => ({
+      title: w.title || 'Untitled',
+      doi: (w.doi || '').replace('https://doi.org/', ''),
+      year: w.publication_year || '-',
+      authors: (w.authorships || []).slice(0, 3).map(a => a.author?.display_name || '').filter(Boolean).join(', ') + ((w.authorships || []).length > 3 ? ' et al.' : ''),
+      venue: w.primary_location?.source?.display_name || '',
+      cited_by: w.cited_by_count || 0
+    }));
 
     if (citingPapers.length === 0 && page === 1 && (paper.cited_by_count || 0) > 0) {
       renderEmptyWithRetry(`⚠️ 引用数为 ${paper.cited_by_count}，但暂未取到文献列表（数据源可能尚未同步）`);
       return;
     }
 
-    // 只有最新一次拉取才能写入，避免并发重复
     if (citeLoadGen[index] !== gen) return;
     paper.citation_list = mergeCitingIntoList(paper.citation_list, citingPapers, page === 1);
     paper.cite_page = page;
@@ -1417,7 +1427,6 @@ async function loadCitations(index) {
     renderCitations(index);
     updateStats();
   } catch(e) {
-    if (citeLoadGen[index] !== gen) return;
     console.warn('loadCitations failed', index, e);
     renderEmptyWithRetry(`❌ 加载失败: ${escHtml(e.message || '未知错误')}`);
   }
