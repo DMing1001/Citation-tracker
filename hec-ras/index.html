@@ -1156,17 +1156,17 @@ section.wrap.toc-on{max-width:1180px}
       <a class="dl-btn" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/files/latest/213685242/213685260/1/1728427351910/Creating+a+Simple+2D+Model.zip" target="_blank" rel="noopener">下载 2D 示例包</a>
     </div>
 
-    <div class="sec-tag">阶段 A · 从恒定流打底升级</div>
+    <div class="sec-tag">阶段 A · 模型升级准备</div>
     <ol class="steps">
-      <li class="step"><div class="step-body"><h4>先跑通 1D 恒定流，确认几何可用</h4>
+      <li class="step"><div class="step-body"><h4>确认恒定流模型可用</h4>
         <p>按「官方教程一」把几何（中心线、断面、滩地）和一两个恒定流量级跑稳：低流量确认主槽与岸滩，高流量确认断面是否盖住洪泛区。</p>
         <p>在 <b>Profile Plot</b> / RAS Mapper 看一眼水面是否合理；几何若有明显错误，先改几何，不要直接上非恒定流。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>下游延伸河段，并量取纵坡</h4>
+      <li class="step"><div class="step-body"><h4>延伸下游河段并量取纵坡</h4>
         <p>把研究河段向下游延伸足够长（让边界影响远离关注区）。在 RAS Mapper 用 <b>Measure Tool</b> 沿河量一段纵坡，记下数值，下一步做 Normal Depth 下游边界要用。</p>
         <p>官方提示：下游边界最简做法是 <b>Normal Depth</b> + 该纵坡。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>新建 Unsteady Flow 数据文件</h4>
+      <li class="step"><div class="step-body"><h4>创建非恒定流数据文件</h4>
         <p>主界面选择 <code>Edit | Unsteady Flow Data…</code>，命名保存（如 <code>Unsteady</code>，对应 <code>.u01</code>）。编辑器里你会用到这些页签/按钮：</p>
         <ul>
           <li><b>Boundary Conditions</b> — 逐河段边界类型与过程线</li>
@@ -1179,7 +1179,7 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="sec-tag">阶段 B · 边界条件与入流过程线</div>
     <ol class="steps" start="4">
-      <li class="step"><div class="step-body"><h4>给上游断面加 Flow Hydrograph</h4>
+      <li class="step"><div class="step-body"><h4>设置上游流量过程线（Flow Hydrograph）</h4>
         <p>在 <b>Boundary Conditions</b> 页，点选最上游（及各支流）位置，边界类型选 <b>Flow Hydrograph</b>。</p>
         <p>过程线数据来源三选一：</p>
         <ul>
@@ -1194,7 +1194,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">在边界条件表中为每个 River/Reach 指定类型与数据。<b>来源：</b>HEC 官方 2D 教程（同一 Unsteady Flow Data 编辑器）</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>从 HEC-DSS 读入流量过程线</h4>
+      <li class="step"><div class="step-body"><h4>从 HEC-DSS 导入过程线</h4>
         <p>点边界行上的 <b>DSS 按钮</b>，<b>Open HEC-DSS File</b> 选择文件，在 <b>Pathname</b> 浏览器中选中流量序列，确认时间窗口与单位（m³/s 或 cfs，与工程一致）。</p>
         <p>勾选/填写 <b>Multiplier</b>（整体缩放）与 <b>Min Flow</b>（最小流量下限，避免 0 流量导致数值问题）——这是官方推荐的两个便捷项。</p>
         <div class="fig">
@@ -1203,7 +1203,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">从 HEC-DSS 路径中选取流量/水位过程线。<b>来源：</b>HEC 官方 2D 教程</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>设置下游边界（Normal Depth / 水位 / Q–H）</h4>
+      <li class="step"><div class="step-body"><h4>设置下游边界条件</h4>
         <p>点最下游位置，按已有资料选：</p>
         <ul>
           <li><b>Normal Depth</b> — 填阶段 A 量取的能量坡度，最常用。</li>
@@ -1212,7 +1212,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>若还要模拟"上游水位+流量混合边界"（感潮等），可用官方的 <b>Upstream Stage and Flow Hydrograph</b>（流量以 -901 作切换约定，详见手册）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（可选）内部侧向入流</h4>
+      <li class="step"><div class="step-body"><h4>添加内部侧向入流（可选）</h4>
         <p>在内部断面用 <b>Add Boundary Condition Location</b> 加入：</p>
         <ul>
           <li><b>Lateral Inflow</b> — 支流/区间一条过程线。</li>
@@ -1224,7 +1224,7 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="sec-tag">阶段 C · 初始条件与断面水力表</div>
     <ol class="steps" start="8">
-      <li class="step"><div class="step-body"><h4>设置 Initial Conditions（初始条件）</h4>
+      <li class="step"><div class="step-body"><h4>设置初始条件（Initial Conditions）</h4>
         <p>切到 <b>Initial Conditions</b> 页。官方常用三种：</p>
         <ul>
           <li><b>给最上游初始流量</b>（常等于过程线起涨前基流），程序做一次恒定流推算各断面初值。</li>
@@ -1233,7 +1233,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>怎么填：</b>过程线从低基流起涨时，初始流量就填该基流；并留出预热段（过程线开头多加一段平稳低流量），让模型自己稳下来。</div></div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>设置断面水力表参数（Hydraulic Table Parameters，易漏！）</h4>
+      <li class="step"><div class="step-body"><h4>设置断面水力表参数（Hydraulic Table Parameters）</h4>
         <p>打开 <b>Geometric Data Editor</b>，点工具栏 <b>Hydraulic Table Parameters</b>（或 <code>Options | Hydraulic Table Computation Parameters</code>）：</p>
         <ul>
           <li><b>Starting Elevation</b>：把各断面渠底高程（invert）复制过去。</li>
@@ -1245,9 +1245,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 D · Plan：时间窗与计算设置</div>
+    <div class="sec-tag">阶段 D · 方案与计算设置</div>
     <ol class="steps" start="10">
-      <li class="step"><div class="step-body"><h4>创建 Unsteady Flow Analysis 方案</h4>
+      <li class="step"><div class="step-body"><h4>创建非恒定流方案（Unsteady Flow Analysis）</h4>
         <p>菜单 <code>Run | Unsteady Flow Analysis…</code>（或主界面 Unsteady Flow Analysis 按钮）：</p>
         <ul>
           <li><b>Plan Title</b> 如 <code>Unsteady-Base</code>，短名 <code>UBase</code></li>
@@ -1255,7 +1255,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>在 <b>Programs to Run</b> 中保持 Geometric Preprocessor → Unsteady Flow Simulation → Post-Processor 勾选（默认齐全）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>设定 Simulation Time Window 与时间步</h4>
+      <li class="step"><div class="step-body"><h4>设定模拟时间窗与计算步长</h4>
         <p>填 <b>Simulation Time Window</b> 起止日期时间（要包住整个过程线，含起涨前基流与退水）。</p>
         <p><b>Computational Time Step</b> 先取 <b>1–5 分钟</b> 试算；2D 或急变段往往要更小。</p>
         <div class="chart-box" style="padding:18px">
@@ -1263,7 +1263,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="chart-cap">Courant 条件：一个时间步内水流推进不宜超过一个断面间距。先短窗试算，再定长模拟步长。</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>Computation Options and Tolerances</h4>
+      <li class="step"><div class="step-body"><h4>设置计算选项与公差（Computation Options）</h4>
         <p>点 <b>Computation Options and Tolerances…</b>，常见开关：</p>
         <ul>
           <li><b>Advanced Time Step Control</b>：按 Courant 自动调步长，省去手工试算。</li>
@@ -1276,9 +1276,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 E · 运行、读结果与稳定性排查</div>
+    <div class="sec-tag">阶段 E · 运行与稳定性排查</div>
     <ol class="steps" start="13">
-      <li class="step"><div class="step-body"><h4>先短窗试算，再跑全过程</h4>
+      <li class="step"><div class="step-body"><h4>短时间窗试算并运行全过程</h4>
         <p>点 <b>Compute</b>。建议先把结束时间收到洪峰后不久，确认能跑通、日志干净，再改回完整窗口重跑。</p>
         <p>运行中看 <b>Unsteady Flow Log</b>：是否频繁减步长、是否出现 Volume Accounting 告警。</p>
       </div></li>
@@ -1291,7 +1291,7 @@ section.wrap.toc-on{max-width:1180px}
           <li><b>Profile Plot</b> — 某时刻水面线（调试振荡很有用）。</li>
         </ul>
       </div></li>
-      <li class="step"><div class="step-body"><h4>不稳定时按官方顺序排查</h4>
+      <li class="step"><div class="step-body"><h4>排查计算不稳定问题</h4>
         <p>手册《Finding and Fixing Model Stability Problems》建议顺序：</p>
         <ul>
           <li><b>一开算就不稳</b>（NaN / 迭代打满）→ 先查初始条件与边界是否一致、水力表是否覆盖。</li>
@@ -1302,7 +1302,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>官方还提供 <b>Automated Calibration of Manning's n</b>（高级特性）与逐步校准清单：观测水位/流量 → 几何 → 糙率 → 蓄量 → 结构系数。详见手册第 7 章 Calibration。</div></div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（进阶入口）接下来可做什么</h4>
+      <li class="step"><div class="step-body"><h4>后续进阶方向</h4>
         <p>本模型跑稳后，官方文档里常见的下一步：</p>
         <ul>
           <li><b>1D/2D 耦合</b>：滩区加 2D Flow Area（Guides《Creating a Combined 1D/2D Model》）。</li>
@@ -1590,9 +1590,9 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>官方损失三段式：</b>结构物水头损失 = <b>进口收缩</b> + <b>桥/涵内（含墩台、摩擦、压力流/堰流）</b> + <b>出口扩散</b>。收缩/扩散系数一般加在结构物前后的断面上（Bridge/Culvert 编辑器可改），不要只在桥址一个断面上硬凑。</div></div>
 
-    <div class="sec-tag">阶段 A · 先布好结构物前后的断面</div>
+    <div class="sec-tag">阶段 A · 断面布置与损失系数</div>
     <ol class="steps">
-      <li class="step"><div class="step-body"><h4>确定桥/涵位置，并在上下游加密断面</h4>
+      <li class="step"><div class="step-body"><h4>布置结构物上下游断面</h4>
         <p>打开 <b>Geometric Data Editor</b>，沿河布设断面时保证：</p>
         <ul>
           <li>结构物<strong>上游</strong>至少 1–2 个断面，用于量测壅水与进口损失。</li>
@@ -1601,7 +1601,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>断面应垂直于流向、覆盖整个路堤与洪泛区。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>填好天然断面的收缩/膨胀系数</h4>
+      <li class="step"><div class="step-body"><h4>设置收缩与膨胀系数</h4>
         <p>在断面表中设置 <b>Contraction / Expansion</b>（恒定流与非恒定流同一套几何）：</p>
         <ul>
           <li>渐变段：收缩约 0.1、膨胀约 0.3 量级起步        <div class="fig">
@@ -1614,7 +1614,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>结构物编辑器里还能针对桥/涵单独调整损失，避免与断面系数重复计入。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>打开 Bridge/Culvert 编辑器入口</h4>
+      <li class="step"><div class="step-body"><h4>打开 Bridge/Culvert 编辑器</h4>
         <p>点工具栏 <b>Bridge/Culvert</b> 按钮（或 <code>Edit | Bridge &amp; Culvert Data…</code>）。空白工程会先提示输入 River / Reach / Station（结构物中心桩号，落在两断面之间）。</p>
         <p>左侧树里将看到：Bridge Deck、Pier、Culvert、Bridge/Culvert Options、View 等节点——后面几步按此填写。
         <div class="fig">
@@ -1625,9 +1625,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 B · 桥梁：桥面、墩台与流态</div>
+    <div class="sec-tag">阶段 B · 桥梁建模（Bridge）</div>
     <ol class="steps" start="4">
-      <li class="step"><div class="step-body"><h4>录入 Bridge Deck（桥面 / 路面）</h4>
+      <li class="step"><div class="step-body"><h4>录入桥面数据（Bridge Deck）</h4>
         <p>选中桥节点下的 <b>Bridge Deck</b>，逐行填（典型字段）：</p>
         <ul>
           <li><b>Upstream / Downstream Station</b> — 桩号（桥面上、下游缘）        <div class="fig">
@@ -1659,7 +1659,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="chart-cap">桥梁纵剖面示意（教学用）：Low Chord 以下为孔流；水位漫过桥面走堰流；能坡压过 Low Chord 可能出现压力流。</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>录入墩台（Pier）与桥墩阻水</h4>
+      <li class="step"><div class="step-body"><h4>录入墩台数据（Pier）</h4>
         <p>在 <b>Pier</b> 页填墩型（圆端/矩形等）、墩宽、墩数、墩台起止高程。墩台会占去过水面积，与桥面共同决定有效过流宽。</p>
         <p>多孔桥：按实际墩位分列；特大桥可配合 Multiple Bridge Openings。
         <div class="fig">
@@ -1668,7 +1668,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">墩型、墩宽、起止高程占去过水面积。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>理解官方三类过流（填系数前必懂）</h4>
+      <li class="step"><div class="step-body"><h4>认识三类过流（Low / Weir / Pressure）</h4>
         <ul>
           <li><b>低流 Low flow</b> — 孔口内明渠/水跃，能量方程 + 收缩膨胀。</li>
           <li><b>堰流 Weir flow</b> — 水位上桥面/路堤，用堰公式并按淹没度折减。</li>
@@ -1676,7 +1676,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>高水也可能"压力流 + 漫顶堰流"同时出现（pressure and weir）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>检查 Bridge/Culvert Options 与视图</h4>
+      <li class="step"><div class="step-body"><h4>设置 Bridge/Culvert Options</h4>
         <p>打开 <b>Bridge and Culvert Options</b>：按需调整损失计算、水跃、是否允许压力流等开关（版本略有差异，以当前界面为准）。</p>
         <p>用 <b>Bridge View / XY Plot</b> 看桥前壅水、孔内流态是否合理；不对先改 Deck/墩/系数，不要只调糙率。
         <div class="fig">
@@ -1687,9 +1687,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 C · 涵洞 Culvert</div>
+    <div class="sec-tag">阶段 C · 涵洞建模（Culvert）</div>
     <ol class="steps" start="8">
-      <li class="step"><div class="step-body"><h4>添加涵洞并选断面型式</h4>
+      <li class="step"><div class="step-body"><h4>添加涵洞并选择断面型式</h4>
         <p>同一 Bridge/Culvert 站点下选 <b>Culvert</b> → <b>Add Culvert</b>。型式支持圆管、箱涵、拱、管涵、低高度箱涵等（官方基于 FHWA《Hydraulic Design of Highway Culverts》进口控制 + 出口能量平衡）。</p>
         <p>填：断面尺寸、长度、糙率 n、进口/出口高程、翼墙/进口型式（控制进口损失）。
         <div class="fig">
@@ -1698,7 +1698,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">选圆管/箱涵/拱等型式，填尺寸、长度、n 与进出口高程。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>多孔涵洞 / 桥涵组合</h4>
+      <li class="step"><div class="step-body"><h4>设置多孔桥涵（Multiple Openings）</h4>
         <p>可对同一站点放 <b>多个 Culvert / Bridge Opening</b>。官方支持 Multiple Bridge and/or Culvert Openings：分别定义各孔，再一起求水面。</p>
         <p>填完用 <b>View</b> 检查进口是否淹没、出口是否贴近下游断面（过近会虚增损失）。
         <div class="fig">
@@ -1709,9 +1709,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 D · 堰闸：Inline Structure（坝、堰、闸）</div>
+    <div class="sec-tag">阶段 D · 堰闸与坝（Inline Structure）</div>
     <ol class="steps" start="10">
-      <li class="step"><div class="step-body"><h4>绘制并新建 Inline Structure</h4>
+      <li class="step"><div class="step-body"><h4>创建 Inline Structure</h4>
         <p>工具栏 <b>Inline Structure</b>：在河段上点击结构物中心位置（桩号落在断面之间），输入 River/Reach/Station。</p>
         <p>打开 <b>Inline Structure Data</b>：添加 <b>Weir</b>（堰）、<b>Gate</b>（闸门，含平板/弧形等）、<b>Spillway</b>（溢洪道）等组件。
         <div class="fig">
@@ -1720,7 +1720,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">河中堰坝闸的总编辑器：Weir / Gate / Spillway 分页。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>填堰顶、闸门与流量系数</h4>
+      <li class="step"><div class="step-body"><h4>录入堰闸与流量系数</h4>
         <ul>
           <li><b>Weir</b>：堰顶高程、堰宽/长度、堰流系数 Cd、侧收/淹没修正        <div class="fig">
           <div class="fig-title">Gate / Weir 编辑器（示例）<span class="fig-flag">官方截图</span></div>
@@ -1733,7 +1733,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>非恒定流可用 <b>Rule Sets</b> 做闸门调度（按上游水位/流量自动开度）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>坝体漫顶与溃口（可选）</h4>
+      <li class="step"><div class="step-body"><h4>设置坝体溃口（可选）</h4>
         <p>堰顶以上可算漫顶；若做溃坝，可在 Inline Structure 上设置 <b>Breach</b>（溃口底高、宽度、边坡、溃决历时），详见手册 "Dam (Inline Structure) Breach"。</p>
         <p>先用恒定流核对各特征水位过流能力，再上非恒定流溃决过程。
         <div class="fig">
@@ -1744,9 +1744,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 E · 侧向结构 Lateral Structure（堤防 / 分洪）</div>
+    <div class="sec-tag">阶段 E · 侧向结构（Lateral Structure）</div>
     <ol class="steps" start="13">
-      <li class="step"><div class="step-body"><h4>绘制 Lateral Structure</h4>
+      <li class="step"><div class="step-body"><h4>创建 Lateral Structure</h4>
         <p>点 <b>Lateral Structure</b>，从河道一侧沿堤线/分洪堰绘制；一端连主河，另一端可接 <b>Storage Area</b> 或 2D 区。</p>
         <p>方向影响正负流量符号——按官方：顺着约定的正流向绘制，反向流会记为负。
         <div class="fig">
@@ -1755,11 +1755,11 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">堤顶/堰顶剖面 + 闸、涵、分洪曲线。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>填堤顶/堰顶与结构</h4>
+      <li class="step"><div class="step-body"><h4>录入堤顶与结构数据</h4>
         <p>填沿线堤顶高程剖面（station–elevation）；若带闸/涵，用 Lateral 上的 Weir / Gate / Culvert 组件。</p>
         <p>漫溢后可启用 <b>Breach</b>（堤防溃决）或 <b>Diversion Rating Curve</b>（分洪能力曲线）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>连接蓄洪区 Storage Area（可选）</h4>
+      <li class="step"><div class="step-body"><h4>连接蓄洪区（Storage Area）（可选）</h4>
         <p>用 <b>Storage Area</b> 工具画容积区，填水位–容积关系；用 <b>SA/2D Area Conn</b> 连接涵/堰/闸。水泵可用 Pump Station 连接两个蓄水区或河段。
         <div class="fig">
           <div class="fig-title">堤防 + 蓄洪区示意（官方示例）<span class="fig-flag">官方截图</span></div>
@@ -1769,13 +1769,13 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 F · 运行、冲刷与排错</div>
+    <div class="sec-tag">阶段 F · 运行评估与桥梁冲刷</div>
     <ol class="steps" start="16">
-      <li class="step"><div class="step-body"><h4>用恒定流先验过流能力</h4>
+      <li class="step"><div class="step-body"><h4>用恒定流验算过流能力</h4>
         <p>按设计流量跑恒定流，看桥前壅水、孔内流态、堰闸泄量是否在合理范围；与设计流量–水位关系对比。</p>
         <p>再切非恒定流（见「官方教程二」）看过程线与最大淹没。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>桥梁冲刷（可选）</h4>
+      <li class="step"><div class="step-body"><h4>计算桥梁冲刷（可选）</h4>
         <p>官方手册第 11 章 <b>Computing Scour at Bridges</b>：在桥上录墩台与河床质，算一般冲刷+局部冲刷。2D 另有 Bridge Scour 分析（可导出 FHWA Hydraulic Toolbox）。
         <div class="fig">
           <div class="fig-title">Scour at Bridges 计算窗口<span class="fig-flag">官方截图</span></div>
@@ -1783,7 +1783,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">录入墩台与河床质后计算一般冲刷+局部冲刷。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>结构物常见病</h4>
+      <li class="step"><div class="step-body"><h4>结构物常见问题</h4>
         <ul>
           <li><b>断面贴桥面</b> → 扩散解析差、水头损失虚大；把下游断面挪远。</li>
           <li><b>Low/High Chord 填反</b> → 流态全错（未上桥就算压力流）。</li>
@@ -1809,13 +1809,13 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>溃口数据存在 Plan 里：</b>官方特意把 Breach 存成方案（Plan）数据——你可以同一套几何试不同溃口位置/尺寸，而不必重跑 Geometric Preprocessor。入口：Inline Structure 编辑器上的 <b>Breach (Plan Data)</b> 按钮，或 Unsteady Flow Simulation 窗口 <code>Options | Dam (Inline Weir) Breach</code> / <code>Levee (Lateral Structure) Breach</code>。</div></div>
 
-    <div class="sec-tag">阶段 A · 几何打底：坝或堤要先存在</div>
+    <div class="sec-tag">阶段 A · 坝/堤几何准备</div>
     <ol class="steps">
-      <li class="step"><div class="step-body"><h4>先做一维/二维非恒定流模型（可含库区）</h4>
+      <li class="step"><div class="step-body"><h4>准备非恒定流模型</h4>
         <p>按「官方教程二」把非恒定流跑稳：有入流过程线、初始条件、合理时间步。溃决是在演进过程中"打开"的缺口，底模不稳则溃决结果不可信。</p>
         <p>库区可用河道宽断面或 <b>Storage Area</b> 表示；下游应延伸到关注区以外。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>建坝：Inline Structure（含堰顶/坝体）</h4>
+      <li class="step"><div class="step-body"><h4>创建坝体（Inline Structure）</h4>
         <p>工具栏 <b>Inline Structure</b> 在坝轴线位置点击，填 River/Reach/Station。在 <b>Inline Structure Data</b> 中至少定义 <b>Weir</b>（坝顶/溢流面）高程与宽度，必要时加 Gate/Spillway。</p>
         <p>溃决前，坝应能按设计挡水/溢流——先用恒定流核对坝前水位。</p>
         <div class="fig">
@@ -1824,7 +1824,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">溃口将作用在这个 Inline Structure（堰体）上。<b>来源：</b>HEC-RAS User's Manual Fig.14-5</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>建堤：Lateral Structure（溃堤场景）</h4>
+      <li class="step"><div class="step-body"><h4>创建堤防（Lateral Structure）</h4>
         <p>点 <b>Lateral Structure</b> 沿堤线绘制，填堤顶高程剖面；另一端可接 <b>Storage Area</b>（背水侧涝区）或 2D 区。</p>
         <div class="fig">
           <div class="fig-title">Lateral Structure 堤防数据示例<span class="fig-flag">官方截图</span></div>
@@ -1834,7 +1834,7 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 B · 打开 Breach 编辑器（存在 Plan 中）</div>
+    <div class="sec-tag">阶段 B · 打开溃口编辑器</div>
     <ol class="steps" start="4">
       <li class="step"><div class="step-body"><h4>打开 Dam Breach Editor</h4>
         <p>两种入口任选：</p>
@@ -1850,7 +1850,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">总编辑器：启用勾选、方法选择、尺寸/时间/触发等页签。<b>来源：</b>HEC-RAS User's Manual Fig.7-58</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>选择溃口方法（两选一）</h4>
+      <li class="step"><div class="step-body"><h4>选择溃口方法</h4>
         <ul>
           <li><b>User Entered Data</b> — 你直接给最终溃口尺寸、形成历时、进展曲线。工程上最常用、最好控。</li>
           <li><b>Simplified Physical</b> — 给"流速–下切率 / 流速–展宽率"关系，程序按实时流速动态发展溃口（更"物理"，参数更难率定）。</li>
@@ -1859,9 +1859,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 C · User Entered Data：逐项填溃口参数</div>
+    <div class="sec-tag">阶段 C · 用户输入溃口参数</div>
     <ol class="steps" start="6">
-      <li class="step"><div class="step-body"><h4>填最终溃口几何（Final Breach）</h4>
+      <li class="step"><div class="step-body"><h4>设置最终溃口尺寸</h4>
         <p>官方字段（梯形溃口）：</p>
         <ul>
           <li><b>Final Bottom Elevation</b> — 溃口刷深后的底高程（最终形态）。</li>
@@ -1875,7 +1875,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">在示例坝上填入最终溃口底高、底宽、边坡等。<b>来源：</b>HEC-RAS User's Manual Fig.14-6</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>填形成时间与触发条件</h4>
+      <li class="step"><div class="step-body"><h4>设置溃口形成时间与触发条件</h4>
         <p>关键时间参数：</p>
         <ul>
           <li><b>Breach Initiation Time</b>（或由触发推算）— 溃口开始时刻。</li>
@@ -1888,7 +1888,7 @@ section.wrap.toc-on{max-width:1180px}
           <li><b>WS Elev + Duration</b> — 水位超过阈值并<strong>持续</strong>一段时间才触发（更符合"泡软了才溃"）。</li>
         </ul>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（可选）User Specified Breach Progression 进展曲线</h4>
+      <li class="step"><div class="step-body"><h4>设置溃口进展曲线（可选）</h4>
         <p>默认：从开始到 Full Formation Time <strong>线性</strong>发展。要非线性时切到 <b>Breach Progression</b> 页签：</p>
         <ul>
           <li>填 <b>Time Fraction</b>（0–1）与 <b>Breach Fraction</b>（0–1）点列。</li>
@@ -1905,7 +1905,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">非线性进展与竖/水平发展比。<b>来源：</b>HEC-RAS User's Manual Fig.14-7</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（可选）Breach Repair 堵口/回填</h4>
+      <li class="step"><div class="step-body"><h4>设置溃口回填（Breach Repair）（可选）</h4>
         <p>切到 <b>Breach Repair</b> 页签：可在模拟中途让溃口回填，表示抢险抢堵或修复。</p>
         <p>适合做"若某时刻开始堵口，下游洪峰会怎样"的情景对比。</p>
         <div class="fig">
@@ -1914,7 +1914,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">模拟过程中回填溃口。<b>来源：</b>HEC-RAS User's Manual Fig.14-8</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（推荐）Parameter Calculator 经验公式初值</h4>
+      <li class="step"><div class="step-body"><h4>用 Parameter Calculator 估算初值</h4>
         <p>切到 <b>Parameter Calculator</b>：输入坝体物理信息（坝高、库容、材料等，以界面为准），用<strong>回归公式</strong>估算：</p>
         <ul>
           <li>溃口底宽 · 边坡 · 形成历时</li>
@@ -1928,9 +1928,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 D · Simplified Physical 简化物理法</div>
+    <div class="sec-tag">阶段 D · 简化物理法（Simplified Physical）</div>
     <ol class="steps" start="11">
-      <li class="step"><div class="step-body"><h4>切换到 Simplified Physical 并理解字段含义</h4>
+      <li class="step"><div class="step-body"><h4>设置 Simplified Physical 参数</h4>
         <p>方法下拉选 <b>Simplified Physical</b> 后，界面字段会变：</p>
         <ul>
           <li><b>底宽上限</b> / <b>底高程下限</b>：不是"最终尺寸"，而是<strong>限值</strong>——实际发展由侵蚀关系与水力决定，不会超过你设的界。</li>
@@ -1942,7 +1942,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">改为限值型参数 + 侵蚀关系。<b>来源：</b>HEC-RAS User's Manual Fig.7-60</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>录入流速–侵蚀率关系（核心数据）</h4>
+      <li class="step"><div class="step-body"><h4>录入流速与侵蚀率关系</h4>
         <p>在 <b>Simplified Physical</b> 页签填两组曲线：</p>
         <ul>
           <li><b>Velocity vs Downcutting Erosion Rate</b> — 流速–下切速率</li>
@@ -1957,9 +1957,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 E · 溃堤（Lateral）与连接溃口</div>
+    <div class="sec-tag">阶段 E · 堤防与连接溃口</div>
     <ol class="steps" start="13">
-      <li class="step"><div class="step-body"><h4>打开 Levee (Lateral Structure) Breach</h4>
+      <li class="step"><div class="step-body"><h4>打开 Levee Breach 编辑器</h4>
         <p>Plan 窗口 <code>Options | Levee (Lateral Structure) Breach…</code>，或 Lateral Structure 编辑器中的 Breach 入口。字段与坝溃口一致（尺寸、历时、进展、修复）。</p>
         <div class="fig">
           <div class="fig-title">Levee Breaching Editor<span class="fig-flag">官方截图</span></div>
@@ -1972,14 +1972,14 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">含触发、进展等页签的完整界面。<b>来源：</b>HEC-RAS User's Manual Fig.14-19</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（可选）SA / 2D 连接结构的溃口</h4>
+      <li class="step"><div class="step-body"><h4>设置 SA/2D 连接溃口（可选）</h4>
         <p>蓄洪区连接（SA/2D Area Connection，可含堰、闸、涵）也能设溃口：在连接编辑器上点 <b>Breach (plan data)</b>。参数与坝/堤相同。</p>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 F · 运行、读结果与排错</div>
+    <div class="sec-tag">阶段 F · 运行与结果分析</div>
     <ol class="steps" start="15">
-      <li class="step"><div class="step-body"><h4>短窗试算，确认溃口"按时张开"</h4>
+      <li class="step"><div class="step-body"><h4>短时间窗试算</h4>
         <p>先跑含触发前后的短时段，用 <b>Profile Plot</b> / 过程线看：</p>
         <ul>
           <li>触发时刻是否合理（水位是否达到阈值）。</li>
@@ -1988,7 +1988,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>再跑完整演进与淹没。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>读四类关键结果</h4>
+      <li class="step"><div class="step-body"><h4>查看溃决过程线与淹没结果</h4>
         <ul>
           <li><b>Breach Hydrograph</b> — 溃口下泄流量过程。</li>
           <li><b>坝前/库区水位</b> — 溃后库容释放。</li>
@@ -1996,7 +1996,7 @@ section.wrap.toc-on{max-width:1180px}
           <li><b>RAS Mapper 最大淹没 / 动画</b> — 风险图。</li>
         </ul>
       </div></li>
-      <li class="step"><div class="step-body"><h4>稳定性与情景（官方实践）</h4>
+      <li class="step"><div class="step-body"><h4>稳定性与情景对比</h4>
         <ul>
           <li>溃口发展过猛时先减小计算时间步，或开 <b>Advanced Time Step Control</b>。</li>
           <li>至少做一组<strong>情景包络</strong>：偏快形成 vs 偏慢形成；宽/窄溃口；有/无 Repair。</li>
@@ -2022,9 +2022,9 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>官方建模惯例：</b>先做稳的 1D 模型理解水系（低水找主槽、高水找洪泛区），再把需要二维流向的区域做成 <b>2D Flow Area</b>。连接方式常见三种：① 1D 断面直接盖住滩地（简单漫滩）；② <b>Lateral Structure</b>（堤/堰/溢流）；③ <b>SA/2D Area Connection</b>（蓄水区与 2D 之间涵/堰/闸）。耦合计算在 <b>Unsteady Flow</b> 中完成。</div></div>
 
-    <div class="sec-tag">阶段 A · 分工与几何总图</div>
+    <div class="sec-tag">阶段 A · 模型分工与几何准备</div>
     <ol class="steps">
-      <li class="step"><div class="step-body"><h4>决定哪里 1D、哪里 2D</h4>
+      <li class="step"><div class="step-body"><h4>划分 1D 与 2D 计算范围</h4>
         <ul>
           <li><b>1D</b>：深窄河谷、流向单一的主槽、已有可靠断面的河段。</li>
           <li><b>2D</b>：滩地宽阔、堤内涝区、城区道路阻水、回流/分流明显处。</li>
@@ -2032,7 +2032,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>在纸上或 GIS 里划好 1D 中心线、2D 多边形、堤线与连接位置，再动手建模。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>先完成 1D 几何（中心线 + 断面）</h4>
+      <li class="step"><div class="step-body"><h4>完成 1D 几何（中心线与断面）</h4>
         <p>按「官方教程一」布好主槽断面；滩地若并入 1D 断面，断面要够宽；若滩地改 2D，断面可只保留主槽+近岸。</p>
         <p>断面上可加 <b>Levee</b>（堤顶）与 <b>Ineffective Flow</b>（无效过水区）做初步漫滩控制。</p>
         <div class="fig">
@@ -2046,15 +2046,15 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">回流/死水区设无效，避免虚假过流。<b>来源：</b>HEC-RAS User's Manual Fig.5-3</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>打开 Geometric Data，认识 2D 相关按钮</h4>
+      <li class="step"><div class="step-body"><h4>打开 Geometric Data 编辑器</h4>
         <p>几何编辑器工具栏中你会用到：<b>2D Flow Area</b>、<b>Break Lines</b>、<b>Generate Mesh</b>、<b>SA/2D Area Conn</b>、<b>Storage Area</b>、<b>Lateral Structure</b>、<b>BC Lines</b>。</p>
         <p>左侧 2D Flow Area 编辑器用于改单元尺寸、显示/选择区域。</p>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 B · 绘制 2D Flow Area 并生成网格</div>
+    <div class="sec-tag">阶段 B · 2D 计算域与网格</div>
     <ol class="steps" start="4">
-      <li class="step"><div class="step-body"><h4>画 2D 区外边界（Perimeter）</h4>
+      <li class="step"><div class="step-body"><h4>绘制 2D 区边界（Perimeter）</h4>
         <p>点 <b>2D Flow Area</b> 工具：在滩地/涝区/城区单击加点，<strong>双击结束</strong>，输入名称（如 <code>Floodplain</code>）。</p>
         <p>边界应盖住可能淹没的范围，但不必无限放大（单元数×时间）。</p>
         <div class="fig">
@@ -2063,7 +2063,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">沿 2D 区外缘加点，双击结束并命名。<b>来源：</b>HEC-RAS User's Manual</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>加 Breakline：堤、路、渠要"卡住"网格</h4>
+      <li class="step"><div class="step-body"><h4>添加 Breakline</h4>
         <p>点 <b>Break Lines</b>，沿堤顶、路基、深槽绘制线，命名。Breakline 强制单元边（face）贴合地物，防止水"穿堤"。</p>
         <ul>
           <li>堤/路：沿脊线画。</li>
@@ -2081,7 +2081,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">道路/堤防等处加密，单元边贴地物。<b>来源：</b>HEC-RAS User's Manual</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>Generate Mesh 生成计算网格</h4>
+      <li class="step"><div class="step-body"><h4>生成计算网格（Generate Mesh）</h4>
         <p>在 2D Flow Area 编辑器中设 <b>Cell Spacing</b>（目标单元尺寸），点 <b>Generate Mesh</b>。</p>
         <ul>
           <li>单元尺寸经验：约 <b>DEM 分辨率的 2–5 倍</b>起步；不小于 DEM。</li>
@@ -2093,7 +2093,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">设置单元尺寸并生成网格。<b>来源：</b>HEC-RAS User's Manual Fig.5-42</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>读懂网格三要素（后文排错要用）</h4>
+      <li class="step"><div class="step-body"><h4>认识网格要素（Cell / Face / Face Point）</h4>
         <div class="fig">
           <div class="fig-title">2D 网格术语：Cell Center / Face / Face Point<span class="fig-flag">官方截图</span></div>
           <img src="assets/official/c12_03_mesh_terms.jpg" alt="2D 网格术语" loading="lazy">
@@ -2103,16 +2103,16 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 C · 1D ↔ 2D 怎么"接上"</div>
+    <div class="sec-tag">阶段 C · 1D 与 2D 连接</div>
     <ol class="steps" start="8">
-      <li class="step"><div class="step-body"><h4>方式一：漫滩直接交换（断面盖滩地）</h4>
+      <li class="step"><div class="step-body"><h4>连接方式一：断面漫滩</h4>
         <p>1D 断面范围盖过滩地，靠水面横向比降分水。适合河道与滩地一体、不需要精细二维流态的河段。注意断面间距与滩地阻力。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>方式二：Lateral Structure（堤、堰、溢流）</h4>
+      <li class="step"><div class="step-body"><h4>连接方式二：侧向结构（Lateral Structure）</h4>
         <p>沿堤/路画 <b>Lateral Structure</b>，填堤顶剖面；漫溢或溃决后向 2D 区（或 Storage Area）分水。可带闸、涵。</p>
         <p>一端连 1D 河段，另一端指向 2D/蓄水区（按软件版本的连接规则放置）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>方式三：SA/2D Area Connection（涵、堰、闸、泵）</h4>
+      <li class="step"><div class="step-body"><h4>连接方式三：SA/2D Area Connection</h4>
         <p>点 <b>SA/2D Area Conn</b>，在蓄水区与 2D 区（或两个 2D 区）之间画连接线：<strong>顺着正流向从左到右</strong>绘制，双击结束并命名——方向决定正负流量符号。</p>
         <div class="fig">
           <div class="fig-title">SA/2D Area Connection Editor<span class="fig-flag">官方截图</span></div>
@@ -2131,7 +2131,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">沿线桩号–高程等。<b>来源：</b>HEC-RAS User's Manual Fig.5-51</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>2D 区外部边界 BC Lines（入流/出流/水位）</h4>
+      <li class="step"><div class="step-body"><h4>设置 2D 区边界条件（BC Lines）</h4>
         <p>点 <b>SA/2D Area BC Lines</b>，沿 2D 区外缘需要给边界处画线，命名后在 <b>Unsteady Flow Data</b> 中给类型：</p>
         <ul>
           <li><b>Flow Hydrograph</b> / <b>Stage Hydrograph</b> / <b>Rating Curve</b></li>
@@ -2140,13 +2140,13 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 D · 非恒定流：边界、初值与 2D 选项</div>
+    <div class="sec-tag">阶段 D · 边界条件与计算设置</div>
     <ol class="steps" start="12">
-      <li class="step"><div class="step-body"><h4>Unsteady Flow Data 中填 1D + 2D 边界</h4>
+      <li class="step"><div class="step-body"><h4>输入 1D 与 2D 边界数据</h4>
         <p>1D 上游/下游按「官方教程二」；2D 的 BC Line 会出现在同一编辑器里，逐条给过程线。</p>
         <p>Initial Conditions：1D 给初始流量；2D 区可给初始水位/干湿状态（按界面选项）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>Computation Options：2D Flow Options</h4>
+      <li class="step"><div class="step-body"><h4>设置 2D Flow Options</h4>
         <p>Plan → <code>Computation Options and Tolerances… → 2D Flow Options</code>：</p>
         <ul>
           <li><b>Equation Set</b>：扩散波（快）或完整浅水方程 SWE（泥沙/复杂流态必用 SWE）。</li>
@@ -2155,21 +2155,21 @@ section.wrap.toc-on{max-width:1180px}
           <li>求解器、紊动等按「2D 建模入门」与泥沙章的建议。</li>
         </ul>
       </div></li>
-      <li class="step"><div class="step-body"><h4>时间步与耦合稳定性</h4>
+      <li class="step"><div class="step-body"><h4>设置时间步长</h4>
         <p>1D/2D 同时算时，先短窗试算。2D 单元小则时间步要小；可用 Advanced Time Step Control。振荡多发生在连接线、堤顶、窄通道——优先查网格与连接几何。</p>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 E · 运行、结果与排错</div>
+    <div class="sec-tag">阶段 E · 运行与结果检查</div>
     <ol class="steps" start="15">
-      <li class="step"><div class="step-body"><h4>运行并分图层看交换</h4>
+      <li class="step"><div class="step-body"><h4>运行并查看交换流量</h4>
         <ul>
           <li>RAS Mapper：2D 水深/流速/水位 + 1D 纵剖面。</li>
           <li>连接线/堤上的流量过程（检查交换是否合理）。</li>
           <li>对比纯 1D 方案：滩地淹没范围、洪峰是否因二维路径改变。</li>
         </ul>
       </div></li>
-      <li class="step"><div class="step-body"><h4>常见病</h4>
+      <li class="step"><div class="step-body"><h4>常见问题</h4>
         <ul>
           <li><b>水穿堤</b> → Breakline 没贴堤脊或网格太粗；重新生成网格。</li>
           <li><b>连接线不过水</b> → 方向画反、堰顶高程太高、两区域没真正搭接。</li>
@@ -2215,9 +2215,9 @@ section.wrap.toc-on{max-width:1180px}
       <a class="dl-btn" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/1d-sediment-transport" target="_blank" rel="noopener">打开官方教程页</a>
     </div>
 
-    <div class="sec-tag">阶段 A · 水动力打底与打开泥沙数据</div>
+    <div class="sec-tag">阶段 A · 水动力模型准备</div>
     <ol class="steps">
-      <li class="step"><div class="step-body"><h4>确认一维模型已经能算稳</h4>
+      <li class="step"><div class="step-body"><h4>确认水动力模型可用</h4>
         <p>打开已有工程（或先按「官方教程一」建好 Merced 一类 1D 模型），运行恒定流或非恒定流，确认水面线、流速合理、无大量 negative depth / 无法收敛。</p>
         <p>在 RAS Mapper 或 <b>Profile Plot</b> 里看一眼水面是否贴合地形；滩地曼宁 n 先不要盲目调大（泥沙对 n 极敏感，见阶段 E）。</p>
         <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>为什么先跑水动力？</b>输沙能力对剪力、能坡非常敏感。水面线不对，后面冲淤只会错得更远。官方 2D 泥沙页也强调：先 warmup 湿润并稳定水面，再加泥沙。</div></div>
@@ -2231,7 +2231,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">进入后先认界面：粒径分组、床层与 Options 菜单都在这个编辑器里。 <b>来源：</b>HEC 官方文档</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>认识准非恒定流三层时间步（填时间参数前必懂）</h4>
+      <li class="step"><div class="step-body"><h4>认识准非恒定流时间步</h4>
         <p>官方将准非恒定流拆成三层，后面在 Quasi-Unsteady Flow 编辑器里会分别填：</p>
         <ul>
           <li><b>Duration 流量档时长</b>：该档内流量近似不变（日流量常取 24&nbsp;h）。</li>
@@ -2254,7 +2254,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">点 Add 新增分组，填写代表粒径；建议 3–6 组以覆盖砂–卵石。 <b>来源：</b>HEC 官方文档</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>设置各粒径组重量百分比</h4>
+      <li class="step"><div class="step-body"><h4>设置粒径组百分比</h4>
         <p>在级配表中填写各组 <b>百分比</b>，合计 100%。上游来沙与床面级配尽量都按同一套分组给出。</p>
         <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>取样优先：</b>用河床质筛分曲线落到这几组上。没有实测时，可从相邻河段资料或经验级配起步，但率定时必须回头核对。</div></div>
       </div>
@@ -2263,15 +2263,15 @@ section.wrap.toc-on{max-width:1180px}
           <img src="assets/official/sed_05a_grain_props.jpg" alt="粒径组属性与重量百分比" loading="lazy">
           <div class="fig-cap">各组百分比合计 100%；与河床质筛分曲线对应。 <b>来源：</b>HEC 官方文档</div>
         </div></li>
-      <li class="step"><div class="step-body"><h4>初始化床层（表层 + 基质）</h4>
+      <li class="step"><div class="step-body"><h4>初始化床层</h4>
         <p>选择 <b>Bed</b> / 初始床沙组成，把表层（active/surface layer）配成与河床质一致的级配；需要模拟粗化时再配置下层基质。</p>
         <p>设置初始床面高程来源：通常直接用几何断面河床点；固定床诊断（Capacity Only）也要填级配，用来按粒径拆分输沙能力。</p>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 C · 选输沙公式与床层参数</div>
+    <div class="sec-tag">阶段 C · 输沙公式与床层参数</div>
     <ol class="steps" start="7">
-      <li class="step"><div class="step-body"><h4>打开 Transport Methods 并选主公式</h4>
+      <li class="step"><div class="step-body"><h4>选择输沙公式（Transport Methods）</h4>
         <p>选择 <code>Options | Transport Methods…</code>。按河床组成选起点公式：</p>
         <div class="fig">
           <div class="fig-title">Transport Methods 对话框<span class="fig-flag">官方截图</span></div>
@@ -2286,7 +2286,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         <p>不确定时：沙河先 EH，砾石河先 MPM 或 Parker；后面用实测冲淤/输沙率对比再定主公式。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>配置 Bed Mixing：隐藏暴露与活动层</h4>
+      <li class="step"><div class="step-body"><h4>配置 Bed Mixing 参数</h4>
         <p>选择 <code>Options | Bed Mixing Options…</code>：</p>
         <p>勾选 <b>Hiding and Exposure</b>，方法优先 <b>Wu</b>，系数用默认值起步（细颗粒更易被"藏"，总输沙会下降、模型更稳）。</p>
         <p>设置 <b>Active Layer</b> 厚度：沙床不要用"1×d90"默认过薄值，加一个最小厚度（约 0.1–0.3&nbsp;m）或放大 d90 倍数，否则容易振荡。</p>
@@ -2296,7 +2296,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">勾选 Hiding and Exposure（Wu 起步），并检查 Active Layer 厚度（沙床加最小厚度）。 <b>来源：</b>HEC 官方 2D Sediment Parameters 文档</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（2D 额外）打开 2D Options 并确认浅水方程</h4>
+      <li class="step"><div class="step-body"><h4>设置 2D Options（可选）</h4>
         <p>2D 动床必须使用完整 <b>Shallow Water Equations（SWE）</b>，不能用扩散波。在 Plan 的 <code>Unsteady Flow Analysis → Options → Computation Options and Tolerances → 2D Flow Options</code> 里把 Equation Set 设为 SWE。
         <div class="fig">
           <div class="fig-title">2D 泥沙相关选项（示例）<span class="fig-flag">官方截图</span></div>
@@ -2308,9 +2308,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 D · 准非恒定流：流量档、温度与来沙</div>
+    <div class="sec-tag">阶段 D · 准非恒定流与边界</div>
     <ol class="steps" start="10">
-      <li class="step"><div class="step-body"><h4>创建 Quasi-Unsteady Flow 数据</h4>
+      <li class="step"><div class="step-body"><h4>创建准非恒定流数据</h4>
         <p>打开 <b>Quasi-Unsteady Flow Editor</b>（非恒定流数据中的准非恒定流类型）。按日或更细分辨率输入流量序列，形成一系列流量档（Duration）。</p>
         <p>在编辑器中设置 <b>Computational Increment</b>（≤ Duration）与 Bed Mixing 相关步长；保存为独立的准非恒定流水流文件。
         <div class="fig">
@@ -2319,7 +2319,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">在此组织流量档与计算增量；温度在下一步单独设置。 <b>来源：</b>HEC 官方文档</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>点 Set Temperature… 填温度时间序列（必填）</h4>
+      <li class="step"><div class="step-body"><h4>输入温度时间序列</h4>
         <p>在 Quasi-Unsteady Flow 编辑器底部点击 <b>Set Temperature…</b>，打开温度序列编辑器，填写水温（°C 或 °F，与工程单位一致）。</p>
         <p>没有长系列时按官方三种做法选一：</p>
         <ul>
@@ -2351,7 +2351,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">上游选给定输沙率或平衡来沙；边界位置要落在主槽过水处。 <b>来源：</b>HEC 官方文档</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>在 Plan 中挂接泥沙计算选项</h4>
+      <li class="step"><div class="step-body"><h4>在方案中设置泥沙计算选项</h4>
         <p>打开 <b>Unsteady Flow Analysis（Plan）</b>：几何选含泥沙的几何，水流选准非恒定流文件。</p>
         <p>选择 <code>Options | Sediment Computation Options and Tolerances…</code>：设泥沙时间相关倍增器（先 &lt;10，并做敏感性）、层厚（初始可取 1–2&nbsp;m 量级更稳）。</p>
         <p>Plan 保存为有意义的名字，如 <code>Sed-Base</code>。
@@ -2363,7 +2363,7 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 E · 运行、读结果与常见问题</div>
+    <div class="sec-tag">阶段 E · 运行与结果分析</div>
     <ol class="steps" start="14">
       <li class="step"><div class="step-body"><h4>运行泥沙计算</h4>
         <p>在 Plan 窗口点击 <b>Compute</b>（或 Run 中的 Sediment / Unsteady 计算）。长系列可先缩短时段试跑，确认不崩溃再跑全序列。</p>
@@ -2377,7 +2377,7 @@ section.wrap.toc-on{max-width:1180px}
         </ul>
         
       </div></li>
-      <li class="step"><div class="step-body"><h4>边界猛冲猛淤怎么查</h4>
+      <li class="step"><div class="step-body"><h4>排查边界冲淤问题</h4>
         <p>若模型上、下边界附近出现夸张冲深或淤积，按官方《Common Errors in 2D Sediment Models》顺序排查：</p>
         <ul>
           <li>来沙能力与来沙量/级配是否匹配（边界"饿"或"撑"）。</li>
@@ -2390,7 +2390,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">边界虚假冲刷会连带回淤，看起来像"上游淤了一大片"。<b>来源：</b>HEC 官方 Common Errors in 2D Sediment Models</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>滩地曼宁 n 不要乱加（泥沙陷阱）</h4>
+      <li class="step"><div class="step-body"><h4>复核滩地曼宁 n 值</h4>
         <p>水力对滩地 n 不敏感，但输沙对应力极敏感：综合起来输沙可近似随 n 的三次方增长。滩地 n 从 0.06 调到 0.12，水位几乎不动，输沙却可能差一个数量级。</p>
         <p>回到几何数据 <code>Tables | Manning's n</code>，把滩地 n 按植被/阻力重新估计，而不是按"水位不好看"去加糙。</p>
       </div>
@@ -2399,7 +2399,7 @@ section.wrap.toc-on{max-width:1180px}
           <img src="assets/official/sf_12_manning_table.jpg" alt="曼宁 n 值表" loading="lazy">
           <div class="fig-cap">滩地 n 对输沙极其敏感，需按植被/阻力估计。图示为 1D 教程中的 Manning's n 表界面。<b>来源：</b>HEC 官方《Steady Flow Modeling with HEC-RAS》</div>
         </div></li>
-      <li class="step"><div class="step-body"><h4>（可选）Capacity Only / Concentration Only 快速诊断</h4>
+      <li class="step"><div class="step-body"><h4>固定床诊断（Capacity Only）（可选）</h4>
         <p>要评估"加构筑物后能力是否变大"时，可用固定床简化：</p>
         <p>在 Sediment Data 中把 <b>Simulation Components</b> 设为 <b>Capacity Only</b>（或 Concentration Only），另存泥沙数据与 Plan，运行后在 Mapper 中展开 <b>Sediment Transport → Total-load Transport Capacity</b> 图层对比方案。</p>
         <div class="fig">
@@ -2415,9 +2415,9 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 F · 二维泥沙收尾检查清单</div>
+    <div class="sec-tag">阶段 F · 二维泥沙检查清单</div>
     <ol class="steps" start="19">
-      <li class="step"><div class="step-body"><h4>按优先级核对参数，而不是一次拧完</h4>
+      <li class="step"><div class="step-body"><h4>按优先级核对二维泥沙参数</h4>
         <p>官方建议顺序（详见 <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/tutorials/2d-sediment-transport" target="_blank" rel="noopener">2D Sediment Transport</a> 文档）：</p>
         <ul>
           <li><b>Tier 0</b>：SWE 方程 + 水力 warmup。</li>
@@ -2426,7 +2426,7 @@ section.wrap.toc-on{max-width:1180px}
           <li><b>Tier 3</b>：Subgrid 等，模型稳定后再开。</li>
         </ul>
       </div></li>
-      <li class="step"><div class="step-body"><h4>需要岸坡稳定性或泥石流时</h4>
+      <li class="step"><div class="step-body"><h4>进阶：岸坡稳定性与泥石流</h4>
         <p>岸坡：用 <b>BSTEM</b>（趾部冲刷 + 崩塌）基于动床结果评估；方案快速对比可用 <b>SIAM</b>。</p>
         <p>高含沙/泥石流：改用非牛顿流体库（屈服应力、塑性粘度；泥石流再加摩擦），沿沟加密网格，上游给流量+浓度过程线，看堆积范围与厚度。</p>
       </div></li>
@@ -2445,12 +2445,12 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本教程能回答的问题：</b>夏季水温会不会太高？DO 会不会掉？氨氮/磷是降解还是累积？——先按阶段 A–D 填数据，再用观测率定。</div></div>
 
-    <div class="sec-tag">阶段 A · 水动力与气象强迫准备</div>
+    <div class="sec-tag">阶段 A · 水动力与气象数据</div>
     <ol class="steps">
-      <li class="step"><div class="step-body"><h4>确认水流场已经合理</h4>
+      <li class="step"><div class="step-body"><h4>确认水动力模型可用</h4>
         <p>运行一维/二维水动力，检查流量分配、回水与滞水区。水质组分只在已算好的流场上做输运与反应，流场不对则浓度场无意义。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>准备气象数据（完整能量平衡必填）</h4>
+      <li class="step"><div class="step-body"><h4>准备气象数据</h4>
         <p>整理逐时（推荐）气象序列，至少包括：</p>
         <ul>
           <li>短波太阳辐射 · 气压 · 气温 · 湿度 · 风速 · 云量</li>
@@ -2463,13 +2463,13 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">本图解释「气象强迫如何进入热平衡」——与本步准备的辐射/气温/风速数据一一对应。短波、长波、潜热、感热与沉积物–水体热交换。<b>来源：</b>HEC 官方 Water Temperature Simulation Module</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>打开 Water Quality 数据入口</h4>
+      <li class="step"><div class="step-body"><h4>打开 Water Quality 数据</h4>
         <p>在主界面选择 <code>Edit | Water Quality Data…</code>（或 Plan/边界数据中的 Water Quality 入口），新建水质数据文件并保存。</p>
         <p>你将用到三套组分库：<b>Temperature</b>（水温/泥沙温度）、<b>NSM</b>（营养盐–藻类–DO–CBOD）、<b>GCSM</b>（一般组分：示踪、微生物等）。</p>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 B · 创建组分集并勾选组分</div>
+    <div class="sec-tag">阶段 B · 创建水质组分集</div>
     <ol class="steps" start="4">
       <li class="step"><div class="step-body"><h4>新建 WQ Constituent Set</h4>
         <p>打开 <b>WQ Constituent Set Editor</b>，选择 <code>File / 菜单 → Create New WQ Constituent Set</code>，命名（如 <code>WQ_Base</code>）。</p>
@@ -2480,7 +2480,7 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">组分集编辑器：列表里是已启用组分与参考值。<b>来源：</b>HEC 官方 WQ Constituent Set Editor 文档</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>点 Edit Set，从库里勾选组分</h4>
+      <li class="step"><div class="step-body"><h4>从库中选择组分</h4>
         <p>点 <b>Edit Set</b> 打开 <b>WQ Constituent Selector</b>。在 <b>Library</b> 下拉中选择库，勾选需要的组分后点 <b>Apply</b>：</p>
         <ul>
           <li><b>Temperature</b>：勾 <b>Water Temperature</b>（需要时再加 Sediment Temperature）。</li>
@@ -2499,14 +2499,14 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">NSM 营养盐库常见组分：DO、NH₄、NO₃、无机磷、浮游植物。<b>来源：</b>HEC 官方 WQ Constituent Selector</div>
         </div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>给每个组分填参考值/初始浓度</h4>
+      <li class="step"><div class="step-body"><h4>输入参考值与初始浓度</h4>
         <p>回到 <b>WQ Constituent Set Editor</b> 表格，为各组分填写 Reference / 初始浓度（mg/L 或文档规定单位）。GCSM 组分还要填速率参数（见阶段 C）。</p>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 C · 边界浓度与反应动力学</div>
+    <div class="sec-tag">阶段 C · 边界浓度与反应速率</div>
     <ol class="steps" start="7">
-      <li class="step"><div class="step-body"><h4>设置上游与旁侧入流浓度</h4>
+      <li class="step"><div class="step-body"><h4>设置边界浓度</h4>
         <p>在边界条件编辑器中，为各组分指定 <b>浓度过程线</b>（与流量过程线同步）。点源排口用旁侧入流，在排口附近保证网格/断面分辨率足够。</p>
         <p>先用 <b>保守示踪</b>（GCSM 近保守）跑一遍，看输运时间尺度是否合理，再上反应组分。
         <div class="fig">
@@ -2515,23 +2515,23 @@ section.wrap.toc-on{max-width:1180px}
           <div class="fig-cap">浓度过程线可来自常数、DSS 或环境值；与流量过程线时间对齐。 <b>来源：</b>HEC 官方文档</div>
         </div></p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>填反应速率与温度系数</h4>
+      <li class="step"><div class="step-body"><h4>输入反应速率与温度系数</h4>
         <p>按 20&nbsp;°C 率定值填写 \(k(20)\) 与温度系数 \(\theta\)（常见 1.01–1.10），运行时自动换算 \(k(T_w)=k(20)\,\theta^{T_w-20}\)。</p>
         <p>GCSM 一般组分典型源汇：零级/一级衰减、沉降 \(v_s\)、底泥释放 \(k_{sed}\)。NSM 则涉及藻类生长/呼吸、CBOD 耗氧、硝化、复氧等——优先用文献或本站监测约束，不要全靠默认值。</p>
         <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>和泥沙一起算时：</b>悬沙影响光消光→水温与藻类；温度序列与时间步要与泥沙分析保持同一套，避免两套强迫。</div></div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>（可选）植被河岸修正</h4>
+      <li class="step"><div class="step-body"><h4>设置植被修正系数（可选）</h4>
         <p>若河道有浓密岸林，可在水温模块中设 <b>遮荫系数</b>、<b>挡风系数</b>、<b>长波保温系数</b>（0=无植被影响，1=完全遮蔽/挡风）。可按季节变化。</p>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 D · 运行、读结果与率定</div>
+    <div class="sec-tag">阶段 D · 运行与率定</div>
     <ol class="steps" start="10">
-      <li class="step"><div class="step-body"><h4>把组分集挂到 Plan 并计算</h4>
+      <li class="step"><div class="step-body"><h4>创建方案并计算</h4>
         <p>在 <b>Unsteady Flow Analysis</b> 中选择对应几何/水流，指定 WQ Constituent Set，保存 Plan（如 <code>WQ-Base</code>）后点 <b>Compute</b>。</p>
         <p>先跑短时段确认稳定，再跑率定期。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>先看水温，再看 DO 与氮磷</h4>
+      <li class="step"><div class="step-body"><h4>查看水温与水质结果</h4>
         <p>在结果绘图中依次检查：</p>
         <ul>
           <li><b>水温</b>沿程/逐日：是否贴近观测（日最低/最高）。</li>
@@ -2539,7 +2539,7 @@ section.wrap.toc-on{max-width:1180px}
           <li><b>NH₄ / NO₃ / PO₄</b>：点源下游是否按预期衰减或累积。</li>
         </ul>
       </div></li>
-      <li class="step"><div class="step-body"><h4>率定顺序建议</h4>
+      <li class="step"><div class="step-body"><h4>模型率定</h4>
         <p>官方与工程实践的稳妥顺序：</p>
         <p><b>① 输运</b>（保守示踪/流场）→ <b>② 水温</b>（辐射与蒸发强迫）→ <b>③ DO</b>（复氧与耗氧）→ <b>④ 营养盐与藻类</b>。</p>
         <p>一次只动一类参数；每改一组速率就保存新的 Plan/组分集，方便回退对比。</p>
