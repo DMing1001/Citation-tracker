@@ -1120,117 +1120,175 @@ section.wrap.toc-on{max-width:1180px}
     </div>
   </section>
 
-  <!-- ================= 官方教程实战 02：1D 非恒定流 ================= -->
+    <!-- ================= 官方教程实战 02：1D 非恒定流 ================= -->
   <section id="p-sec2" class="wrap">
     <div class="sec-head">
       <div class="sec-kicker">02 · Tutorial 2 · 1D Unsteady Flow</div>
       <h2>官方教程二：1D 非恒定流建模</h2>
-      <p>非恒定流模拟的是"流量和水位随时间变化"的过程：给模型一个入流过程线（hydrograph），观察洪水波如何沿河道演进、水位如何涨落。官方 Guides &amp; Tutorials 的《Creating a Combined 1D/2D Model》给出了从 1D 恒定流升级到非恒定流的完整路径，本节按官方流程整理为五个阶段。</p>
+      <p>非恒定流模拟"流量和水位随时间变化"：给一个入流过程线，看洪水波如何演进。本节按官方 User's Manual 第 7 章《Performing a 1D Unsteady Flow Analysis》与 Guides 中 Combined 1D/2D 路径，从恒定流模型升级开始，一步步填边界、初始条件、水力表与计算选项，直到跑通并排查不稳定。</p>
     </div>
 
-    <div class="sec-tag">阶段 A · 从恒定流升级到非恒定流</div>
-    <div class="tbl-wrap"><table>
-      <colgroup><col style="width:20%"><col style="width:40%"><col style="width:40%"></colgroup>
-      <caption>恒定流 vs 非恒定流</caption>
-      <thead><tr><th>维度</th><th>恒定流 Steady</th><th>非恒定流 Unsteady</th></tr></thead>
-      <tbody>
-        <tr><td><b>流量输入</b></td><td>各断面固定流量（每个 Profile 一个值）</td><td>随时间变化的流量过程线/水位过程线</td></tr>
-        <tr><td><b>方程</b></td><td>一维能量方程（标准步进法）</td><td>圣维南方程组（连续 + 动量），有限差分/有限体积求解</td></tr>
-        <tr><td><b>初始条件</b></td><td>不需要（由边界向上游/下游递推）</td><td>需要（初始流量分布、蓄水区初始水位）</td></tr>
-        <tr><td><b>结果</b></td><td>各 Profile 的水面线</td><td>各断面的水位/流量过程线、最大淹没</td></tr>
-        <tr><td><b>适用</b></td><td>设计洪水、恒定工况</td><td>洪水演进、溃坝、调度、感潮河段</td></tr>
-      </tbody>
-    </table></div>
-    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>非恒定流模型三件套：</b>几何（与恒定流共用）+ 边界过程线（入流/出流）+ 初始条件。官方惯例是先用 1D 恒定流模型打底，再在同一套几何上升级——文件后缀上，几何为 <code>.g01</code>、恒定流数据为 <code>.f01</code>、非恒定流数据为 <code>.u01</code>、对应方案为 <code>.p02</code>。</div></div>
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本教程能回答的问题：</b>洪峰什么时候到下游？水位涨到多高、淹到哪里？闸坝调度或溃坝后过程如何？——先有稳的 1D 几何，再按阶段 B–E 填过程线与初值。</div></div>
+
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>和恒定流的关系：</b>几何共用（<code>.g01</code>）；恒定流数据 <code>.f01</code>，非恒定流数据 <code>.u01</code>，新方案常为 <code>.p02</code>。官方惯例：先用恒定流理解主槽/滩地/洪泛区，再在同一套几何上做非恒定流。</div></div>
+
+    <div class="sec-tag">阶段 A · 从恒定流打底升级</div>
     <ol class="steps">
-      <li class="step"><div class="step-body"><h4>先建 1D 恒定流模型打底</h4>
-        <p>官方 Combined 1D/2D 教程建议：任何非恒定流建模前，先创建稳态 1D 模型理解水系行为——用低流量（如 2 年一遇）确认主槽与岸滩位置，用高流量确认洪泛区与断面范围。</p>
+      <li class="step"><div class="step-body"><h4>先跑通 1D 恒定流，确认几何可用</h4>
+        <p>按「官方教程一」把几何（中心线、断面、滩地）和一两个恒定流量级跑稳：低流量确认主槽与岸滩，高流量确认断面是否盖住洪泛区。</p>
+        <p>在 <b>Profile Plot</b> / RAS Mapper 看一眼水面是否合理；几何若有明显错误，先改几何，不要直接上非恒定流。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>量取下游坡降并延伸一维河段</h4>
-        <p>为下游延伸足够长的强一维河段（远离关注区），并在 RAS Mapper 用 <b>Measure Tool</b> 沿河数字化一段河道量取纵坡，作为 Normal Depth 下游边界的坡度。官方提示：正常水深（Normal Depth）是快速设置下游边界的最简方式。</p>
+      <li class="step"><div class="step-body"><h4>下游延伸河段，并量取纵坡</h4>
+        <p>把研究河段向下游延伸足够长（让边界影响远离关注区）。在 RAS Mapper 用 <b>Measure Tool</b> 沿河量一段纵坡，记下数值，下一步做 Normal Depth 下游边界要用。</p>
+        <p>官方提示：下游边界最简做法是 <b>Normal Depth</b> + 该纵坡。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>新建 Unsteady Flow 数据文件</h4>
+        <p>主界面选择 <code>Edit | Unsteady Flow Data…</code>，命名保存（如 <code>Unsteady</code>，对应 <code>.u01</code>）。编辑器里你会用到这些页签/按钮：</p>
+        <ul>
+          <li><b>Boundary Conditions</b> — 逐河段边界类型与过程线</li>
+          <li><b>Initial Conditions</b> — 初始流量/水位</li>
+          <li><b>Options</b> — 观测数据、水温等</li>
+        </ul>
+        <p>先别填数，浏览一遍界面，确认 River/Reach 列表与几何一致。</p>
       </div></li>
     </ol>
 
     <div class="sec-tag">阶段 B · 边界条件与入流过程线</div>
-    <div class="tbl-wrap"><table>
-      <colgroup><col style="width:24%"><col style="width:44%"><col style="width:32%"></colgroup>
-      <caption>非恒定流常用边界条件</caption>
-      <thead><tr><th>类型</th><th>含义</th><th>典型位置</th></tr></thead>
-      <tbody>
-        <tr><td><b>流量过程线 Flow Hydrograph</b></td><td>输入 Q–t 序列（可手工录入、从 HEC-DSS 读取或来自 HEC-HMS），最常见的上游边界</td><td>上游边界 / 支流</td></tr>
-        <tr><td><b>水位过程线 Stage Hydrograph</b></td><td>输入 Z–t 序列，用于有实测水位的边界或感潮河口（潮位过程）</td><td>上/下游边界</td></tr>
-        <tr><td><b>水位-流量关系 Rating Curve</b></td><td>用 Q–H 曲线定义边界，适合有稳定率定关系的下游</td><td>下游边界</td></tr>
-        <tr><td><b>正常水深 Normal Depth</b></td><td>给定能量坡度，快速设定下游边界</td><td>下游边界</td></tr>
-        <tr><td><b>侧向入流 Lateral Inflow</b></td><td>沿程分布式入流过程线（支流、区间汇流）</td><td>河道内部（Internal）</td></tr>
-        <tr><td><b>均匀侧向入流 Uniform Lateral Inflow</b></td><td>沿整段河道均匀分配的入流</td><td>河道内部（Internal）</td></tr>
-      </tbody>
-    </table></div>
-    <div class="chart-box">
-      <div class="chart-title">典型入流过程线示意<span class="chart-flag">示意图数据</span></div>
-      <div id="chartHydro"></div>
-      <div class="chart-cap">洪水过程线示意：从基流起涨 → 陡涨 → 峰值 → 退水。官方建议过程线覆盖"起涨前基流 → 洪峰 → 回落至基流"的完整时段（至少 2 倍洪水历时）。水文模型（HEC-HMS）可导出 DSS 格式直接供 HEC-RAS 读取。</div>
-    </div>
-    <ol class="steps">
-      <li class="step"><div class="step-body"><h4>输入非恒定流边界条件</h4>
-        <p>打开 <b>Unsteady Flow Data Editor</b>：在边界条件表中为最上游断面选 <b>Flow Hydrograph</b>（录入过程线或读取 DSS），为最下游断面选 Normal Depth / Stage Hydrograph / Rating Curve。需要时在内部断面"Add Boundary Condition Location"加侧向入流。</p>
-        <p>录入后务必点 <b>Plot Data</b> 检查过程线形状是否正确。过程线支持 <b>Min Flow</b>（最小流量下限）与 <b>Multiplier</b>（整体缩放系数）两个便捷选项。</p>
+    <ol class="steps" start="4">
+      <li class="step"><div class="step-body"><h4>给上游断面加 Flow Hydrograph</h4>
+        <p>在 <b>Boundary Conditions</b> 页，点选最上游（及各支流）位置，边界类型选 <b>Flow Hydrograph</b>。</p>
+        <p>过程线数据来源三选一：</p>
+        <ul>
+          <li><b>手工录入</b>：在表格中填日期时间 + 流量。</li>
+          <li><b>HEC-DSS</b>：点 DSS 图标，选路径（如 <code>/FLOW/01JAN2020/1HOUR//TYPE-PER-AVER/</code>）。</li>
+          <li><b>HEC-HMS 导出</b>的 DSS 文件直接引用。</li>
+        </ul>
+        <p>录入后点 <b>Plot Data</b> 看形状：应"基流起涨 → 洪峰 → 退水"，时段至少覆盖约 2 倍洪水历时。</p>
+        <div class="fig">
+          <div class="fig-title">非恒定流边界条件表<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/td_06_bc_table.jpg" alt="非恒定流边界条件表" loading="lazy">
+          <div class="fig-cap">在边界条件表中为每个 River/Reach 指定类型与数据。<b>来源：</b>HEC 官方 2D 教程（同一 Unsteady Flow Data 编辑器）</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>从 HEC-DSS 读入流量过程线</h4>
+        <p>点边界行上的 <b>DSS 按钮</b>，<b>Open HEC-DSS File</b> 选择文件，在 <b>Pathname</b> 浏览器中选中流量序列，确认时间窗口与单位（m³/s 或 cfs，与工程一致）。</p>
+        <p>勾选/填写 <b>Multiplier</b>（整体缩放）与 <b>Min Flow</b>（最小流量下限，避免 0 流量导致数值问题）——这是官方推荐的两个便捷项。</p>
+        <div class="fig">
+          <div class="fig-title">DSS 流量过程线选择<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/td_07_dss.jpg" alt="HEC-DSS 过程线选择" loading="lazy">
+          <div class="fig-cap">从 HEC-DSS 路径中选取流量/水位过程线。<b>来源：</b>HEC 官方 2D 教程</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>设置下游边界（Normal Depth / 水位 / Q–H）</h4>
+        <p>点最下游位置，按已有资料选：</p>
+        <ul>
+          <li><b>Normal Depth</b> — 填阶段 A 量取的能量坡度，最常用。</li>
+          <li><b>Stage Hydrograph</b> — 有实测水位或潮位时。</li>
+          <li><b>Rating Curve</b> — 有稳定水位流量关系时。</li>
+        </ul>
+        <p>若还要模拟"上游水位+流量混合边界"（感潮等），可用官方的 <b>Upstream Stage and Flow Hydrograph</b>（流量以 -901 作切换约定，详见手册）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>（可选）内部侧向入流</h4>
+        <p>在内部断面用 <b>Add Boundary Condition Location</b> 加入：</p>
+        <ul>
+          <li><b>Lateral Inflow</b> — 支流/区间一条过程线。</li>
+          <li><b>Uniform Lateral Inflow</b> — 沿整段均匀分配。</li>
+        </ul>
+        <p>再点 <b>Plot Data</b> 检查各条过程线是否对齐同一时间基。</p>
       </div></li>
     </ol>
 
     <div class="sec-tag">阶段 C · 初始条件与断面水力表</div>
-    <ol class="steps">
-      <li class="step"><div class="step-body"><h4>设置初始条件</h4>
-        <p>在 Initial Conditions 页输入初始流量分布（常用方式：输入最上游初始流量，程序自动做一次恒定流计算得到各断面初始水位）；也可用上一次运行的 <b>Restart File</b> 续算。蓄水区需给初始水位。</p>
-        <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>稳定性经验：</b>以低基流（baseflow）启动并设置足够的预热期（warm-up），让模型自动达到稳定初态；过程线变化过陡容易导致振荡，可用"Critical Boundary Condition"选项在流量突增时自动减半时间步长。</div></div>
+    <ol class="steps" start="8">
+      <li class="step"><div class="step-body"><h4>设置 Initial Conditions（初始条件）</h4>
+        <p>切到 <b>Initial Conditions</b> 页。官方常用三种：</p>
+        <ul>
+          <li><b>给最上游初始流量</b>（常等于过程线起涨前基流），程序做一次恒定流推算各断面初值。</li>
+          <li><b>Restart File</b> — 用上次运行输出续算（长系列分段跑、或稳定性差时先跑稳再接）。</li>
+          <li>蓄水区/连接处留空时按默认处理；也可用堰上水位等信息辅助初始化。</li>
+        </ul>
+        <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>怎么填：</b>过程线从低基流起涨时，初始流量就填该基流；并留出预热段（过程线开头多加一段平稳低流量），让模型自己稳下来。</div></div>
       </div></li>
-      <li class="step"><div class="step-body"><h4>设置断面水力表参数（常见遗漏！）</h4>
-        <p>官方特别强调：从恒定流升级到非恒定流时最常犯的错误是<b>忘记设置断面水力表参数（Hydraulic Table Parameters）</b>——若不设置，模拟一开始 HEC-RAS 就会报数据缺失。在 <b>Geometric Data Editor</b> 中点击 <b>Hydraulic Table Parameters</b>：把渠底高程（invert）复制到 Starting Elevation 列，再加一个增量（官方默认 0.5 ft）；设置足够的计算点数，使其覆盖全部预期流量产生的水位范围——可逐个断面看右侧竖向切片确认水位范围。</p>
-      </div></li>
-    </ol>
-
-    <div class="sec-tag">阶段 D · 计算设置：时间窗与步长</div>
-    <div class="chart-box" style="padding:18px">
-      $$C_n = \frac{V\,\Delta t}{\Delta x} \le 1$$
-      <div class="chart-cap">Courant 条件：时间步长 Δt 应满足一个时间步内水流移动不超过一个断面间距——步长选择取决于断面间距与流速。官方做法：先设短时间窗试算，评估时间步长满足 Courant 条件后再跑长模拟。</div>
-    </div>
-    <ol class="steps">
-      <li class="step"><div class="step-body"><h4>设置模拟时间窗与计算步长并运行</h4>
-        <p>创建非恒定流方案：设定 <b>Simulation Time Window</b>（起止日期时间）、<b>Computational Time Step</b>（如 1–5 分钟起步，2D 单元通常需要更小步长）。先用短时间窗试算，评估一个时间步（见学习参考 · 常见问题）后再跑长模拟。</p>
-      </div></li>
-      <li class="step"><div class="step-body"><h4>计算选项与公差（Computation Options and Tolerances）</h4>
-        <div class="tbl-wrap"><table>
-          <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
-          <caption>关键计算选项</caption>
-          <tbody>
-            <tr><td><b>Advanced Time Step Control</b></td><td>让 HEC-RAS 按 Courant 准则自动计算时间步长，免去手工试算。</td></tr>
-            <tr><td><b>Time Slices 时间分片</b></td><td>当 2D 域需要比 1D 更小的时间步时使用：基步长保持不变，2D 域内部按分片再细分，平衡稳定性与运行时间。</td></tr>
-            <tr><td><b>Theta 隐式权重因子</b></td><td>默认 1.0 最稳定（动量方程压差项只用当前步信息）；调到 0.6 更精确但牺牲稳定性。</td></tr>
-            <tr><td><b>Lateral Structure Flow Stability Factor</b></td><td>抑制侧向结构（堰/路堤）流量突变：1.0 最准确，3.0 明显提高稳定性（模型稳定后可调回）。</td></tr>
-            <tr><td><b>Output Interval 输出间隔</b></td><td>结果输出的时间间隔，影响过程线分辨率与结果文件大小。</td></tr>
-          </tbody>
-        </table></div>
+      <li class="step"><div class="step-body"><h4>设置断面水力表参数（Hydraulic Table Parameters，易漏！）</h4>
+        <p>打开 <b>Geometric Data Editor</b>，点工具栏 <b>Hydraulic Table Parameters</b>（或 <code>Options | Hydraulic Table Computation Parameters</code>）：</p>
+        <ul>
+          <li><b>Starting Elevation</b>：把各断面渠底高程（invert）复制过去。</li>
+          <li><b>Increment</b>：加一个增量，官方默认示例 0.5&nbsp;ft（约 0.15&nbsp;m）。</li>
+          <li><b>Number of Points</b>：点数要盖住全过程最高水位；可看右侧竖向切片预览。</li>
+        </ul>
+        <p>保存几何。若跳过这步，非恒定流一开算就容易报缺表/插值失败。</p>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>从恒定流升级时，这是官方点名的<b>最高频遗漏</b>。改断面或改流量级后，记得重新生成/检查水力表覆盖范围。</div></div>
       </div></li>
     </ol>
 
-    <div class="sec-tag">阶段 E · 运行、结果与稳定性调试</div>
-    <ol class="steps">
-      <li class="step"><div class="step-body"><h4>运行并查看结果</h4>
-        <p>结果包括：各断面 <b>水位/流量过程线</b>（Stage/Flow Hydrograph Plot）、最大淹没范围（RAS Mapper）、溃坝过程线（Breach Hydrograph）、沿程水面纵剖面动画等。</p>
+    <div class="sec-tag">阶段 D · Plan：时间窗与计算设置</div>
+    <ol class="steps" start="10">
+      <li class="step"><div class="step-body"><h4>创建 Unsteady Flow Analysis 方案</h4>
+        <p>菜单 <code>Run | Unsteady Flow Analysis…</code>（或主界面 Unsteady Flow Analysis 按钮）：</p>
+        <ul>
+          <li><b>Plan Title</b> 如 <code>Unsteady-Base</code>，短名 <code>UBase</code></li>
+          <li>几何选阶段 A 的几何，水流数据选 <code>Unsteady</code></li>
+        </ul>
+        <p>在 <b>Programs to Run</b> 中保持 Geometric Preprocessor → Unsteady Flow Simulation → Post-Processor 勾选（默认齐全）。</p>
       </div></li>
-      <li class="step"><div class="step-body"><h4>稳定性排查（官方经验清单）</h4>
-        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>
-          <p><b>一开始就不稳定</b>（计算输出显示迭代到最大次数 / NaN / 振荡）→ 多半是初始条件或边界条件问题，先复查这两项。</p>
-          <p><b>支流汇入主河处持续振荡</b>→ 常见于"较陡支流 + 主河计算出的很低初始水位"的组合，本质是交汇处几何数据不一致。官方对策：junction 处默认强制各断面同一水面，可改用<b>能量平衡法</b>求解交汇水面以稳定模型。</p>
-          <p><b>减小时间步长</b>→ 若结果显著改变，说明步长过大，应采用更小步长重跑。</p>
-          <p><b>Volume Accounting 误差大</b>→ 检查堰流设置（Weir Flow Submergence Decay Exponent 等）、减小时间步长；确认高地是否真的起堤防作用。</p>
-          <p><b>敏感性对比</b>：把方案另存为新名重跑，逐个评估时间步长、Theta、糙率等参数对水面线/流速的影响。</p>
-        </div></div>
+      <li class="step"><div class="step-body"><h4>设定 Simulation Time Window 与时间步</h4>
+        <p>填 <b>Simulation Time Window</b> 起止日期时间（要包住整个过程线，含起涨前基流与退水）。</p>
+        <p><b>Computational Time Step</b> 先取 <b>1–5 分钟</b> 试算；2D 或急变段往往要更小。</p>
+        <div class="chart-box" style="padding:18px">
+          $$C_n = \frac{V\,\Delta t}{\Delta x} \le 1$$
+          <div class="chart-cap">Courant 条件：一个时间步内水流推进不宜超过一个断面间距。先短窗试算，再定长模拟步长。</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>Computation Options and Tolerances</h4>
+        <p>点 <b>Computation Options and Tolerances…</b>，常见开关：</p>
+        <ul>
+          <li><b>Advanced Time Step Control</b>：按 Courant 自动调步长，省去手工试算。</li>
+          <li><b>Theta</b>：默认 1.0 最稳；0.6 更精但更挑模型。</li>
+          <li><b>Time Slices</b>：2D 要更小步时用，1D 基步长不变、2D 域再切片。</li>
+          <li><b>Lateral Structure Flow Stability Factor</b>：侧向结构流量跳时可临时调到 2–3，稳后再回 1。</li>
+          <li><b>Output Interval</b>：结果输出间隔（过程线分辨率 vs 文件体积）。</li>
+        </ul>
+        <p>保存 Plan。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 运行、读结果与稳定性排查</div>
+    <ol class="steps" start="13">
+      <li class="step"><div class="step-body"><h4>先短窗试算，再跑全过程</h4>
+        <p>点 <b>Compute</b>。建议先把结束时间收到洪峰后不久，确认能跑通、日志干净，再改回完整窗口重跑。</p>
+        <p>运行中看 <b>Unsteady Flow Log</b>：是否频繁减步长、是否出现 Volume Accounting 告警。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>查看过程线与淹没结果</h4>
+        <p>结果常用四件：</p>
+        <ul>
+          <li><b>Stage / Flow Hydrograph Plot</b> — 指定断面的水位、流量过程。</li>
+          <li><b>Unsteady Flow Spatial Plot / Time Series</b> — 沿程与时间对比。</li>
+          <li><b>RAS Mapper</b> — 最大淹没、动画、指定时刻水深。</li>
+          <li><b>Profile Plot</b> — 某时刻水面线（调试振荡很有用）。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>不稳定时按官方顺序排查</h4>
+        <p>手册《Finding and Fixing Model Stability Problems》建议顺序：</p>
+        <ul>
+          <li><b>一开算就不稳</b>（NaN / 迭代打满）→ 先查初始条件与边界是否一致、水力表是否覆盖。</li>
+          <li><b>汇流口持续振荡</b> → 多为陡支流 + 主河低初值；检查交汇几何，必要时对 junction 改用水面能量平衡求解。</li>
+          <li><b>减小时间步后结果大变</b> → 原步长过大，用更小步重跑。</li>
+          <li><b>Volume Accounting 误差大</b> → 查堰流淹没指数、时间步、高地/堤防是否真正挡水。</li>
+          <li><b>糙率/结构系数敏感</b> → 每次只改一类参数，另存 Plan 做敏感性对比。</li>
+        </ul>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>官方还提供 <b>Automated Calibration of Manning's n</b>（高级特性）与逐步校准清单：观测水位/流量 → 几何 → 糙率 → 蓄量 → 结构系数。详见手册第 7 章 Calibration。</div></div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>（进阶入口）接下来可做什么</h4>
+        <p>本模型跑稳后，官方文档里常见的下一步：</p>
+        <ul>
+          <li><b>1D/2D 耦合</b>：滩区加 2D Flow Area（Guides《Creating a Combined 1D/2D Model》）。</li>
+          <li><b>溃坝/溃口</b>：Inline Structure Breach / Lateral Structure（堤防）Breach。</li>
+          <li><b>调度规则</b>：闸门规则集（Rule Sets）控制非恒定出流。</li>
+        </ul>
       </div></li>
     </ol>
   </section>
 
-
-  <!-- ================= 官方教程实战 03：2D 建模 ================= -->
   <section id="p-sec3" class="wrap">
     <div class="sec-head">
       <div class="sec-kicker">03 · Tutorial 3 · 2D Modeling</div>
