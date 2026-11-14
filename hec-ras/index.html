@@ -1600,14 +1600,24 @@ section.wrap.toc-on{max-width:1180px}
       <li class="step"><div class="step-body"><h4>填好天然断面的收缩/膨胀系数</h4>
         <p>在断面表中设置 <b>Contraction / Expansion</b>（恒定流与非恒定流同一套几何）：</p>
         <ul>
-          <li>渐变段：收缩约 0.1、膨胀约 0.3 量级起步。</li>
+          <li>渐变段：收缩约 0.1、膨胀约 0.3 量级起步        <div class="fig">
+          <div class="fig-title">Geometric Data Window（几何数据总窗）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_01_geom_window.jpg" alt="Geometric Data Window" loading="lazy">
+          <div class="fig-cap">断面、桥涵、堰闸等几何数据的统一入口。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div>
+      。</li>
           <li>桥墩密集、进口突变：收缩可取更大；以实测壅水或设计资料校核。</li>
         </ul>
         <p>结构物编辑器里还能针对桥/涵单独调整损失，避免与断面系数重复计入。</p>
       </div></li>
       <li class="step"><div class="step-body"><h4>打开 Bridge/Culvert 编辑器入口</h4>
         <p>点工具栏 <b>Bridge/Culvert</b> 按钮（或 <code>Edit | Bridge &amp; Culvert Data…</code>）。空白工程会先提示输入 River / Reach / Station（结构物中心桩号，落在两断面之间）。</p>
-        <p>左侧树里将看到：Bridge Deck、Pier、Culvert、Bridge/Culvert Options、View 等节点——后面几步按此填写。</p>
+        <p>左侧树里将看到：Bridge Deck、Pier、Culvert、Bridge/Culvert Options、View 等节点——后面几步按此填写。
+        <div class="fig">
+          <div class="fig-title">Bridge/Culvert Data Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_02_bridge_culvert_editor.jpg" alt="Bridge/Culvert Data Editor" loading="lazy">
+          <div class="fig-cap">工具栏 Bridge/Culvert 打开后的总编辑器：左侧结构树，右侧为各页数据表。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
     </ol>
 
@@ -1616,7 +1626,12 @@ section.wrap.toc-on{max-width:1180px}
       <li class="step"><div class="step-body"><h4>录入 Bridge Deck（桥面 / 路面）</h4>
         <p>选中桥节点下的 <b>Bridge Deck</b>，逐行填（典型字段）：</p>
         <ul>
-          <li><b>Upstream / Downstream Station</b> — 桩号（桥面上、下游缘）。</li>
+          <li><b>Upstream / Downstream Station</b> — 桩号（桥面上、下游缘）        <div class="fig">
+          <div class="fig-title">Bridge Deck 叠在上下边界断面上（官方示例）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_03_bridge_deck_sections.jpg" alt="Bridge Deck 与边界断面" loading="lazy">
+          <div class="fig-cap">桥面高程要落在上下游断面之间；Low/High Chord 决定孔流、压力流与漫顶堰流。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div>
+      。</li>
           <li><b>Low Chord</b> — 桥面底缘高程（决定何时进入压力流/堰流）。</li>
           <li><b>High Chord</b> — 桥面顶缘高程（漫顶堰流）。</li>
           <li><b>Width / 面积、斜率</b> — 路面宽度、上下游边坡（US/DS Slope）。</li>
@@ -1642,7 +1657,12 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
       <li class="step"><div class="step-body"><h4>录入墩台（Pier）与桥墩阻水</h4>
         <p>在 <b>Pier</b> 页填墩型（圆端/矩形等）、墩宽、墩数、墩台起止高程。墩台会占去过水面积，与桥面共同决定有效过流宽。</p>
-        <p>多孔桥：按实际墩位分列；特大桥可配合 Multiple Bridge Openings。</p>
+        <p>多孔桥：按实际墩位分列；特大桥可配合 Multiple Bridge Openings。
+        <div class="fig">
+          <div class="fig-title">Pier Data Editor（墩台）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_04_pier_editor.jpg" alt="Pier Data Editor" loading="lazy">
+          <div class="fig-cap">墩型、墩宽、起止高程占去过水面积。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>理解官方三类过流（填系数前必懂）</h4>
         <ul>
@@ -1654,7 +1674,12 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
       <li class="step"><div class="step-body"><h4>检查 Bridge/Culvert Options 与视图</h4>
         <p>打开 <b>Bridge and Culvert Options</b>：按需调整损失计算、水跃、是否允许压力流等开关（版本略有差异，以当前界面为准）。</p>
-        <p>用 <b>Bridge View / XY Plot</b> 看桥前壅水、孔内流态是否合理；不对先改 Deck/墩/系数，不要只调糙率。</p>
+        <p>用 <b>Bridge View / XY Plot</b> 看桥前壅水、孔内流态是否合理；不对先改 Deck/墩/系数，不要只调糙率。
+        <div class="fig">
+          <div class="fig-title">Bridge Modeling Approach（建模途径选项）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_05_bridge_approach.jpg" alt="Bridge Modeling Approach Editor" loading="lazy">
+          <div class="fig-cap">选择桥梁计算途径（如 WSPRO/能量方程等，随版本略有差异）。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
     </ol>
 
@@ -1662,11 +1687,21 @@ section.wrap.toc-on{max-width:1180px}
     <ol class="steps" start="8">
       <li class="step"><div class="step-body"><h4>添加涵洞并选断面型式</h4>
         <p>同一 Bridge/Culvert 站点下选 <b>Culvert</b> → <b>Add Culvert</b>。型式支持圆管、箱涵、拱、管涵、低高度箱涵等（官方基于 FHWA《Hydraulic Design of Highway Culverts》进口控制 + 出口能量平衡）。</p>
-        <p>填：断面尺寸、长度、糙率 n、进口/出口高程、翼墙/进口型式（控制进口损失）。</p>
+        <p>填：断面尺寸、长度、糙率 n、进口/出口高程、翼墙/进口型式（控制进口损失）。
+        <div class="fig">
+          <div class="fig-title">Culvert Data Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_06_culvert_editor.jpg" alt="Culvert Data Editor" loading="lazy">
+          <div class="fig-cap">选圆管/箱涵/拱等型式，填尺寸、长度、n 与进出口高程。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>多孔涵洞 / 桥涵组合</h4>
         <p>可对同一站点放 <b>多个 Culvert / Bridge Opening</b>。官方支持 Multiple Bridge and/or Culvert Openings：分别定义各孔，再一起求水面。</p>
-        <p>填完用 <b>View</b> 检查进口是否淹没、出口是否贴近下游断面（过近会虚增损失）。</p>
+        <p>填完用 <b>View</b> 检查进口是否淹没、出口是否贴近下游断面（过近会虚增损失）。
+        <div class="fig">
+          <div class="fig-title">含示例涵洞的 Bridge/Culvert 编辑器<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_07_culvert_example.jpg" alt="含涵洞的 Bridge/Culvert 编辑器" loading="lazy">
+          <div class="fig-cap">同一站点可放桥+涵、多孔涵。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
     </ol>
 
@@ -1674,11 +1709,21 @@ section.wrap.toc-on{max-width:1180px}
     <ol class="steps" start="10">
       <li class="step"><div class="step-body"><h4>绘制并新建 Inline Structure</h4>
         <p>工具栏 <b>Inline Structure</b>：在河段上点击结构物中心位置（桩号落在断面之间），输入 River/Reach/Station。</p>
-        <p>打开 <b>Inline Structure Data</b>：添加 <b>Weir</b>（堰）、<b>Gate</b>（闸门，含平板/弧形等）、<b>Spillway</b>（溢洪道）等组件。</p>
+        <p>打开 <b>Inline Structure Data</b>：添加 <b>Weir</b>（堰）、<b>Gate</b>（闸门，含平板/弧形等）、<b>Spillway</b>（溢洪道）等组件。
+        <div class="fig">
+          <div class="fig-title">Inline Structure Data Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_08_inline_editor.jpg" alt="Inline Structure Data Editor" loading="lazy">
+          <div class="fig-cap">河中堰坝闸的总编辑器：Weir / Gate / Spillway 分页。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>填堰顶、闸门与流量系数</h4>
         <ul>
-          <li><b>Weir</b>：堰顶高程、堰宽/长度、堰流系数 Cd、侧收/淹没修正。</li>
+          <li><b>Weir</b>：堰顶高程、堰宽/长度、堰流系数 Cd、侧收/淹没修正        <div class="fig">
+          <div class="fig-title">Gate / Weir 编辑器（示例）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_09_gate_editor.jpg" alt="闸门编辑器" loading="lazy">
+          <div class="fig-cap">闸底坎、开度、流量曲线；堰顶与堰流系数在 Weir 页。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div>
+      。</li>
           <li><b>Gate</b>：闸底坎高程、闸门宽、开度过程（恒定流给固定开度；非恒定流可给开度时间序列或规则）。</li>
           <li><b>Spillway</b>：溢流面/设计水位–流量关系。</li>
         </ul>
@@ -1686,7 +1731,12 @@ section.wrap.toc-on{max-width:1180px}
       </div></li>
       <li class="step"><div class="step-body"><h4>坝体漫顶与溃口（可选）</h4>
         <p>堰顶以上可算漫顶；若做溃坝，可在 Inline Structure 上设置 <b>Breach</b>（溃口底高、宽度、边坡、溃决历时），详见手册 "Dam (Inline Structure) Breach"。</p>
-        <p>先用恒定流核对各特征水位过流能力，再上非恒定流溃决过程。</p>
+        <p>先用恒定流核对各特征水位过流能力，再上非恒定流溃决过程。
+        <div class="fig">
+          <div class="fig-title">Dam Breach Editor（溃口）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_10_dam_breach.jpg" alt="Dam Breach Editor" loading="lazy">
+          <div class="fig-cap">溃口底高、宽度、边坡、溃决历时等。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
     </ol>
 
@@ -1694,14 +1744,24 @@ section.wrap.toc-on{max-width:1180px}
     <ol class="steps" start="13">
       <li class="step"><div class="step-body"><h4>绘制 Lateral Structure</h4>
         <p>点 <b>Lateral Structure</b>，从河道一侧沿堤线/分洪堰绘制；一端连主河，另一端可接 <b>Storage Area</b> 或 2D 区。</p>
-        <p>方向影响正负流量符号——按官方：顺着约定的正流向绘制，反向流会记为负。</p>
+        <p>方向影响正负流量符号——按官方：顺着约定的正流向绘制，反向流会记为负。
+        <div class="fig">
+          <div class="fig-title">Lateral Weir / Gated Spillway / Culvert Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_11_lateral_editor.jpg" alt="侧向结构编辑器" loading="lazy">
+          <div class="fig-cap">堤顶/堰顶剖面 + 闸、涵、分洪曲线。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>填堤顶/堰顶与结构</h4>
         <p>填沿线堤顶高程剖面（station–elevation）；若带闸/涵，用 Lateral 上的 Weir / Gate / Culvert 组件。</p>
         <p>漫溢后可启用 <b>Breach</b>（堤防溃决）或 <b>Diversion Rating Curve</b>（分洪能力曲线）。</p>
       </div></li>
       <li class="step"><div class="step-body"><h4>连接蓄洪区 Storage Area（可选）</h4>
-        <p>用 <b>Storage Area</b> 工具画容积区，填水位–容积关系；用 <b>SA/2D Area Conn</b> 连接涵/堰/闸。水泵可用 Pump Station 连接两个蓄水区或河段。</p>
+        <p>用 <b>Storage Area</b> 工具画容积区，填水位–容积关系；用 <b>SA/2D Area Conn</b> 连接涵/堰/闸。水泵可用 Pump Station 连接两个蓄水区或河段。
+        <div class="fig">
+          <div class="fig-title">堤防 + 蓄洪区示意（官方示例）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_12_levee_storage.jpg" alt="堤防与蓄洪区" loading="lazy">
+          <div class="fig-cap">Lateral Structure 一端接主河，一端接 Storage Area。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
     </ol>
 
@@ -1712,7 +1772,12 @@ section.wrap.toc-on{max-width:1180px}
         <p>再切非恒定流（见「官方教程二」）看过程线与最大淹没。</p>
       </div></li>
       <li class="step"><div class="step-body"><h4>桥梁冲刷（可选）</h4>
-        <p>官方手册第 11 章 <b>Computing Scour at Bridges</b>：在桥上录墩台与河床质，算一般冲刷+局部冲刷。2D 另有 Bridge Scour 分析（可导出 FHWA Hydraulic Toolbox）。</p>
+        <p>官方手册第 11 章 <b>Computing Scour at Bridges</b>：在桥上录墩台与河床质，算一般冲刷+局部冲刷。2D 另有 Bridge Scour 分析（可导出 FHWA Hydraulic Toolbox）。
+        <div class="fig">
+          <div class="fig-title">Scour at Bridges 计算窗口<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/str_13_scour_window.jpg" alt="桥梁冲刷计算窗口" loading="lazy">
+          <div class="fig-cap">录入墩台与河床质后计算一般冲刷+局部冲刷。 <b>来源：</b>HEC-RAS User's Manual（官方手册插图）</div>
+        </div></p>
       </div></li>
       <li class="step"><div class="step-body"><h4>结构物常见病</h4>
         <ul>
