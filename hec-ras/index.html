@@ -583,6 +583,7 @@ section.wrap.toc-on{max-width:1180px}
     <a class="nav-item" href="#practical/p-sec3" data-view="practical" data-target="p-sec3"><span class="num">03</span>2D 建模入门</a>
     <a class="nav-item" href="#practical/p-sec4" data-view="practical" data-target="p-sec4"><span class="num">04</span>RAS Mapper</a>
         <a class="nav-item" href="#practical/p-sec5" data-view="practical" data-target="p-sec5"><span class="num">05</span>结构物建模</a>
+        <a class="nav-item" href="#practical/p-sec6" data-view="practical" data-target="p-sec6"><span class="num">06</span>溃坝溃堤</a>
     <button class="nav-group" data-view="advanced">进阶专题</button>
     <a class="nav-item" href="#advanced/a-sec1" data-view="advanced" data-target="a-sec1"><span class="num">01</span>泥沙输移</a>
     <a class="nav-item" href="#advanced/a-sec2" data-view="advanced" data-target="a-sec2"><span class="num">02</span>水质模拟</a>
@@ -650,7 +651,7 @@ section.wrap.toc-on{max-width:1180px}
         <span class="gn-num">PART 02 · 官方教程实战</span>
         <h3>官方教程实战</h3>
         <p>照 HEC 官方分步教程动手做：Merced 河 1D 恒定流、1D 非恒定流、Bald Eagle Creek 2D 建模与 RAS Mapper 应用。</p>
-        <span class="gn-list">01 1D 恒定流 · 02 1D 非恒定流 · 03 2D 建模 · 04 RAS Mapper · 05 结构物</span>
+        <span class="gn-list">01 1D 恒定流 · 02 1D 非恒定流 · 03 2D 建模 · 04 RAS Mapper · 05 结构物 · 06 溃坝溃堤</span>
         <span class="gn-go">进入官方教程实战 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
       </a>
       <a class="gnav-card" href="#advanced/a-sec1">
@@ -924,6 +925,7 @@ section.wrap.toc-on{max-width:1180px}
       <button class="seg-btn" data-target="p-sec3">2D 建模</button>
       <button class="seg-btn" data-target="p-sec4">RAS Mapper</button>
         <button class="seg-btn" data-target="p-sec5">结构物</button>
+        <button class="seg-btn" data-target="p-sec6">溃坝溃堤</button>
     </div>
 
   <!-- ================= 官方教程实战 01：1D 恒定流 ================= -->
@@ -1793,6 +1795,221 @@ section.wrap.toc-on{max-width:1180px}
     <p>官方手册入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a>（Ch.5 Bridges/Culverts/Inline/Lateral · Ch.11 Bridge Scour）· <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" rel="noopener">Guides &amp; Tutorials</a></p>
   </section>
 
+  <!-- ================= 官方教程实战 06：溃坝/溃堤 ================= -->
+  <section id="p-sec6" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">06 · Tutorial 6 · Dam &amp; Levee Breach</div>
+      <h2>官方教程六：溃坝与溃堤分析</h2>
+      <p>溃坝/溃堤是 HEC-RAS 非恒定流的经典应用：在坝（Inline Structure）或堤（Lateral Structure）上定义溃口，让程序在演进过程中逐步下切、拓宽，算出溃决洪水波与淹没。本节按官方 User's Manual 第 7 章「Performing a Dam or Levee Breach Analysis」与第 14 章详细讨论，从几何打底到两种溃口方法、进展曲线、参数计算器，一步步填到能跑能读。</p>
+    </div>
+
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本教程能回答的问题：</b>溃口何时形成、张多宽、切多深？下游洪峰何时到、淹到哪？抢险堵口（Breach Repair）有没有用？——先把坝/堤几何建稳，再在 <b>Plan 数据</b>里开溃口，可反复改参数而不重跑几何预处理。</div></div>
+
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>溃口数据存在 Plan 里：</b>官方特意把 Breach 存成方案（Plan）数据——你可以同一套几何试不同溃口位置/尺寸，而不必重跑 Geometric Preprocessor。入口：Inline Structure 编辑器上的 <b>Breach (Plan Data)</b> 按钮，或 Unsteady Flow Simulation 窗口 <code>Options | Dam (Inline Weir) Breach</code> / <code>Levee (Lateral Structure) Breach</code>。</div></div>
+
+    <div class="sec-tag">阶段 A · 几何打底：坝或堤要先存在</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>先做一维/二维非恒定流模型（可含库区）</h4>
+        <p>按「官方教程二」把非恒定流跑稳：有入流过程线、初始条件、合理时间步。溃决是在演进过程中"打开"的缺口，底模不稳则溃决结果不可信。</p>
+        <p>库区可用河道宽断面或 <b>Storage Area</b> 表示；下游应延伸到关注区以外。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>建坝：Inline Structure（含堰顶/坝体）</h4>
+        <p>工具栏 <b>Inline Structure</b> 在坝轴线位置点击，填 River/Reach/Station。在 <b>Inline Structure Data</b> 中至少定义 <b>Weir</b>（坝顶/溢流面）高程与宽度，必要时加 Gate/Spillway。</p>
+        <p>溃决前，坝应能按设计挡水/溢流——先用恒定流核对坝前水位。</p>
+        <div class="fig">
+          <div class="fig-title">Inline Structure 示例坝<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_06_inline_example_dam.jpg" alt="Inline Structure 示例坝" loading="lazy">
+          <div class="fig-cap">溃口将作用在这个 Inline Structure（堰体）上。<b>来源：</b>HEC-RAS User's Manual Fig.14-5</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>建堤：Lateral Structure（溃堤场景）</h4>
+        <p>点 <b>Lateral Structure</b> 沿堤线绘制，填堤顶高程剖面；另一端可接 <b>Storage Area</b>（背水侧涝区）或 2D 区。</p>
+        <div class="fig">
+          <div class="fig-title">Lateral Structure 堤防数据示例<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_11_levee_data_example.jpg" alt="堤防 Lateral Structure 数据" loading="lazy">
+          <div class="fig-cap">堤顶高程剖面 + 漫溢/溃口将定义在该结构上。<b>来源：</b>HEC-RAS User's Manual Fig.14-18</div>
+        </div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 打开 Breach 编辑器（存在 Plan 中）</div>
+    <ol class="steps" start="4">
+      <li class="step"><div class="step-body"><h4>打开 Dam Breach Editor</h4>
+        <p>两种入口任选：</p>
+        <ul>
+          <li>Inline Structure 编辑器 → 点 <b>Breach (Plan Data)</b></li>
+          <li>Unsteady Flow Simulation（Plan）→ <code>Options | Dam (Inline Weir) Breach…</code></li>
+        </ul>
+        <p>在编辑器顶部左侧勾选 <b>Breach This Structure</b>——只有勾上才会溃；不勾可保留参数暂不启用。</p>
+        <p>下拉选择要溃的 Inline Structure；多坝可逐个定义。</p>
+        <div class="fig">
+          <div class="fig-title">Dam Breach Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_01_dam_breach_editor.jpg" alt="Dam Breach Editor" loading="lazy">
+          <div class="fig-cap">总编辑器：启用勾选、方法选择、尺寸/时间/触发等页签。<b>来源：</b>HEC-RAS User's Manual Fig.7-58</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>选择溃口方法（两选一）</h4>
+        <ul>
+          <li><b>User Entered Data</b> — 你直接给最终溃口尺寸、形成历时、进展曲线。工程上最常用、最好控。</li>
+          <li><b>Simplified Physical</b> — 给"流速–下切率 / 流速–展宽率"关系，程序按实时流速动态发展溃口（更"物理"，参数更难率定）。</li>
+        </ul>
+        <p>新版本还可能提供 Physical（DLBreach）等，以当前界面下拉为准。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · User Entered Data：逐项填溃口参数</div>
+    <ol class="steps" start="6">
+      <li class="step"><div class="step-body"><h4>填最终溃口几何（Final Breach）</h4>
+        <p>官方字段（梯形溃口）：</p>
+        <ul>
+          <li><b>Final Bottom Elevation</b> — 溃口刷深后的底高程（最终形态）。</li>
+          <li><b>Final Bottom Width</b> — 最终底宽。</li>
+          <li><b>Left / Right Side Slope</b> — 边坡 H:V（如填 2 表示水平 2 : 垂直 1；两侧都 0 = 矩形）。</li>
+          <li><b>Breach Weir Coefficient</b> — 溃口处堰流系数（漫顶溃决或堰顶溃口常用）。</li>
+        </ul>
+        <div class="fig">
+          <div class="fig-title">Dam Breach Data Editor（含示例坝）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_07_breach_data_example.jpg" alt="溃口数据编辑器示例" loading="lazy">
+          <div class="fig-cap">在示例坝上填入最终溃口底高、底宽、边坡等。<b>来源：</b>HEC-RAS User's Manual Fig.14-6</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>填形成时间与触发条件</h4>
+        <p>关键时间参数：</p>
+        <ul>
+          <li><b>Breach Initiation Time</b>（或由触发推算）— 溃口开始时刻。</li>
+          <li><b>Full Formation Time</b> — 从开始到达到最终尺寸的历时。</li>
+        </ul>
+        <p>触发方式常见：</p>
+        <ul>
+          <li><b>指定时刻</b> — 直接给开始时间。</li>
+          <li><b>水位阈值</b> — 坝前/堤前水位达到某高程后开始。</li>
+          <li><b>WS Elev + Duration</b> — 水位超过阈值并<strong>持续</strong>一段时间才触发（更符合"泡软了才溃"）。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>（可选）User Specified Breach Progression 进展曲线</h4>
+        <p>默认：从开始到 Full Formation Time <strong>线性</strong>发展。要非线性时切到 <b>Breach Progression</b> 页签：</p>
+        <ul>
+          <li>填 <b>Time Fraction</b>（0–1）与 <b>Breach Fraction</b>（0–1）点列。</li>
+          <li>可选 <b>Vertical/Horizontal Growth Ratio</b>：竖向下切与水平展宽的比例（如 0.5 表示竖向速率是水平的一半）。</li>
+        </ul>
+        <div class="fig">
+          <div class="fig-title">User Specified Breach Progression<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_02_user_progression.jpg" alt="用户指定溃口进展曲线" loading="lazy">
+          <div class="fig-cap">Time Fraction–Breach Fraction 曲线控制溃口发展形态。<b>来源：</b>HEC-RAS User's Manual Fig.7-59</div>
+        </div>
+        <div class="fig">
+          <div class="fig-title">Nonlinear Breach Progression 示例<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_08_nonlinear_progression.jpg" alt="非线性溃口进展" loading="lazy">
+          <div class="fig-cap">非线性进展与竖/水平发展比。<b>来源：</b>HEC-RAS User's Manual Fig.14-7</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>（可选）Breach Repair 堵口/回填</h4>
+        <p>切到 <b>Breach Repair</b> 页签：可在模拟中途让溃口回填，表示抢险抢堵或修复。</p>
+        <p>适合做"若某时刻开始堵口，下游洪峰会怎样"的情景对比。</p>
+        <div class="fig">
+          <div class="fig-title">Breach Repair 页签<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_09_breach_repair.jpg" alt="溃口回填修复" loading="lazy">
+          <div class="fig-cap">模拟过程中回填溃口。<b>来源：</b>HEC-RAS User's Manual Fig.14-8</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>（推荐）Parameter Calculator 经验公式初值</h4>
+        <p>切到 <b>Parameter Calculator</b>：输入坝体物理信息（坝高、库容、材料等，以界面为准），用<strong>回归公式</strong>估算：</p>
+        <ul>
+          <li>溃口底宽 · 边坡 · 形成历时</li>
+        </ul>
+        <p>把结果抄回 User Entered Data 作起点，再按风险分析假定做情景包络（偏保守、偏不利）。</p>
+        <div class="fig">
+          <div class="fig-title">Breach Parameter Calculator<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_10_param_calculator.jpg" alt="溃口参数计算器" loading="lazy">
+          <div class="fig-cap">回归方程估算溃口尺寸与历时。<b>来源：</b>HEC-RAS User's Manual Fig.14-11</div>
+        </div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 D · Simplified Physical 简化物理法</div>
+    <ol class="steps" start="11">
+      <li class="step"><div class="step-body"><h4>切换到 Simplified Physical 并理解字段含义</h4>
+        <p>方法下拉选 <b>Simplified Physical</b> 后，界面字段会变：</p>
+        <ul>
+          <li><b>底宽上限</b> / <b>底高程下限</b>：不是"最终尺寸"，而是<strong>限值</strong>——实际发展由侵蚀关系与水力决定，不会超过你设的界。</li>
+          <li><b>Starting Notch Width</b>（漫顶）或 <b>Initial Piping Diameter</b>（管涌）— 初始缺口/初始管径。</li>
+        </ul>
+        <div class="fig">
+          <div class="fig-title">Simplified Physical 溃口选项<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_03_physical_option.jpg" alt="简化物理法溃口" loading="lazy">
+          <div class="fig-cap">改为限值型参数 + 侵蚀关系。<b>来源：</b>HEC-RAS User's Manual Fig.7-60</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>录入流速–侵蚀率关系（核心数据）</h4>
+        <p>在 <b>Simplified Physical</b> 页签填两组曲线：</p>
+        <ul>
+          <li><b>Velocity vs Downcutting Erosion Rate</b> — 流速–下切速率</li>
+          <li><b>Velocity vs Widening Erosion Rate</b> — 流速–展宽速率</li>
+        </ul>
+        <p>没有实测时可用文献/经验土侵蚀参数；该法对关系曲线敏感，务必做敏感性。</p>
+        <div class="fig">
+          <div class="fig-title">流速–侵蚀率输入<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_04_physical_rates.jpg" alt="流速与侵蚀率关系" loading="lazy">
+          <div class="fig-cap">按时间步根据实时流速发展溃口。<b>来源：</b>HEC-RAS User's Manual Fig.7-61</div>
+        </div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 溃堤（Lateral）与连接溃口</div>
+    <ol class="steps" start="13">
+      <li class="step"><div class="step-body"><h4>打开 Levee (Lateral Structure) Breach</h4>
+        <p>Plan 窗口 <code>Options | Levee (Lateral Structure) Breach…</code>，或 Lateral Structure 编辑器中的 Breach 入口。字段与坝溃口一致（尺寸、历时、进展、修复）。</p>
+        <div class="fig">
+          <div class="fig-title">Levee Breaching Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_05_levee_breach_editor.jpg" alt="堤防溃决编辑器" loading="lazy">
+          <div class="fig-cap">与 Dam Breach 同类参数，作用在 Lateral Structure 上。<b>来源：</b>HEC-RAS User's Manual Fig.7-62</div>
+        </div>
+        <div class="fig">
+          <div class="fig-title">堤防溃口完整编辑器（官方示例）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/br_12_levee_breach_full.jpg" alt="堤防溃口编辑器" loading="lazy">
+          <div class="fig-cap">含触发、进展等页签的完整界面。<b>来源：</b>HEC-RAS User's Manual Fig.14-19</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>（可选）SA / 2D 连接结构的溃口</h4>
+        <p>蓄洪区连接（SA/2D Area Connection，可含堰、闸、涵）也能设溃口：在连接编辑器上点 <b>Breach (plan data)</b>。参数与坝/堤相同。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 F · 运行、读结果与排错</div>
+    <ol class="steps" start="15">
+      <li class="step"><div class="step-body"><h4>短窗试算，确认溃口"按时张开"</h4>
+        <p>先跑含触发前后的短时段，用 <b>Profile Plot</b> / 过程线看：</p>
+        <ul>
+          <li>触发时刻是否合理（水位是否达到阈值）。</li>
+          <li>溃口是否从初始缺口发展到最终尺寸。</li>
+          <li>库水位是否在溃后快速下降。</li>
+        </ul>
+        <p>再跑完整演进与淹没。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>读四类关键结果</h4>
+        <ul>
+          <li><b>Breach Hydrograph</b> — 溃口下泄流量过程。</li>
+          <li><b>坝前/库区水位</b> — 溃后库容释放。</li>
+          <li><b>下游各断面洪峰与到时</b> — 淹没与预警时间。</li>
+          <li><b>RAS Mapper 最大淹没 / 动画</b> — 风险图。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>稳定性与情景（官方实践）</h4>
+        <ul>
+          <li>溃口发展过猛时先减小计算时间步，或开 <b>Advanced Time Step Control</b>。</li>
+          <li>至少做一组<strong>情景包络</strong>：偏快形成 vs 偏慢形成；宽/窄溃口；有/无 Repair。</li>
+          <li>User Entered 与 Simplified Physical 各跑一遍对比量级。</li>
+          <li>改溃口参数只动 Plan，不必重跑几何预处理。</li>
+        </ul>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>溃口参数不确定性很大，结果应用作<strong>风险比较与应急推演</strong>，而非单一"真值预报"。参数来源（回归公式、历史溃坝、专家假定）要写进报告。</div></div>
+      </div></li>
+    </ol>
+
+    <p>官方手册入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a>（Ch.7 Dam/Levee Breach · Ch.14 详细讨论与回归参数）· <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" rel="noopener">Guides &amp; Tutorials</a></p>
+  </section>
+
+
+
 
   </div>
 
@@ -2564,7 +2781,7 @@ function buildSectionToc(secId){
   }, {rootMargin: '-15% 0px -70% 0px', threshold: 0});
   groups.forEach(g => io.observe(g.tag));
 }
-['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'p-sec5', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
+['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'p-sec5', 'p-sec6', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
 
 
 
