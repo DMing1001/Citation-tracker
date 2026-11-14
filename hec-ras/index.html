@@ -585,6 +585,7 @@ section.wrap.toc-on{max-width:1180px}
         <a class="nav-item" href="#practical/p-sec5" data-view="practical" data-target="p-sec5"><span class="num">05</span>结构物建模</a>
         <a class="nav-item" href="#practical/p-sec6" data-view="practical" data-target="p-sec6"><span class="num">06</span>溃坝溃堤</a>
         <a class="nav-item" href="#practical/p-sec7" data-view="practical" data-target="p-sec7"><span class="num">07</span>1D/2D 耦合</a>
+        <a class="nav-item" href="#practical/p-sec8" data-view="practical" data-target="p-sec8"><span class="num">08</span>率定与敏感性</a>
     <button class="nav-group" data-view="advanced">进阶专题</button>
     <a class="nav-item" href="#advanced/a-sec1" data-view="advanced" data-target="a-sec1"><span class="num">01</span>泥沙输移</a>
     <a class="nav-item" href="#advanced/a-sec2" data-view="advanced" data-target="a-sec2"><span class="num">02</span>水质模拟</a>
@@ -652,7 +653,7 @@ section.wrap.toc-on{max-width:1180px}
         <span class="gn-num">PART 02 · 官方教程实战</span>
         <h3>官方教程实战</h3>
         <p>照 HEC 官方分步教程动手做：Merced 河 1D 恒定流、1D 非恒定流、Bald Eagle Creek 2D 建模与 RAS Mapper 应用。</p>
-        <span class="gn-list">01–04 基础实战 · 05 结构物 · 06 溃坝溃堤 · 07 1D/2D 耦合</span>
+        <span class="gn-list">01–04 基础 · 05 结构物 · 06 溃坝 · 07 1D/2D · 08 率定</span>
         <span class="gn-go">进入官方教程实战 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
       </a>
       <a class="gnav-card" href="#advanced/a-sec1">
@@ -928,6 +929,7 @@ section.wrap.toc-on{max-width:1180px}
         <button class="seg-btn" data-target="p-sec5">结构物</button>
         <button class="seg-btn" data-target="p-sec6">溃坝溃堤</button>
         <button class="seg-btn" data-target="p-sec7">1D/2D</button>
+        <button class="seg-btn" data-target="p-sec8">率定</button>
     </div>
 
   <!-- ================= 官方教程实战 01：1D 恒定流 ================= -->
@@ -2184,6 +2186,181 @@ section.wrap.toc-on{max-width:1180px}
     <p>官方入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/guides/creating-an-combined-1d-2d-model" target="_blank" rel="noopener">Creating a Combined 1D/2D Model</a> · <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a>（Ch.5 2D Flow Area / SA-2D Conn）</p>
   </section>
 
+  <!-- ================= 官方教程实战 08：率定与敏感性 ================= -->
+  <section id="p-sec8" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">08 · Tutorial 8 · Calibration &amp; Sensitivity</div>
+      <h2>官方教程八：模型率定与敏感性分析</h2>
+      <p>模型能算只是起点，要能用必须经得起实测检验。本节按官方 User's Manual 第 7 章《Calibration of Unsteady Flow Models / Model Sensitivity》的顺序：先整编率定资料，再按"恒定流定 n → 非恒定流调过程线 → 分项微调 → 敏感性包络"推进，最后形成可审查的率定报告。</p>
+    </div>
+
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本教程能回答的问题：</b>糙率取多少才"对"？洪水过程线差在峰、量还是时间？哪些参数最影响结果？——率定是"用观测约束参数"，不是"把曲线凑好看"。</div></div>
+
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>官方五步法（Unsteady）：</b>① 恒定流多流量级率定 n 至率定曲线/高水位；② 选完整涨落事件做非恒定流；③ 调断面蓄量（无效区）与侧向堰，使<b>流量</b>过程线在时间、洪峰、水量、形态上接近；④ 调曼宁 n 使<b>水位</b>过程线接近；⑤ 用 Discharge–Roughness 等手段做低水到高水的细调。</div></div>
+
+    <div class="sec-tag">阶段 A · 准备率定资料</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>整编实测水文资料</h4>
+        <p>按官方《Observed Hydrologic Data》清单收集并做质量检查：</p>
+        <ul>
+          <li><b>水位（Stage）</b>：最可靠，一般可达 ±1 ft 量级；查水位计卡滞、记录仪零漂、水尺基面错误、地面沉降。</li>
+          <li><b>流量（Flow）</b>：多由水位–流量关系推求，误差通常更大；注明测流方式与不确定度。</li>
+          <li><b>高水位痕迹（High Water Marks）</b>：洪水调查点，作空间校核。</li>
+        </ul>
+        <p>在 HEC-RAS 中可用 <b>Observed Data</b> 录入，供过程线叠绘。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>选定率定事件与评价指标</h4>
+        <p>事件应覆盖<strong>低水 → 洪峰 → 退水</strong>全过程。事先约定评价指标，例如：</p>
+        <ul>
+          <li>洪峰相对误差 · 峰现时间差 · 水量相对误差 · 水位均方根误差（RMSE）</li>
+        </ul>
+        <p>建议同时保留 1 场率定、1 场验证（不参与调参）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>建立基准方案（Base Plan）</h4>
+        <p>冻结一版几何与边界，命名 <code>Cal-Base</code>。此后每改一类参数另存新 Plan，形成可回溯的方案树。</p>
+        <div class="fig">
+          <div class="fig-title">Unsteady Flow Computations Window<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/cal_04_computations_win.jpg" alt="非恒定流计算窗口" loading="lazy">
+          <div class="fig-cap">率定反复运行的入口：方案、输出间隔与计算设置。<b>来源：</b>HEC-RAS User's Manual</div>
+        </div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 恒定流率定 n 与水位流量关系</div>
+    <ol class="steps" start="4">
+      <li class="step"><div class="step-body"><h4>多流量级恒定流试算</h4>
+        <p>官方步骤 1：尽可能用恒定流跑一组流量（低、中、高），对照<strong>水尺率定曲线</strong>与<strong>已知高水位</strong>。</p>
+        <p>1D 恒定流工具：Profile Plot、Rating Curve、RAS Mapper 中的 Observed WS。</p>
+        <div class="fig">
+          <div class="fig-title">实测高水位与模拟对比<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/sf_15_observed_ws.jpg" alt="实测高水位位置" loading="lazy">
+          <div class="fig-cap">沿程高水位痕迹是空间校核的硬约束。<b>来源：</b>HEC 官方 Steady Flow 教程</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>分区调整曼宁 n（主槽 / 左右滩）</h4>
+        <p>在几何数据 <code>Tables | Manning's n</code> 按断面分区调整：</p>
+        <ul>
+          <li>主槽 n：控制低水–中水。</li>
+          <li>滩地 n：控制高水；对输沙与高水位都极敏感，取值要与植被/阻力一致。</li>
+        </ul>
+        <p>可用 <b>Flow Roughness Factors</b>（随流量变化的糙率系数）表达"低水糙、高水相对光"等现象。</p>
+        <div class="fig">
+          <div class="fig-title">Manning's n 编辑表<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/cal_02_manning_table.jpg" alt="曼宁 n 编辑表" loading="lazy">
+          <div class="fig-cap">分区 n 表：主槽与滩地分开率定。<b>来源：</b>HEC-RAS User's Manual</div>
+        </div>
+        <div class="fig">
+          <div class="fig-title">糙率随水位/流量变化示意<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/cal_03_rough_stage.jpg" alt="糙率与水位关系" loading="lazy">
+          <div class="fig-cap">河床形态与阻力随流量变化，可用 Flow Roughness Factors 描述。<b>来源：</b>HEC-RAS User's Manual</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>对照检查河床形态与河相关系</h4>
+        <p>n 不是唯一自由参数：深潭–浅滩、床面形态（沙波等）都影响阻力。官方用河床形态图说明"同一河流不同流量下阻力并非常数"。</p>
+        <div class="fig">
+          <div class="fig-title">冲积河流床面形态转换<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/cal_05_bed_forms.jpg" alt="床面形态" loading="lazy">
+          <div class="fig-cap">床面形态随流量转换，糙率随之变化。<b>来源：</b>HEC-RAS User's Manual</div>
+        </div>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · 非恒定流：过程线四要素</div>
+    <ol class="steps" start="7">
+      <li class="step"><div class="step-body"><h4>运行率定事件并叠绘观测</h4>
+        <p>官方步骤 2：跑完整涨落事件。在 <b>Stage/Flow Hydrograph Plot</b> 叠绘实测与计算：</p>
+        <ul>
+          <li>水位过程线 · 流量过程线 · 洪峰与峰现时间 · 水量</li>
+        </ul>
+        <div class="fig">
+          <div class="fig-title">计算与实测高水位对比<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/cal_01_highwater_compare.jpg" alt="高水位对比" loading="lazy">
+          <div class="fig-cap">沿程对比一目了然：偏高/偏低集中在哪一段。<b>来源：</b>HEC-RAS User's Manual</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>先调蓄量与侧向交换，修流量过程线</h4>
+        <p>官方步骤 3：在改 n 之前，先使<strong>流量</strong>过程线在时间、峰、量、形态上接近：</p>
+        <ul>
+          <li>断面 <b>Ineffective / 存蓄</b>：影响槽蓄与坦化。</li>
+          <li><b>Lateral Structure / 侧向入流</b>：影响分流与汇入时间。</li>
+          <li>区间入流是否重复计或漏计。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>再调曼宁 n，修水位过程线</h4>
+        <p>官方步骤 4：流量大体正确后，用 n 对齐<strong>水位</strong>：</p>
+        <ul>
+          <li>整体偏高/偏低：先查基面与断面，再大范围微调 n。</li>
+          <li>仅某河段偏差：局部河段 n 或断面间距/几何。</li>
+          <li>峰现时间差：优先查槽蓄与传播，而不是死磕 n。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>低水到高水分段细调</h4>
+        <p>官方步骤 5：用 Discharge–Roughness（Flow Roughness Factors）等做分流量级细调；每次只改一类参数，保存对比 Plan。</p>
+        <p>结构物参数（堰流系数、收缩膨胀）单独一轮，避免与 n 双计。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 D · 敏感性分析</div>
+    <ol class="steps" start="11">
+      <li class="step"><div class="step-body"><h4>列出敏感参数清单</h4>
+        <p>官方《Model Sensitivity》建议围绕：</p>
+        <ul>
+          <li>曼宁 n（主槽/滩地）· 时间步长 · 初始条件 · 边界过程线缩放 · 断面间距/蓄量 · 结构系数</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>单因素扰动方案树</h4>
+        <p>以 Cal-Base 为根，每次只动一个参数 ± 合理幅度（如 n ±20%、时间步 ×2 / ÷2），另存 Plan 批量跑：</p>
+        <ul>
+          <li><code>Cal-Base</code> / <code>Cal-nHigh</code> / <code>Cal-nLow</code> / <code>Cal-DtSmall</code> …</li>
+        </ul>
+        <p>对比输出：洪峰、峰现时间、最高水位、淹没面积的变幅。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>整理敏感性表与结论</h4>
+        <p>形成两列结论：</p>
+        <ul>
+          <li><b>敏感</b>：必须重点率定与论证的参数。</li>
+          <li><b>不敏感</b>：可保持文献/默认值，节省工作量。</li>
+        </ul>
+        <p>报告中给出"率定残差 + 参数合理区间 + 验证事件表现"。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 工具、自动率定与常见误区</div>
+    <ol class="steps" start="14">
+      <li class="step"><div class="step-body"><h4>使用 HEC-RAS 率定辅助工具</h4>
+        <ul>
+          <li><b>Observed Data</b> 叠绘与残差。</li>
+          <li><b>Profile Plot</b> 沿程高水位对比。</li>
+          <li>输出变量表（水位、流量、体积）导出做统计。</li>
+          <li>高级特性：<b>Automated Calibration of Manning's n</b>（按河段率定 Flow–Roughness Factors；须先有合理基准 n）。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>常见误区</h4>
+        <ul>
+          <li>只调 n、不查断面与基面。</li>
+          <li>用同一场洪水率定又验证，无独立验证场次。</li>
+          <li>为凑峰现时间把 n 调到物理不合理。</li>
+          <li>忽略观测误差（尤其流量）。</li>
+          <li>一次改多个参数，无法归因。</li>
+        </ul>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>官方提醒：率定要与物理意义一致。n 应落在对应河相/地物的合理范围；调整顺序上，几何与边界问题优先于糙率。</div></div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>输出率定与敏感性报告要点</h4>
+        <ul>
+          <li>资料来源与质量说明</li>
+          <li>率定事件、指标与残差表/图</li>
+          <li>参数终值与取值范围（含依据）</li>
+          <li>验证事件表现</li>
+          <li>敏感性排序与建议监测/补测项</li>
+        </ul>
+      </div></li>
+    </ol>
+
+    <p>官方手册入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a>（Ch.7 Calibration / Sensitivity · Ch.14 Automated Calibration）· <a href="https://www.hec.usace.army.mil/confluence/rasdocs/ras1dtechref/latest" target="_blank" rel="noopener">Hydraulic Reference Manual</a></p>
+  </section>
+
+
+
 
 
 
@@ -2959,7 +3136,7 @@ function buildSectionToc(secId){
   }, {rootMargin: '-15% 0px -70% 0px', threshold: 0});
   groups.forEach(g => io.observe(g.tag));
 }
-['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'p-sec5', 'p-sec6', 'p-sec7', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
+['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'p-sec5', 'p-sec6', 'p-sec7', 'p-sec8', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
 
 
 
