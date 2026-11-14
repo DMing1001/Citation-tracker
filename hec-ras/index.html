@@ -582,6 +582,7 @@ section.wrap.toc-on{max-width:1180px}
     <a class="nav-item" href="#practical/p-sec2" data-view="practical" data-target="p-sec2"><span class="num">02</span>1D 非恒定流</a>
     <a class="nav-item" href="#practical/p-sec3" data-view="practical" data-target="p-sec3"><span class="num">03</span>2D 建模入门</a>
     <a class="nav-item" href="#practical/p-sec4" data-view="practical" data-target="p-sec4"><span class="num">04</span>RAS Mapper</a>
+        <a class="nav-item" href="#practical/p-sec5" data-view="practical" data-target="p-sec5"><span class="num">05</span>结构物建模</a>
     <button class="nav-group" data-view="advanced">进阶专题</button>
     <a class="nav-item" href="#advanced/a-sec1" data-view="advanced" data-target="a-sec1"><span class="num">01</span>泥沙输移</a>
     <a class="nav-item" href="#advanced/a-sec2" data-view="advanced" data-target="a-sec2"><span class="num">02</span>水质模拟</a>
@@ -649,7 +650,7 @@ section.wrap.toc-on{max-width:1180px}
         <span class="gn-num">PART 02 · 官方教程实战</span>
         <h3>官方教程实战</h3>
         <p>照 HEC 官方分步教程动手做：Merced 河 1D 恒定流、1D 非恒定流、Bald Eagle Creek 2D 建模与 RAS Mapper 应用。</p>
-        <span class="gn-list">01 1D 恒定流 · 02 1D 非恒定流 · 03 2D 建模 · 04 RAS Mapper</span>
+        <span class="gn-list">01 1D 恒定流 · 02 1D 非恒定流 · 03 2D 建模 · 04 RAS Mapper · 05 结构物</span>
         <span class="gn-go">进入官方教程实战 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
       </a>
       <a class="gnav-card" href="#advanced/a-sec1">
@@ -922,6 +923,7 @@ section.wrap.toc-on{max-width:1180px}
       <button class="seg-btn" data-target="p-sec2">1D 非恒定流</button>
       <button class="seg-btn" data-target="p-sec3">2D 建模</button>
       <button class="seg-btn" data-target="p-sec4">RAS Mapper</button>
+        <button class="seg-btn" data-target="p-sec5">结构物</button>
     </div>
 
   <!-- ================= 官方教程实战 01：1D 恒定流 ================= -->
@@ -1571,6 +1573,162 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>在线数据下载：</b>RAS Mapper 可直接从 <b>USGS Terrain</b> 与 <b>GRiD Terrain</b> 服务查询并下载高程瓦片，无需离开软件即可获取建模地形。</div></div>
   </section>
+
+  <!-- ================= 官方教程实战 05：结构物 ================= -->
+  <section id="p-sec5" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">05 · Tutorial 5 · Hydraulic Structures</div>
+      <h2>官方教程五：结构物建模（桥梁 / 涵洞 / 堰闸）</h2>
+      <p>桥梁、涵洞、堰闸、堤防是洪水计算里最常见的"卡脖子"断面。本节按 HEC-RAS User's Manual 第 5 章《Bridges and Culverts / Inline Structures / Lateral Structures》的操作顺序：先布好结构物前后的断面，再打开 Bridge/Culvert、Inline、Lateral 编辑器逐项填高程与系数，最后用恒定流/非恒定流算过流与壅水。</p>
+    </div>
+
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本教程能回答的问题：</b>桥前壅水多高？会不会封桥（压力流）？涵洞过流能力够不够？闸门开启后水位怎么变？分洪后下游洪峰削多少？</div></div>
+
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>官方损失三段式：</b>结构物水头损失 = <b>进口收缩</b> + <b>桥/涵内（含墩台、摩擦、压力流/堰流）</b> + <b>出口扩散</b>。收缩/扩散系数一般加在结构物前后的断面上（Bridge/Culvert 编辑器可改），不要只在桥址一个断面上硬凑。</div></div>
+
+    <div class="sec-tag">阶段 A · 先布好结构物前后的断面</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>确定桥/涵位置，并在上下游加密断面</h4>
+        <p>打开 <b>Geometric Data Editor</b>，沿河布设断面时保证：</p>
+        <ul>
+          <li>结构物<strong>上游</strong>至少 1–2 个断面，用于量测壅水与进口损失。</li>
+          <li>结构物<strong>下游</strong>同样留出断面；官方明确：<b>不要把断面紧贴桥面/涵洞出口</b>（例如只离 1 ft），否则扩散段解析不开。</li>
+          <li>路堤、锥坡、河槽变化处断面要够密。</li>
+        </ul>
+        <p>断面应垂直于流向、覆盖整个路堤与洪泛区。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>填好天然断面的收缩/膨胀系数</h4>
+        <p>在断面表中设置 <b>Contraction / Expansion</b>（恒定流与非恒定流同一套几何）：</p>
+        <ul>
+          <li>渐变段：收缩约 0.1、膨胀约 0.3 量级起步。</li>
+          <li>桥墩密集、进口突变：收缩可取更大；以实测壅水或设计资料校核。</li>
+        </ul>
+        <p>结构物编辑器里还能针对桥/涵单独调整损失，避免与断面系数重复计入。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>打开 Bridge/Culvert 编辑器入口</h4>
+        <p>点工具栏 <b>Bridge/Culvert</b> 按钮（或 <code>Edit | Bridge &amp; Culvert Data…</code>）。空白工程会先提示输入 River / Reach / Station（结构物中心桩号，落在两断面之间）。</p>
+        <p>左侧树里将看到：Bridge Deck、Pier、Culvert、Bridge/Culvert Options、View 等节点——后面几步按此填写。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 桥梁：桥面、墩台与流态</div>
+    <ol class="steps" start="4">
+      <li class="step"><div class="step-body"><h4>录入 Bridge Deck（桥面 / 路面）</h4>
+        <p>选中桥节点下的 <b>Bridge Deck</b>，逐行填（典型字段）：</p>
+        <ul>
+          <li><b>Upstream / Downstream Station</b> — 桩号（桥面上、下游缘）。</li>
+          <li><b>Low Chord</b> — 桥面底缘高程（决定何时进入压力流/堰流）。</li>
+          <li><b>High Chord</b> — 桥面顶缘高程（漫顶堰流）。</li>
+          <li><b>Width / 面积、斜率</b> — 路面宽度、上下游边坡（US/DS Slope）。</li>
+        </ul>
+        <div class="chart-box" style="padding:16px">
+          <svg viewBox="0 0 640 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg" aria-label="桥梁纵剖面示意">
+            <rect width="640" height="220" fill="#F7FAFC"/>
+            <path d="M40 170 L200 170 L240 90 L400 90 L440 170 L600 170" fill="none" stroke="#0B2545" stroke-width="2.5"/>
+            <path d="M240 90 H400" stroke="#E9A23B" stroke-width="8"/>
+            <line x1="250" y1="90" x2="250" y2="150" stroke="#0B2545" stroke-width="2"/>
+            <line x1="320" y1="90" x2="320" y2="155" stroke="#0B2545" stroke-width="2"/>
+            <line x1="390" y1="90" x2="390" y2="150" stroke="#0B2545" stroke-width="2"/>
+            <path d="M40 150 H220" stroke="#00B4D8" stroke-width="3" stroke-dasharray="6 4"/>
+            <path d="M420 155 H600" stroke="#00B4D8" stroke-width="3" stroke-dasharray="6 4"/>
+            <text x="120" y="140" fill="#1D4E89" font-size="13" font-family="sans-serif">桥前壅水</text>
+            <text x="470" y="145" fill="#1D4E89" font-size="13" font-family="sans-serif">扩散段</text>
+            <text x="300" y="78" fill="#B97B12" font-size="13" font-family="sans-serif">Bridge Deck（Low/High Chord）</text>
+            <text x="255" y="200" fill="#5A6B7B" font-size="12" font-family="sans-serif">Piers 墩台</text>
+            <text x="60" y="200" fill="#5A6B7B" font-size="12" font-family="sans-serif">上游断面（勿贴桥面）</text>
+          </svg>
+          <div class="chart-cap">桥梁纵剖面示意（教学用）：Low Chord 以下为孔流；水位漫过桥面走堰流；能坡压过 Low Chord 可能出现压力流。</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>录入墩台（Pier）与桥墩阻水</h4>
+        <p>在 <b>Pier</b> 页填墩型（圆端/矩形等）、墩宽、墩数、墩台起止高程。墩台会占去过水面积，与桥面共同决定有效过流宽。</p>
+        <p>多孔桥：按实际墩位分列；特大桥可配合 Multiple Bridge Openings。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>理解官方三类过流（填系数前必懂）</h4>
+        <ul>
+          <li><b>低流 Low flow</b> — 孔口内明渠/水跃，能量方程 + 收缩膨胀。</li>
+          <li><b>堰流 Weir flow</b> — 水位上桥面/路堤，用堰公式并按淹没度折减。</li>
+          <li><b>压力流 Pressure flow</b> — 能坡高于 Low Chord，按孔口/闸孔公式；与低流结果比较取控制。</li>
+        </ul>
+        <p>高水也可能"压力流 + 漫顶堰流"同时出现（pressure and weir）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>检查 Bridge/Culvert Options 与视图</h4>
+        <p>打开 <b>Bridge and Culvert Options</b>：按需调整损失计算、水跃、是否允许压力流等开关（版本略有差异，以当前界面为准）。</p>
+        <p>用 <b>Bridge View / XY Plot</b> 看桥前壅水、孔内流态是否合理；不对先改 Deck/墩/系数，不要只调糙率。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · 涵洞 Culvert</div>
+    <ol class="steps" start="8">
+      <li class="step"><div class="step-body"><h4>添加涵洞并选断面型式</h4>
+        <p>同一 Bridge/Culvert 站点下选 <b>Culvert</b> → <b>Add Culvert</b>。型式支持圆管、箱涵、拱、管涵、低高度箱涵等（官方基于 FHWA《Hydraulic Design of Highway Culverts》进口控制 + 出口能量平衡）。</p>
+        <p>填：断面尺寸、长度、糙率 n、进口/出口高程、翼墙/进口型式（控制进口损失）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>多孔涵洞 / 桥涵组合</h4>
+        <p>可对同一站点放 <b>多个 Culvert / Bridge Opening</b>。官方支持 Multiple Bridge and/or Culvert Openings：分别定义各孔，再一起求水面。</p>
+        <p>填完用 <b>View</b> 检查进口是否淹没、出口是否贴近下游断面（过近会虚增损失）。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 D · 堰闸：Inline Structure（坝、堰、闸）</div>
+    <ol class="steps" start="10">
+      <li class="step"><div class="step-body"><h4>绘制并新建 Inline Structure</h4>
+        <p>工具栏 <b>Inline Structure</b>：在河段上点击结构物中心位置（桩号落在断面之间），输入 River/Reach/Station。</p>
+        <p>打开 <b>Inline Structure Data</b>：添加 <b>Weir</b>（堰）、<b>Gate</b>（闸门，含平板/弧形等）、<b>Spillway</b>（溢洪道）等组件。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>填堰顶、闸门与流量系数</h4>
+        <ul>
+          <li><b>Weir</b>：堰顶高程、堰宽/长度、堰流系数 Cd、侧收/淹没修正。</li>
+          <li><b>Gate</b>：闸底坎高程、闸门宽、开度过程（恒定流给固定开度；非恒定流可给开度时间序列或规则）。</li>
+          <li><b>Spillway</b>：溢流面/设计水位–流量关系。</li>
+        </ul>
+        <p>非恒定流可用 <b>Rule Sets</b> 做闸门调度（按上游水位/流量自动开度）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>坝体漫顶与溃口（可选）</h4>
+        <p>堰顶以上可算漫顶；若做溃坝，可在 Inline Structure 上设置 <b>Breach</b>（溃口底高、宽度、边坡、溃决历时），详见手册 "Dam (Inline Structure) Breach"。</p>
+        <p>先用恒定流核对各特征水位过流能力，再上非恒定流溃决过程。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 侧向结构 Lateral Structure（堤防 / 分洪）</div>
+    <ol class="steps" start="13">
+      <li class="step"><div class="step-body"><h4>绘制 Lateral Structure</h4>
+        <p>点 <b>Lateral Structure</b>，从河道一侧沿堤线/分洪堰绘制；一端连主河，另一端可接 <b>Storage Area</b> 或 2D 区。</p>
+        <p>方向影响正负流量符号——按官方：顺着约定的正流向绘制，反向流会记为负。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>填堤顶/堰顶与结构</h4>
+        <p>填沿线堤顶高程剖面（station–elevation）；若带闸/涵，用 Lateral 上的 Weir / Gate / Culvert 组件。</p>
+        <p>漫溢后可启用 <b>Breach</b>（堤防溃决）或 <b>Diversion Rating Curve</b>（分洪能力曲线）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>连接蓄洪区 Storage Area（可选）</h4>
+        <p>用 <b>Storage Area</b> 工具画容积区，填水位–容积关系；用 <b>SA/2D Area Conn</b> 连接涵/堰/闸。水泵可用 Pump Station 连接两个蓄水区或河段。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 F · 运行、冲刷与排错</div>
+    <ol class="steps" start="16">
+      <li class="step"><div class="step-body"><h4>用恒定流先验过流能力</h4>
+        <p>按设计流量跑恒定流，看桥前壅水、孔内流态、堰闸泄量是否在合理范围；与设计流量–水位关系对比。</p>
+        <p>再切非恒定流（见「官方教程二」）看过程线与最大淹没。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>桥梁冲刷（可选）</h4>
+        <p>官方手册第 11 章 <b>Computing Scour at Bridges</b>：在桥上录墩台与河床质，算一般冲刷+局部冲刷。2D 另有 Bridge Scour 分析（可导出 FHWA Hydraulic Toolbox）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>结构物常见病</h4>
+        <ul>
+          <li><b>断面贴桥面</b> → 扩散解析差、水头损失虚大；把下游断面挪远。</li>
+          <li><b>Low/High Chord 填反</b> → 流态全错（未上桥就算压力流）。</li>
+          <li><b>系数重复</b> → 断面收缩膨胀与桥涵损失都很大 → 检查是否双计。</li>
+          <li><b>压力流/堰流跳变</b> → 时间步或迭代问题，非恒定流可开 Advanced Time Step，或微调 Low Chord/糙率。</li>
+          <li><b>涵洞出口贴断面</b> → 同桥，出口扩散要有距离。</li>
+        </ul>
+      </div></li>
+    </ol>
+
+    <p>官方手册入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a>（Ch.5 Bridges/Culverts/Inline/Lateral · Ch.11 Bridge Scour）· <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" rel="noopener">Guides &amp; Tutorials</a></p>
+  </section>
+
+
   </div>
 
   <div class="view" id="view-advanced">
@@ -2341,7 +2499,7 @@ function buildSectionToc(secId){
   }, {rootMargin: '-15% 0px -70% 0px', threshold: 0});
   groups.forEach(g => io.observe(g.tag));
 }
-['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
+['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'p-sec5', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
 
 
 
