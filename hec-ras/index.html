@@ -1132,6 +1132,24 @@ section.wrap.toc-on{max-width:1180px}
 
     <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>和恒定流的关系：</b>几何共用（<code>.g01</code>）；恒定流数据 <code>.f01</code>，非恒定流数据 <code>.u01</code>，新方案常为 <code>.p02</code>。官方惯例：先用恒定流理解主槽/滩地/洪泛区，再在同一套几何上做非恒定流。</div></div>
 
+    <div class="dl-card">
+      <div class="dl-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></div>
+      <div class="dl-info"><b>官方案例与数据包入口</b><span>非恒定流步骤对应官方《Creating a Combined 1D/2D Model》——<b>示例工程与数据包挂在该指南页文末附件</b>，请到官方页下载（本节不重复托管）。也可先下载下方恒定流包作几何底稿，再按本节新建 <code>.u01</code> 过程线；2D 包内含 DSS 流量过程线可作录入参考。</span></div>
+      <a class="dl-btn" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/guides/creating-an-combined-1d-2d-model" target="_blank" rel="noopener">打开官方指南页</a>
+    </div>
+
+    <div class="dl-card">
+      <div class="dl-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></div>
+      <div class="dl-info"><b>可复用：Steady Flow Modeling with HEC-RAS.zip</b><span>Merced 河 1D 几何与地形全套，可作非恒定流的几何打底（阶段 A）。</span></div>
+      <a class="dl-btn" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/files/latest/308223637/308223644/1/1754493257068/Steady+Flow+Modeling+with+HEC-RAS.zip" target="_blank" rel="noopener">下载恒定流包</a>
+    </div>
+
+    <div class="dl-card">
+      <div class="dl-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></div>
+      <div class="dl-info"><b>可复用：Creating a Simple 2D Model.zip</b><span>Bald Eagle Creek 工程数据，内含 GIS/地形与 <b>DSS 流量过程线</b>，可参考阶段 B 的 DSS 读入方式。</span></div>
+      <a class="dl-btn" href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/files/latest/213685242/213685260/1/1728427351910/Creating+a+Simple+2D+Model.zip" target="_blank" rel="noopener">下载 2D 示例包</a>
+    </div>
+
     <div class="sec-tag">阶段 A · 从恒定流打底升级</div>
     <ol class="steps">
       <li class="step"><div class="step-body"><h4>先跑通 1D 恒定流，确认几何可用</h4>
