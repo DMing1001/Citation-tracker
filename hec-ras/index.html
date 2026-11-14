@@ -584,6 +584,7 @@ section.wrap.toc-on{max-width:1180px}
     <a class="nav-item" href="#practical/p-sec4" data-view="practical" data-target="p-sec4"><span class="num">04</span>RAS Mapper</a>
         <a class="nav-item" href="#practical/p-sec5" data-view="practical" data-target="p-sec5"><span class="num">05</span>结构物建模</a>
         <a class="nav-item" href="#practical/p-sec6" data-view="practical" data-target="p-sec6"><span class="num">06</span>溃坝溃堤</a>
+        <a class="nav-item" href="#practical/p-sec7" data-view="practical" data-target="p-sec7"><span class="num">07</span>1D/2D 耦合</a>
     <button class="nav-group" data-view="advanced">进阶专题</button>
     <a class="nav-item" href="#advanced/a-sec1" data-view="advanced" data-target="a-sec1"><span class="num">01</span>泥沙输移</a>
     <a class="nav-item" href="#advanced/a-sec2" data-view="advanced" data-target="a-sec2"><span class="num">02</span>水质模拟</a>
@@ -651,7 +652,7 @@ section.wrap.toc-on{max-width:1180px}
         <span class="gn-num">PART 02 · 官方教程实战</span>
         <h3>官方教程实战</h3>
         <p>照 HEC 官方分步教程动手做：Merced 河 1D 恒定流、1D 非恒定流、Bald Eagle Creek 2D 建模与 RAS Mapper 应用。</p>
-        <span class="gn-list">01 1D 恒定流 · 02 1D 非恒定流 · 03 2D 建模 · 04 RAS Mapper · 05 结构物 · 06 溃坝溃堤</span>
+        <span class="gn-list">01–04 基础实战 · 05 结构物 · 06 溃坝溃堤 · 07 1D/2D 耦合</span>
         <span class="gn-go">进入官方教程实战 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg></span>
       </a>
       <a class="gnav-card" href="#advanced/a-sec1">
@@ -926,6 +927,7 @@ section.wrap.toc-on{max-width:1180px}
       <button class="seg-btn" data-target="p-sec4">RAS Mapper</button>
         <button class="seg-btn" data-target="p-sec5">结构物</button>
         <button class="seg-btn" data-target="p-sec6">溃坝溃堤</button>
+        <button class="seg-btn" data-target="p-sec7">1D/2D</button>
     </div>
 
   <!-- ================= 官方教程实战 01：1D 恒定流 ================= -->
@@ -2008,6 +2010,182 @@ section.wrap.toc-on{max-width:1180px}
     <p>官方手册入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a>（Ch.7 Dam/Levee Breach · Ch.14 详细讨论与回归参数）· <a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest" target="_blank" rel="noopener">Guides &amp; Tutorials</a></p>
   </section>
 
+  <!-- ================= 官方教程实战 07：1D/2D 耦合 ================= -->
+  <section id="p-sec7" class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">07 · Tutorial 7 · Combined 1D/2D</div>
+      <h2>官方教程七：1D/2D 耦合建模</h2>
+      <p>河道用 1D 高效算水面，滩地/城区/涝区用 2D 刻画流向与淹没——这是工程上最常见的"组合拳"。本节按官方 User's Manual 第 5 章 2D Flow Area / SA-2D Connection 与 Guides《Creating a Combined 1D/2D Model》的路径：先定分工，再画 2D 边界与网格、做连接与边界，最后在非恒定流里耦合求解。</p>
+    </div>
+
+    <div class="callout tip"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><b>本教程能回答的问题：</b>主槽过流多少、滩地漫过去多少？堤决后涝区怎么淹？城区道路挡水后积水往哪走？——1D 管"槽"，2D 管"面"，连接管"交换"。</div></div>
+
+    <div class="callout note"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>官方建模惯例：</b>先做稳的 1D 模型理解水系（低水找主槽、高水找洪泛区），再把需要二维流向的区域做成 <b>2D Flow Area</b>。连接方式常见三种：① 1D 断面直接盖住滩地（简单漫滩）；② <b>Lateral Structure</b>（堤/堰/溢流）；③ <b>SA/2D Area Connection</b>（蓄水区与 2D 之间涵/堰/闸）。耦合计算在 <b>Unsteady Flow</b> 中完成。</div></div>
+
+    <div class="sec-tag">阶段 A · 分工与几何总图</div>
+    <ol class="steps">
+      <li class="step"><div class="step-body"><h4>决定哪里 1D、哪里 2D</h4>
+        <ul>
+          <li><b>1D</b>：深窄河谷、流向单一的主槽、已有可靠断面的河段。</li>
+          <li><b>2D</b>：滩地宽阔、堤内涝区、城区道路阻水、回流/分流明显处。</li>
+          <li><b>Storage Area</b>：只需"一个水位"的湖库/涝区，比 2D 省机时。</li>
+        </ul>
+        <p>在纸上或 GIS 里划好 1D 中心线、2D 多边形、堤线与连接位置，再动手建模。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>先完成 1D 几何（中心线 + 断面）</h4>
+        <p>按「官方教程一」布好主槽断面；滩地若并入 1D 断面，断面要够宽；若滩地改 2D，断面可只保留主槽+近岸。</p>
+        <p>断面上可加 <b>Levee</b>（堤顶）与 <b>Ineffective Flow</b>（无效过水区）做初步漫滩控制。</p>
+        <div class="fig">
+          <div class="fig-title">断面 Levee 选项<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_09_levee_xs.jpg" alt="断面堤顶选项" loading="lazy">
+          <div class="fig-cap">1D 断面上的堤顶：不到该高程不向滩地分水（简化漫滩）。<b>来源：</b>HEC-RAS User's Manual Fig.5-5</div>
+        </div>
+        <div class="fig">
+          <div class="fig-title">无效过水区（Ineffective）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_10_ineffective.jpg" alt="无效过水区" loading="lazy">
+          <div class="fig-cap">回流/死水区设无效，避免虚假过流。<b>来源：</b>HEC-RAS User's Manual Fig.5-3</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>打开 Geometric Data，认识 2D 相关按钮</h4>
+        <p>几何编辑器工具栏中你会用到：<b>2D Flow Area</b>、<b>Break Lines</b>、<b>Generate Mesh</b>、<b>SA/2D Area Conn</b>、<b>Storage Area</b>、<b>Lateral Structure</b>、<b>BC Lines</b>。</p>
+        <p>左侧 2D Flow Area 编辑器用于改单元尺寸、显示/选择区域。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 B · 绘制 2D Flow Area 并生成网格</div>
+    <ol class="steps" start="4">
+      <li class="step"><div class="step-body"><h4>画 2D 区外边界（Perimeter）</h4>
+        <p>点 <b>2D Flow Area</b> 工具：在滩地/涝区/城区单击加点，<strong>双击结束</strong>，输入名称（如 <code>Floodplain</code>）。</p>
+        <p>边界应盖住可能淹没的范围，但不必无限放大（单元数×时间）。</p>
+        <div class="fig">
+          <div class="fig-title">绘制 2D Flow Area 边界<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_01_draw_perimeter.jpg" alt="绘制 2D 边界" loading="lazy">
+          <div class="fig-cap">沿 2D 区外缘加点，双击结束并命名。<b>来源：</b>HEC-RAS User's Manual</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>加 Breakline：堤、路、渠要"卡住"网格</h4>
+        <p>点 <b>Break Lines</b>，沿堤顶、路基、深槽绘制线，命名。Breakline 强制单元边（face）贴合地物，防止水"穿堤"。</p>
+        <ul>
+          <li>堤/路：沿脊线画。</li>
+          <li>主槽深切：可沿深泓加密。</li>
+          <li>与 1D 河道相邻处：边界线与 1D 位置对齐。</li>
+        </ul>
+        <div class="fig">
+          <div class="fig-title">网格与 Breakline（堤内涝区示例）<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_04_mesh_example.jpg" alt="2D 网格示例" loading="lazy">
+          <div class="fig-cap">堤防保护区内 2D 网格：Breakline 让堤线成为单元边界。<b>来源：</b>HEC-RAS User's Manual Fig.5-44</div>
+        </div>
+        <div class="fig">
+          <div class="fig-title">地物附近网格加密<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_05_mesh_zoom.jpg" alt="网格局部加密" loading="lazy">
+          <div class="fig-cap">道路/堤防等处加密，单元边贴地物。<b>来源：</b>HEC-RAS User's Manual</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>Generate Mesh 生成计算网格</h4>
+        <p>在 2D Flow Area 编辑器中设 <b>Cell Spacing</b>（目标单元尺寸），点 <b>Generate Mesh</b>。</p>
+        <ul>
+          <li>单元尺寸经验：约 <b>DEM 分辨率的 2–5 倍</b>起步；不小于 DEM。</li>
+          <li>主槽/建筑周边用更小尺寸或局部 Refinement。</li>
+        </ul>
+        <div class="fig">
+          <div class="fig-title">2D Flow Area Mesh Generation Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_02_mesh_editor.jpg" alt="网格生成编辑器" loading="lazy">
+          <div class="fig-cap">设置单元尺寸并生成网格。<b>来源：</b>HEC-RAS User's Manual Fig.5-42</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>读懂网格三要素（后文排错要用）</h4>
+        <div class="fig">
+          <div class="fig-title">2D 网格术语：Cell Center / Face / Face Point<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_03_mesh_terms.jpg" alt="2D 网格术语" loading="lazy">
+          <div class="fig-cap"><b>Cell Center</b> 算水位水深；<b>Face</b> 过流量；<b>Face Point</b> 是角点。<b>来源：</b>HEC-RAS User's Manual Fig.5-46</div>
+        </div>
+        <p>在 Mesh 编辑器里检查：有无畸形单元、漏缝、堤线是否被"锯齿"切断。有问题改 Breakline 后重新 Generate。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 C · 1D ↔ 2D 怎么"接上"</div>
+    <ol class="steps" start="8">
+      <li class="step"><div class="step-body"><h4>方式一：漫滩直接交换（断面盖滩地）</h4>
+        <p>1D 断面范围盖过滩地，靠水面横向比降分水。适合河道与滩地一体、不需要精细二维流态的河段。注意断面间距与滩地阻力。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>方式二：Lateral Structure（堤、堰、溢流）</h4>
+        <p>沿堤/路画 <b>Lateral Structure</b>，填堤顶剖面；漫溢或溃决后向 2D 区（或 Storage Area）分水。可带闸、涵。</p>
+        <p>一端连 1D 河段，另一端指向 2D/蓄水区（按软件版本的连接规则放置）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>方式三：SA/2D Area Connection（涵、堰、闸、泵）</h4>
+        <p>点 <b>SA/2D Area Conn</b>，在蓄水区与 2D 区（或两个 2D 区）之间画连接线：<strong>顺着正流向从左到右</strong>绘制，双击结束并命名——方向决定正负流量符号。</p>
+        <div class="fig">
+          <div class="fig-title">SA/2D Area Connection Editor<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_06_sa2d_conn.jpg" alt="SA/2D 连接编辑器" loading="lazy">
+          <div class="fig-cap">连接线上可组合 Weir / Culvert / Gate。<b>来源：</b>HEC-RAS User's Manual Fig.5-48</div>
+        </div>
+        <div class="fig">
+          <div class="fig-title">连接上的 Weir/Embankment<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_07_weir_conn.jpg" alt="连接堰/堤" loading="lazy">
+          <div class="fig-cap">堰顶高程与宽度决定何时过水。<b>来源：</b>HEC-RAS User's Manual Fig.5-49</div>
+        </div>
+        <p>中心线与属性表：</p>
+        <div class="fig">
+          <div class="fig-title">Hydraulic Structure Centerline Data Table<span class="fig-flag">官方截图</span></div>
+          <img src="assets/official/c12_08_centerline_table.jpg" alt="水力结构中心线表" loading="lazy">
+          <div class="fig-cap">沿线桩号–高程等。<b>来源：</b>HEC-RAS User's Manual Fig.5-51</div>
+        </div>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>2D 区外部边界 BC Lines（入流/出流/水位）</h4>
+        <p>点 <b>SA/2D Area BC Lines</b>，沿 2D 区外缘需要给边界处画线，命名后在 <b>Unsteady Flow Data</b> 中给类型：</p>
+        <ul>
+          <li><b>Flow Hydrograph</b> / <b>Stage Hydrograph</b> / <b>Rating Curve</b></li>
+        </ul>
+        <p>与 1D 相邻的边通常不设外部边界，靠耦合交换。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 D · 非恒定流：边界、初值与 2D 选项</div>
+    <ol class="steps" start="12">
+      <li class="step"><div class="step-body"><h4>Unsteady Flow Data 中填 1D + 2D 边界</h4>
+        <p>1D 上游/下游按「官方教程二」；2D 的 BC Line 会出现在同一编辑器里，逐条给过程线。</p>
+        <p>Initial Conditions：1D 给初始流量；2D 区可给初始水位/干湿状态（按界面选项）。</p>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>Computation Options：2D Flow Options</h4>
+        <p>Plan → <code>Computation Options and Tolerances… → 2D Flow Options</code>：</p>
+        <ul>
+          <li><b>Equation Set</b>：扩散波（快）或完整浅水方程 SWE（泥沙/复杂流态必用 SWE）。</li>
+          <li><b>Warmup</b>：先湿润网格再正式算。</li>
+          <li><b>Time Slices / 2D 时间步</b>：2D 往往要更小步长。</li>
+          <li>求解器、紊动等按「2D 建模入门」与泥沙章的建议。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>时间步与耦合稳定性</h4>
+        <p>1D/2D 同时算时，先短窗试算。2D 单元小则时间步要小；可用 Advanced Time Step Control。振荡多发生在连接线、堤顶、窄通道——优先查网格与连接几何。</p>
+      </div></li>
+    </ol>
+
+    <div class="sec-tag">阶段 E · 运行、结果与排错</div>
+    <ol class="steps" start="15">
+      <li class="step"><div class="step-body"><h4>运行并分图层看交换</h4>
+        <ul>
+          <li>RAS Mapper：2D 水深/流速/水位 + 1D 纵剖面。</li>
+          <li>连接线/堤上的流量过程（检查交换是否合理）。</li>
+          <li>对比纯 1D 方案：滩地淹没范围、洪峰是否因二维路径改变。</li>
+        </ul>
+      </div></li>
+      <li class="step"><div class="step-body"><h4>常见病</h4>
+        <ul>
+          <li><b>水穿堤</b> → Breakline 没贴堤脊或网格太粗；重新生成网格。</li>
+          <li><b>连接线不过水</b> → 方向画反、堰顶高程太高、两区域没真正搭接。</li>
+          <li><b>2D 边界溢出</b> → BC 位置/类型不当，或 2D 范围不够。</li>
+          <li><b>极慢/不稳</b> → 单元过多或步长过大；先局部加密而不是全域细化。</li>
+          <li><b>与 1D 水位对不上</b> → 断面范围、无效区、糙率分工（主槽 vs 滩地）要分开校。</li>
+        </ul>
+        <div class="callout warn"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div>耦合模型参数更多：先保证 1D 与 2D <strong>各自</strong>合理，再调连接。一次只动一类参数，用 Plan 对比。</div></div>
+      </div></li>
+    </ol>
+
+    <p>官方入口：<a href="https://www.hec.usace.army.mil/confluence/rasdocs/hgt/latest/guides/creating-an-combined-1d-2d-model" target="_blank" rel="noopener">Creating a Combined 1D/2D Model</a> · <a href="https://www.hec.usace.army.mil/confluence/rasdocs/rasum/latest" target="_blank" rel="noopener">User's Manual</a>（Ch.5 2D Flow Area / SA-2D Conn）</p>
+  </section>
+
+
+
 
 
 
@@ -2781,7 +2959,7 @@ function buildSectionToc(secId){
   }, {rootMargin: '-15% 0px -70% 0px', threshold: 0});
   groups.forEach(g => io.observe(g.tag));
 }
-['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'p-sec5', 'p-sec6', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
+['p-sec1', 'p-sec2', 'p-sec3', 'p-sec4', 'p-sec5', 'p-sec6', 'p-sec7', 'a-sec1', 'a-sec2', 'r-sec1'].forEach(buildSectionToc);
 
 
 
